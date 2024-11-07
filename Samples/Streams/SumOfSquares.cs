@@ -20,9 +20,9 @@ public static class SumOfSquares
         from x in example(n).Iter().As()
         select unit;
 
-    static StreamT<M, long> squares<M>(int n)
+    static StreamT<M, long> squares<M>(long n)
         where M : Monad<M> =>
-        StreamT<M>.lift(Range(0, (long)n).Select(v => v * v).Where(v => v <= n));
+        StreamT<M>.lift(Range(0, n).Select(v => v * v).Where(v => v <= n));
 
     static StreamT<IO, (long X, long Y)> example(int n) =>
         from x in squares<IO>(n)

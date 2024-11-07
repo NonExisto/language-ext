@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\LanguageExt.Core\LanguageExt.Core.csproj" />
+      <ProjectReference Include="..\..\LanguageExt.Pipes\LanguageExt.Pipes.csproj" />
     </ItemGroup>
 
 </Project>

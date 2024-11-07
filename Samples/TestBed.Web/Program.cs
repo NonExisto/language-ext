@@ -25,11 +25,11 @@ app.MapGet("/fork-sync",
            });
 
 app.MapGet("/fork-async",
-           () =>
+           async () =>
            {
                var effect      = yieldFor(1000).Map("Hello, World");
                var computation = awaitIO(fork(effect));
-               return computation.Run();
+               return await computation.RunAsync();
            });
 
 app.Run();

@@ -26,7 +26,7 @@ public readonly struct Base12(int MostSig, uint LeastSig) :
     public static readonly Base12 Zero = new (0, 0);
 
     public static Base12 From(int value) =>
-        new (value / 12, (uint)(Math.Abs(value) % 12));
+        Math.DivRem(value, 12).Map((q,r) => new Base12(q, (uint)Math.Abs(r)));
 
     public static Fin<Base12> From((int MostSig, uint LeastSig) repr) => 
         repr.LeastSig > 11
@@ -84,8 +84,7 @@ public readonly struct Base12(int MostSig, uint LeastSig) :
         var (lm, ll) = left.To();
         var (rm, rl) = right.To();
 
-        var leastQuot = (ll * rl) % 12;
-        var leastRem  = (ll * rl) / 12;
+        var (leastQuot, leastRem) = Math.DivRem(ll * rl, 12);
         var most      = lm * rm + leastRem;
         return new((int)most, leastQuot);
     }
@@ -95,8 +94,7 @@ public readonly struct Base12(int MostSig, uint LeastSig) :
         var (lm, ll) = left.To();
         var (rm, rl) = right.To();
 
-        var mostQuot = lm / rm;
-        var mostRem  = lm % rm;
+        var (mostQuot, mostRem) = Math.DivRem(lm, rm);
         var least = (ll / rl + mostRem) % 12;
         return new(mostQuot, (uint)least);
     }

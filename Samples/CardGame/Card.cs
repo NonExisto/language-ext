@@ -18,18 +18,18 @@ public record Card(int Index)
             var ix => $"{ix + 1}"
         };
     
-    public string Suit =>
+    public char Suit =>
         Index switch
         {
-            < 13 => "Hearts",
-            < 26 => "Clubs",
-            < 39 => "Spades",
-            < 52 => "Diamonds",
+            < 13 => '¦',
+            < 26 => '¦',
+            < 39 => '¦',
+            < 52 => '¦',
             _    => throw new NotSupportedException()
         };
 
     public override string ToString() =>
-        $"{Name} of {Suit}";
+        $"{Name}{Suit}";
     
     public Seq<int> FaceValues =>
         (Index % 13) switch

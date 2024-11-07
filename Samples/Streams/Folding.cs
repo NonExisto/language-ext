@@ -15,7 +15,7 @@ public static class Folding
     
     static StreamT<IO, Unit> example(int n) =>
         from v in naturals(n).FoldUntil(0, (s, x) => s + x, (_, x) => x % 10 == 0)
-        from _ in writeLine(v.ToString())
+        from _ in writeLine(v)
         where false
         select unit;
 }
