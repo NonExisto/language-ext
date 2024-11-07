@@ -40,15 +40,13 @@ namespace LanguageExt
             int hash = offsetBasis;
             if (items == null) return hash;
 
-            unchecked
+
+            foreach (var item in items)
             {
-                Span<A> span = items;
-                foreach (var item in span)
-                {
-                    hash = Next(HashA.GetHashCode(item), hash);
-                }
-                return hash;
+                hash = Next(HashA.GetHashCode(item), hash);
             }
+            return hash;
+
         }
 
         /// <summary>
@@ -60,15 +58,14 @@ namespace LanguageExt
             int hash = offsetBasis;
             if (items == null) return hash;
 
-            unchecked
+
+            var span = new ReadOnlySpan<A>(items, start, length);
+            foreach (var item in span)
             {
-                var span = new Span<A>(items, start, length);
-                foreach (var item in span)
-                {
-                    hash = Next(HashA.GetHashCode(item), hash);
-                }
-                return hash;
+                hash = Next(HashA.GetHashCode(item), hash);
             }
+            return hash;
+
         }
 
         /// <summary>
@@ -80,14 +77,13 @@ namespace LanguageExt
             int hash = offsetBasis;
             if (items == null) return hash;
 
-            unchecked
+
+            foreach (var item in items)
             {
-                foreach (var item in items)
-                {
-                    hash = Next(HashA.GetHashCode(item), hash);
-                }
-                return hash;
+                hash = Next(HashA.GetHashCode(item), hash);
             }
+            return hash;
+
         }
     }
 }

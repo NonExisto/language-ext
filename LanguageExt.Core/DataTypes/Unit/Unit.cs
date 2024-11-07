@@ -10,8 +10,6 @@ namespace LanguageExt;
 [Serializable]
 public readonly struct Unit : IEquatable<Unit>, IComparable<Unit>, Monoid<Unit>
 {
-    public static readonly Unit Default = default;
-
     [Pure]
     public override int GetHashCode() => 
         0;
@@ -83,7 +81,7 @@ public readonly struct Unit : IEquatable<Unit>, IComparable<Unit>, Monoid<Unit>
 
     [Pure]
     public static Unit operator +(Unit a, Unit b) =>
-        Default;
+        default;
 
     [Pure]
     public static implicit operator ValueTuple(Unit _) => 

@@ -14,7 +14,7 @@ namespace LanguageExt;
 public readonly struct Guard<E, A>
 {
     public readonly bool Flag;
-    readonly Func<E> onFalse;
+    readonly Func<E>? onFalse;
 
     internal Guard(bool flag, Func<E> onFalse) =>
         (Flag, this.onFalse) = (flag, onFalse ?? throw new ArgumentNullException(nameof(onFalse)));

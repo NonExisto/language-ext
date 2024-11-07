@@ -9,7 +9,6 @@ using System.Runtime.Serialization;
 using LanguageExt.Traits;
 using LanguageExt.ClassInstances;
 using System.Runtime.CompilerServices;
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 
 namespace LanguageExt;
 
@@ -22,7 +21,7 @@ namespace LanguageExt;
 /// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
 [Serializable]
-internal class MapInternal<OrdK, K, V> :
+internal sealed class MapInternal<OrdK, K, V> :
     IEnumerable<(K Key, V Value)>
     where OrdK : Ord<K>
 {
@@ -31,13 +30,6 @@ internal class MapInternal<OrdK, K, V> :
     internal readonly MapItem<K, V> Root;
     internal readonly bool Rev;
     int hashCode;
-
-    /// <summary>
-    /// Ctor
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal MapInternal() =>
-        Root = MapItem<K, V>.Empty;
 
     /// <summary>
     /// Ctor
@@ -53,9 +45,9 @@ internal class MapInternal<OrdK, K, V> :
     internal MapInternal(ReadOnlySpan<(K Key, V Value)> items, MapModuleM.AddOpt option)
     {
         var root = MapItem<K, V>.Empty;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            root = MapModuleM.Add<OrdK, K, V>(root, item.Key, item.Value, option);
+            root = MapModuleM.Add<OrdK, K, V>(root, Key, Value, option);
         }
         Root = root;
     }
@@ -64,9 +56,9 @@ internal class MapInternal<OrdK, K, V> :
     internal MapInternal(IEnumerable<(K Key, V Value)> items, MapModuleM.AddOpt option)
     {
         var root = MapItem<K, V>.Empty;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            root = MapModuleM.Add<OrdK, K, V>(root, item.Key, item.Value, option);
+            root = MapModuleM.Add<OrdK, K, V>(root, Key, Value, option);
         }
         Root = root;
     }
@@ -125,16 +117,6 @@ internal class MapInternal<OrdK, K, V> :
         get => Root.Count;
     }
 
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => Count;
-    }
-
     [Pure]
     public Option<(K, V)> Min
     {
@@ -159,7 +141,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override int GetHashCode() =>
         hashCode == 0
-            ? (hashCode = FNV32.Hash<HashablePair<OrdK, HashableDefault<V>, K, V>, (K, V)>(AsEnumerable()))
+            ? (hashCode = FNV32.Hash<HashableTuple<OrdK, HashableDefault<V>, K, V>, (K, V)>(AsEnumerable()))
             : hashCode;
 
     /// <summary>
@@ -175,8 +157,8 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> Add(K key, V value)
     {
-        if (isnull(key)) throw new ArgumentNullException(nameof(key));
-        if (isnull(value)) throw new ArgumentNullException(nameof(value));
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(value);
         return SetRoot(MapModule.Add<OrdK, K, V>(Root, key, value));
     }
 
@@ -193,7 +175,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> TryAdd(K key, V value)
     {
-        if (isnull(key)) throw new ArgumentNullException(nameof(key));
+        ArgumentNullException.ThrowIfNull(key);
         return SetRoot(MapModule.TryAdd<OrdK, K, V>(Root, key, value));
     }
 
@@ -213,7 +195,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> TryAdd(K key, V value, Func<MapInternal<OrdK, K, V>, V, MapInternal<OrdK, K, V>> Fail)
     {
-        if (isnull(key)) throw new ArgumentNullException(nameof(key));
+        ArgumentNullException.ThrowIfNull(key);
         return Find(key, v => Fail(this, v), () => Add(key, value));
     }
 
@@ -236,7 +218,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.Add<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -261,7 +243,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.Add<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -286,7 +268,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.TryAdd<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -311,7 +293,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.TryAdd<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -336,7 +318,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Key)) throw new ArgumentNullException(nameof(item.Key));
+            ArgumentNullException.ThrowIfNull(item.Key);
             self = MapModule.TryAdd<OrdK, K, V>(self, item.Key, item.Value);
         }
         return SetRoot(self);
@@ -361,7 +343,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.AddOrUpdate<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -386,7 +368,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Item1)) throw new ArgumentNullException(nameof(item.Item1));
+            ArgumentNullException.ThrowIfNull(item.Item1);
             self = MapModule.AddOrUpdate<OrdK, K, V>(self, item.Item1, item.Item2);
         }
         return SetRoot(self);
@@ -411,7 +393,7 @@ internal class MapInternal<OrdK, K, V> :
         var self = Root;
         foreach (var item in range)
         {
-            if (isnull(item.Key)) throw new ArgumentNullException(nameof(item.Key));
+            ArgumentNullException.ThrowIfNull(item.Key);
             self = MapModule.AddOrUpdate<OrdK, K, V>(self, item.Key, item.Value);
         }
         return SetRoot(self);
@@ -576,7 +558,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> SetItem(K key, V value)
     {
-        if (isnull(key)) throw new ArgumentNullException(nameof(key));
+        ArgumentNullException.ThrowIfNull(key);
         return SetRoot(MapModule.SetItem<OrdK, K, V>(Root, key, value));
     }
 
@@ -665,7 +647,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> AddOrUpdate(K key, V value)
     {
-        if (isnull(key)) throw new ArgumentNullException(nameof(key));
+        ArgumentNullException.ThrowIfNull(key);
         return SetRoot(MapModule.AddOrUpdate<OrdK, K, V>(Root, key, value));
     }
 
@@ -699,7 +681,7 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MapInternal<OrdK, K, V> AddOrUpdate(K key, Func<V, V> Some, V None)
     {
-        if (isnull(None)) throw new ArgumentNullException(nameof(None));
+        ArgumentNullException.ThrowIfNull(None);
 
         return isnull(key)
                    ? this
@@ -719,8 +701,8 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<V> FindRange(K keyFrom, K keyTo)
     {
-        if (isnull(keyFrom)) throw new ArgumentNullException(nameof(keyFrom));
-        if (isnull(keyTo)) throw new ArgumentNullException(nameof(keyTo));
+        ArgumentNullException.ThrowIfNull(keyFrom);
+        ArgumentNullException.ThrowIfNull(keyTo);
         return OrdK.Compare(keyFrom, keyTo) > 0
                    ? MapModule.FindRange<OrdK, K, V>(Root, keyTo, keyFrom).AsIterable()
                    : MapModule.FindRange<OrdK, K, V>(Root, keyFrom, keyTo).AsIterable();
@@ -737,8 +719,8 @@ internal class MapInternal<OrdK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<(K, V)> FindRangePairs(K keyFrom, K keyTo)
     {
-        if (isnull(keyFrom)) throw new ArgumentNullException(nameof(keyFrom));
-        if (isnull(keyTo)) throw new ArgumentNullException(nameof(keyTo));
+        ArgumentNullException.ThrowIfNull(keyFrom);
+        ArgumentNullException.ThrowIfNull(keyTo);
         return OrdK.Compare(keyFrom, keyTo) > 0
                    ? MapModule.FindRangePairs<OrdK, K, V>(Root, keyTo, keyFrom).AsIterable()
                    : MapModule.FindRangePairs<OrdK, K, V>(Root, keyFrom, keyTo).AsIterable();
@@ -758,10 +740,10 @@ internal class MapInternal<OrdK, K, V> :
 
         IEnumerable<(K, V)> Go()
         {
-            using var enumer = new MapEnumerator<K, V>(Root, Rev, amount);
-            while (enumer.MoveNext())
+            using var enumerator = new MapEnumerator<K, V>(Root, Rev, amount);
+            while (enumerator.MoveNext())
             {
-                yield return enumer.Current;
+                yield return enumerator.Current;
             }
         }
     }
@@ -999,22 +981,6 @@ internal class MapInternal<OrdK, K, V> :
               None: () => false);
 
     /// <summary>
-    /// TryGetValue
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete("TryGetValue is obsolete, use TryFind instead")]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetValue(K key, out V value)
-    {
-        var res = match(Find(key), Some: x => (x, true), None: () => (default(V)!, false));
-        value = res.Item1;
-        return res.Item2;
-    }
-
-    /// <summary>
     /// Equivalent to map and filter but the filtering is done based on whether the returned
     /// Option is Some or None.  If the item is None then it's filtered out, if not the the
     /// mapped Some value is used.
@@ -1145,11 +1111,6 @@ internal class MapInternal<OrdK, K, V> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Seq<(K Key, V Value)> ToSeq() =>
-        toSeq(AsEnumerable());
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<(K Key, V Value)> AsEnumerable()
     {
         return Iterable.createRange(Go());
@@ -1162,10 +1123,6 @@ internal class MapInternal<OrdK, K, V> :
             }
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static KeyValuePair<K, V> ToKeyValuePair((K Key, V Value) kv) => 
-        new(kv.Key, kv.Value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal MapInternal<OrdK, K, V> SetRoot(MapItem<K, V> root) =>
@@ -1183,9 +1140,9 @@ internal class MapInternal<OrdK, K, V> :
     [Pure]
     public MapInternal<OrdK, K, R> Union<V2, R>(MapInternal<OrdK, K, V2> other, WhenMissing<K, V, R> MapLeft, WhenMissing<K, V2, R> MapRight, WhenMatched<K, V, V2, R> Merge)
     {
-        if (MapLeft  == null) throw new ArgumentNullException(nameof(MapLeft));
-        if (MapRight == null) throw new ArgumentNullException(nameof(MapRight));
-        if (Merge    == null) throw new ArgumentNullException(nameof(Merge));
+        ArgumentNullException.ThrowIfNull(MapLeft);
+        ArgumentNullException.ThrowIfNull(MapRight);
+        ArgumentNullException.ThrowIfNull(Merge);
 
         var root = MapItem<K, R>.Empty;
 
@@ -1210,16 +1167,16 @@ internal class MapInternal<OrdK, K, V> :
                     MapModuleM.AddOpt.TryAdd);
             }
         }
-        foreach (var left in this)
+        foreach (var (Key, Value) in this)
         {
-            var key   = left.Key;
+            var key   = Key;
             var right = other.Find(key);
             if (right.IsNone)
             {
                 root = MapModuleM.Add<OrdK, K, R>(
                     root,
                     key,
-                    MapLeft(key, left.Value),
+                    MapLeft(key, Value),
                     MapModuleM.AddOpt.TryAdd);
             }
         }
@@ -1233,7 +1190,7 @@ internal class MapInternal<OrdK, K, V> :
     [Pure]
     public MapInternal<OrdK, K, R> Intersect<V2, R>(MapInternal<OrdK, K, V2> other, WhenMatched<K, V, V2, R> Merge)
     {
-        if (Merge == null) throw new ArgumentNullException(nameof(Merge));
+        ArgumentNullException.ThrowIfNull(Merge);
 
         var root = MapItem<K, R>.Empty;
 
@@ -1432,7 +1389,7 @@ internal interface IMapItem<K, V>
 }
 
 [Serializable]
-class MapItem<K, V> :
+sealed class MapItem<K, V> :
     ISerializable,
     IMapItem<K, V>
 {
@@ -1928,41 +1885,6 @@ static class MapModule
         else
         {
             return Some(node.KeyValue.Value);
-        }
-    }
-
-    public static MapItem<K, V> Skip<K, V>(MapItem<K, V> node, int amount)
-    {
-        if (amount == 0 || node.IsEmpty)
-        {
-            return node;
-        }
-        if (amount > node.Count)
-        {
-            return MapItem<K, V>.Empty;
-        }
-        if (!node.Left.IsEmpty && node.Left.Count == amount)
-        {
-            return Balance(Make(node.KeyValue, MapItem<K, V>.Empty, node.Right));
-        }
-        if (!node.Left.IsEmpty && node.Left.Count == amount - 1)
-        {
-            return node.Right;
-        }
-        if (node.Left.IsEmpty)
-        {
-            return Skip(node.Right, amount - 1);
-        }
-
-        var newleft   = Skip(node.Left, amount);
-        var remaining = amount - node.Left.Count - newleft.Count;
-        if (remaining > 0)
-        {
-            return Skip(Balance(Make(node.KeyValue, newleft, node.Right)), remaining);
-        }
-        else
-        {
-            return Balance(Make(node.KeyValue, newleft, node.Right));
         }
     }
 

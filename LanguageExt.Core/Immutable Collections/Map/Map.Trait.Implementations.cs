@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class Map<Key> : Foldable<Map<Key>>, Functor<Map<Key>>, MonoidK<Map<Key>>
+public sealed partial class Map<Key> : Foldable<Map<Key>>, Functor<Map<Key>>, MonoidK<Map<Key>>
 {
     static K<Map<Key>, B> Functor<Map<Key>>.Map<A, B>(Func<A, B> f, K<Map<Key>, A> ma)
     {

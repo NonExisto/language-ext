@@ -8,6 +8,7 @@ using static LanguageExt.Prelude;
 using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 using System.Runtime.CompilerServices;
+using LanguageExt.Common;
 
 namespace LanguageExt;
 
@@ -118,8 +119,8 @@ public readonly struct Lst<A> :
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Lens<Lst<A>, A>.New(
-            Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[0],
-            Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(0, a));
+            Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[0],
+            Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(0, a));
     }
 
     /// <summary>
@@ -142,8 +143,8 @@ public readonly struct Lst<A> :
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Lens<Lst<A>, A>.New(
-            Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[^1],
-            Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(la.Count - 1, a));
+            Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[^1],
+            Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(la.Count - 1, a));
     }
 
     /// <summary>
@@ -164,8 +165,8 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<Lst<A>, A> item(int index) => Lens<Lst<A>, A>.New(
-        Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[index],
-        Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(index, a)
+        Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[index],
+        Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(index, a)
     );
 
     /// <summary>
@@ -250,7 +251,7 @@ public readonly struct Lst<A> :
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    Lst<A> Wrap(LstInternal<A> list) =>
+    static Lst<A> Wrap(LstInternal<A> list) =>
         new (list);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -284,7 +285,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Add(A value) =>
-        Wrap(Value.Add(value));
+        Lst<A>.Wrap(Value.Add(value));
 
     /// <summary>
     /// Add a range of items to the end of the list
@@ -292,7 +293,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> AddRange(IEnumerable<A> items) =>
-        Wrap(Value.AddRange(items));
+        Lst<A>.Wrap(Value.AddRange(items));
 
     /// <summary>
     /// Clear the list
@@ -324,7 +325,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Insert(int index, A value) =>
-        Wrap(Value.Insert(index, value));
+        Lst<A>.Wrap(Value.Insert(index, value));
 
     /// <summary>
     /// Insert range of values at specified index
@@ -332,7 +333,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> InsertRange(int index, IEnumerable<A> items) =>
-        Wrap(Value.InsertRange(index, items));
+        Lst<A>.Wrap(Value.InsertRange(index, items));
 
     /// <summary>
     /// Find the last index of an item in the list
@@ -348,7 +349,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Remove(A value) =>
-        Wrap(Value.Remove(value));
+        Lst<A>.Wrap(Value.Remove(value));
 
     /// <summary>
     /// Remove all items that match the value from the list
@@ -356,7 +357,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Remove(A value, IEqualityComparer<A> equalityComparer) =>
-        Wrap(Value.Remove(value, equalityComparer));
+        Lst<A>.Wrap(Value.Remove(value, equalityComparer));
 
     /// <summary>
     /// Remove all items that match a predicate
@@ -364,7 +365,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> RemoveAll(Func<A, bool> pred) =>
-        Wrap(Value.RemoveAll(pred));
+        Lst<A>.Wrap(Value.RemoveAll(pred));
 
     /// <summary>
     /// Remove item at location
@@ -374,7 +375,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> RemoveAt(int index) =>
-        Wrap(Value.RemoveAt(index));
+        Lst<A>.Wrap(Value.RemoveAt(index));
 
     /// <summary>
     /// Remove a range of items
@@ -382,7 +383,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> RemoveRange(int index, int count) =>
-        Wrap(Value.RemoveRange(index, count));
+        Lst<A>.Wrap(Value.RemoveRange(index, count));
 
     /// <summary>
     /// Set an item at the specified index
@@ -390,7 +391,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> SetItem(int index, A value) =>
-        Wrap(Value.SetItem(index, value));
+        Lst<A>.Wrap(Value.SetItem(index, value));
 
     /// <summary>
     /// Returns an enumerable range from the collection.  This is the fastest way of
@@ -462,7 +463,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Reverse() =>
-        Wrap(Value.Reverse());
+        Lst<A>.Wrap(Value.Reverse());
 
     /// <summary>
     /// Impure iteration of the bound values in the structure
@@ -517,7 +518,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Filter(Func<A, bool> pred) =>
-        Wrap(Value.Filter(pred));
+        Lst<A>.Wrap(Value.Filter(pred));
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -563,7 +564,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> Subtract(Lst<A> rhs) =>
-        Wrap(Value.Subtract(rhs.Value));
+        Lst<A>.Wrap(Value.Subtract(rhs.Value));
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

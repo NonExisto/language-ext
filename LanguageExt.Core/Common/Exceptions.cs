@@ -1,6 +1,6 @@
 namespace LanguageExt.Common;
 
-public class Exceptions
+public static class Exceptions
 {
     /// <summary>
     /// An error state without any error values

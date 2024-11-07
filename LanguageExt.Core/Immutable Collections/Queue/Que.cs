@@ -6,6 +6,7 @@ using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using LanguageExt.ClassInstances;
+using LanguageExt.Common;
 
 namespace LanguageExt;
 
@@ -21,7 +22,7 @@ public readonly struct Que<A> :
 {
     public static readonly Que<A> Empty = new (QueInternal<A>.Empty);
 
-    readonly QueInternal<A> value;
+    readonly QueInternal<A>? value;
     internal QueInternal<A> Value => value ?? QueInternal<A>.Empty;
 
     internal Que(QueInternal<A> value) =>

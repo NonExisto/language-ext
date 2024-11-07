@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace LanguageExt;
 
-public partial class Set
+public sealed partial class Set
 {
     /// <summary>
     /// True if the set has no elements
@@ -265,7 +265,7 @@ public partial class Set
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>

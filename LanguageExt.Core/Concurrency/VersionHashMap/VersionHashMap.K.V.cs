@@ -38,7 +38,7 @@ namespace LanguageExt
         public static VersionHashMap<K, V> Empty
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new VersionHashMap<K, V>(VersionHashMap<LastWriteWins<V>, TString, EqDefault<K>, string, K, V>.Empty);
+            get => new(VersionHashMap<LastWriteWins<V>, TString, EqDefault<K>, string, K, V>.Empty);
         }
         
         /// <summary>
@@ -47,7 +47,7 @@ namespace LanguageExt
         /// <param name="items">Trie map</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         VersionHashMap(VersionHashMap<LastWriteWins<V>, TString, EqDefault<K>, string, K, V> items) =>
-            this.Items = items;
+            Items = items;
 
         /// <summary>
         /// 'this' accessor
@@ -392,7 +392,7 @@ namespace LanguageExt
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VersionHashMap<K, V> Where(Func<long, Option<V>, bool> pred) =>
-            new VersionHashMap<K, V>(Items.Filter(pred));
+            new(Items.Filter(pred));
 
         /// <summary>
         /// Atomically filter out items that return false when a predicate is applied
@@ -402,7 +402,7 @@ namespace LanguageExt
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VersionHashMap<K, V> Where(Func<K, long, Option<V>, bool> pred) =>
-            new VersionHashMap<K, V>(Items.Filter(pred));
+            new(Items.Filter(pred));
 
         /// <summary>
         /// Atomically filter out items that return false when a predicate is applied
@@ -412,7 +412,7 @@ namespace LanguageExt
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VersionHashMap<K, V> Filter(Func<long, Option<V>, bool> pred) =>
-            new VersionHashMap<K, V>(Items.Filter(pred));
+            new(Items.Filter(pred));
 
         /// <summary>
         /// Atomically filter out items that return false when a predicate is applied
@@ -422,7 +422,7 @@ namespace LanguageExt
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VersionHashMap<K, V> Filter(Func<K, long, Option<V>, bool> pred) =>
-            new VersionHashMap<K, V>(Items.Filter(pred));
+            new(Items.Filter(pred));
 
         /// <summary>
         /// Atomically filter out items that return false when a predicate is applied

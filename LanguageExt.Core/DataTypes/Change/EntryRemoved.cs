@@ -25,9 +25,9 @@ public sealed class EntryRemoved<A> :
     public override int GetHashCode() => 
         OldValue?.GetHashCode() ?? FNV32.OffsetBasis;
         
-    public bool Equals(EntryRemoved<A>? rhs) =>
-        !ReferenceEquals(rhs, null) &&
-        EqDefault<A>.Equals(OldValue, rhs.OldValue);
+    public bool Equals(EntryRemoved<A>? other) =>
+        other is not null &&
+        EqDefault<A>.Equals(OldValue, other.OldValue);
 
     public void Deconstruct(out A oldValue)
     {
@@ -35,4 +35,7 @@ public sealed class EntryRemoved<A> :
     }
         
     public override string ToString() => $"-{OldValue}";
+
+    public override bool Equals(object? obj) => 
+        Equals(obj as EntryRemoved<A>);
 }

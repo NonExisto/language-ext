@@ -83,25 +83,25 @@ public abstract class Change<A> :
     /// <summary>
     /// Equality
     /// </summary>
-    public abstract bool Equals(Change<A>? obj);
+    public abstract bool Equals(Change<A>? other);
 
     /// <summary>
     /// Hash code
     /// </summary>
     public override int GetHashCode() => FNV32.OffsetBasis;
 
-    public Change<A> Combine(Change<A> y) =>
-        (this, y) switch
+    public Change<A> Combine(Change<A> rhs) =>
+        (this, rhs) switch
         {
-            (NoChange<A>, _)                                       => y,
+            (NoChange<A>, _)                                       => rhs,
             (_, NoChange<A>)                                       => this,
-            (_, EntryRemoved<A>)                                   => y,
+            (_, EntryRemoved<A>)                                   => rhs,
             (EntryRemoved<A> (var vx), EntryAdded<A> (var vy))     => Mapped(vx, vy),
             (EntryAdded<A>, EntryMappedTo<A>(var vz))              => Added(vz),
             (EntryMappedFrom<A>(var vx), EntryMappedTo<A>(var vz)) => Mapped(vx, vz),
-            _                                                      => y
+            _                                                      => rhs
         };
 
-    static Change<A> Monoid<Change<A>>.Empty =>
+    public static Change<A> Empty =>
         None;
 }

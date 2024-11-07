@@ -5,7 +5,7 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
-public class Lst : 
+public sealed class Lst: 
     Monad<Lst>, 
     Alternative<Lst>, 
     Traversable<Lst>

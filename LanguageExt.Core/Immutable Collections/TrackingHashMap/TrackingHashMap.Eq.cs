@@ -689,7 +689,7 @@ public readonly struct TrackingHashMap<EqK, K, V> :
 
     /// <summary>
     /// Format the collection as `[(key: value), (key: value), (key: value), ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>
@@ -1225,84 +1225,5 @@ public readonly struct TrackingHashMap<EqK, K, V> :
     [Pure]
     public S Fold<S>(S state, Func<S, V, S> folder) =>
         Values.Fold(state, folder);
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(ValueTuple<(K, V)> items) =>
-        [items.Item1];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V)) items) =>
-        [items.Item1, items.Item2];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator TrackingHashMap<EqK, K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15, items.Item16];
+    
 }

@@ -9,7 +9,6 @@ using LanguageExt.Traits;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 
 namespace LanguageExt;
 
@@ -33,7 +32,7 @@ public readonly struct HashMap<K, V> :
     [Pure] 
     public static HashMap<K, V> Empty { get; } = new(TrieMap<EqDefault<K>, K, V>.Empty);
 
-    readonly TrieMap<EqDefault<K>, K, V> value;
+    readonly TrieMap<EqDefault<K>, K, V>? value;
 
     internal TrieMap<EqDefault<K>, K, V> Value => 
         value ?? TrieMap<EqDefault<K>, K, V>.Empty;
@@ -674,12 +673,12 @@ public readonly struct HashMap<K, V> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public HashMap<K, V> ToTrackingHashMap() =>
+    public TrackingHashMap<K, V> ToTrackingHashMap() =>
         new (value);
 
     /// <summary>
     /// Format the collection as `[(key: value), (key: value), (key: value), ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>
@@ -919,7 +918,7 @@ public readonly struct HashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public HashMap<K, V> Union(IEnumerable<(K, V)> rhs) =>
-        this.TryAddRange(rhs);
+        TryAddRange(rhs);
         
     /// <summary>
     /// Union two maps.  
@@ -1197,86 +1196,6 @@ public readonly struct HashMap<K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReadOnlyDictionary<K, V> ToReadOnlyDictionary() =>
         this;
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(ValueTuple<(K, V)> items) =>
-        new (new[] { items.Item1 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15 });
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator HashMap<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        new (new[] { items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15, items.Item16 });
 
     public static HashMap<K, V> AdditiveIdentity => 
         Empty;    

@@ -235,8 +235,8 @@ public class Iterable<A> :
     /// Semigroup combine two iterables (concatenate)
     /// </summary>
     [Pure]
-    public Iterable<A> Combine(Iterable<A> y) =>
-        Concat(y);
+    public Iterable<A> Combine(Iterable<A> rhs) =>
+        Concat(rhs);
 
     /// <summary>
     /// Add a range of items to the end of the sequence
@@ -534,7 +534,8 @@ public class Iterable<A> :
     public Iterable<A> TakeWhile(Func<A, bool> pred)
     {
         return new IterableEnumerable<A>(Yield(AsEnumerable(), pred));
-        IEnumerable<A> Yield(IEnumerable<A> xs, Func<A, bool> f)
+
+        static IEnumerable<A> Yield(IEnumerable<A> xs, Func<A, bool> f)
         {
             foreach (var x in xs)
             {
@@ -555,7 +556,8 @@ public class Iterable<A> :
     public Iterable<A> TakeWhile(Func<A, int, bool> pred)
     {
         return new IterableEnumerable<A>(Yield(AsEnumerable(), pred));
-        IEnumerable<A> Yield(IEnumerable<A> xs, Func<A, int, bool> f)
+
+        static IEnumerable<A> Yield(IEnumerable<A> xs, Func<A, int, bool> f)
         {
             var i = 0;
             foreach (var x in xs)
@@ -604,8 +606,8 @@ public class Iterable<A> :
         return seq is IEnumerable<B> mb
                    ? new IterableEnumerable<B>(mb)
                    : new IterableEnumerable<B>(Yield(seq));
-        
-        IEnumerable<B> Yield(IEnumerable<A> ma)
+
+        static IEnumerable<B> Yield(IEnumerable<A> ma)
         {
             foreach (object? item in ma.AsEnumerable())
             {

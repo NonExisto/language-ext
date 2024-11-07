@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using static LanguageExt.Prelude;
@@ -501,14 +499,14 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> preditem)
+    public static S foldWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> pred)
     {
         foreach (var item in list)
         {
-            if (!preditem(item))
+            if (!pred(item))
             {
                 return state;
             }
@@ -529,14 +527,14 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> predstate)
+    public static S foldWhileState<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> pred)
     {
         foreach (var item in list)
         {
-            if (!predstate(state))
+            if (!pred(state))
             {
                 return state;
             }
@@ -558,11 +556,11 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldBackWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> preditem) =>
-        foldWhile(rev(list), state, folder, preditem: preditem);
+    public static S foldBackWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> pred) =>
+        foldWhile(rev(list), state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection (from last element to first), 
@@ -577,11 +575,11 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldBackWhile<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> predstate) =>
-        foldWhile(rev(list), state, folder, predstate: predstate);
+    public static S foldBackWhileState<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> pred) =>
+        foldWhileState(rev(list), state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection whilst the predicate function 
@@ -595,14 +593,14 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> preditem)
+    public static S foldUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> pred)
     {
         foreach (var item in list)
         {
-            if (preditem(item))
+            if (pred(item))
             {
                 return state;
             }
@@ -623,14 +621,14 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> predstate)
+    public static S foldUntilState<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> pred)
     {
         foreach (var item in list)
         {
-            if (predstate(state))
+            if (pred(state))
             {
                 return state;
             }
@@ -652,11 +650,11 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldBackUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> preditem) =>
-        foldUntil(rev(list), state, folder, preditem: preditem);
+    public static S foldBackUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<T, bool> pred) =>
+        foldUntil(rev(list), state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection (from last element to first), 
@@ -671,11 +669,11 @@ public static class List
     /// <param name="list">Enumerable to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S foldBackUntil<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> predstate) =>
-        foldUntil(rev(list), state, folder, predstate: predstate);
+    public static S foldBackUntilState<S, T>(IEnumerable<T> list, S state, Func<S, T, S> folder, Func<S, bool> pred) =>
+        foldUntilState(rev(list), state, folder, pred);
 
     /// <summary>
     /// Applies a function to each element of the collection (from first element to last), threading 
@@ -683,7 +681,7 @@ public static class List
     /// to the first two elements of the list. Then, it passes this result into the function along 
     /// with the third element and so on. Finally, it returns the final result.
     /// </summary>
-    /// <remarks>The enumerable must contain at least one item or an excpetion will be thrown</remarks>
+    /// <remarks>The enumerable must contain at least one item or an exception will be thrown</remarks>
     /// <typeparam name="A">Bound item type</typeparam>
     /// <param name="list">Enumerable to reduce</param>
     /// <param name="reducer">Reduce function</param>
@@ -717,7 +715,7 @@ public static class List
     /// elements of the list. Then, it passes this result into the function along with the third 
     /// element and so on. Finally, it returns the final result.
     /// </summary>
-    /// <remarks>The enumerable must contain at least one item or an excpetion will be thrown</remarks>
+    /// <remarks>The enumerable must contain at least one item or an exception will be thrown</remarks>
     /// <typeparam name="A">Bound item type</typeparam>
     /// <param name="list">Enumerable to reduce</param>
     /// <param name="reducer">Reduce function</param>
@@ -997,7 +995,7 @@ public static class List
         list.TakeWhile(pred);
 
     /// <summary>
-    /// Generate a new list from an intial state value and an 'unfolding' function.
+    /// Generate a new list from an initial state value and an 'unfolding' function.
     /// The unfold function generates the items in the resulting list until None is returned.
     /// </summary>
     /// <typeparam name="S">State type</typeparam>
@@ -1023,7 +1021,7 @@ public static class List
     }
 
     /// <summary>
-    /// Generate a new list from an intial state value and an 'unfolding' function.  An aggregate
+    /// Generate a new list from an initial state value and an 'unfolding' function.  An aggregate
     /// state value is threaded through separately to the yielded value.
     /// The unfold function generates the items in the resulting list until None is returned.
     /// </summary>
@@ -1051,7 +1049,7 @@ public static class List
     }
 
     /// <summary>
-    /// Generate a new list from an intial state value and an 'unfolding' function.  An aggregate
+    /// Generate a new list from an initial state value and an 'unfolding' function.  An aggregate
     /// state value is threaded through separately to the yielded value.
     /// The unfold function generates the items in the resulting list until None is returned.
     /// </summary>
@@ -1080,7 +1078,7 @@ public static class List
     }
 
     /// <summary>
-    /// Generate a new list from an intial state value and an 'unfolding' function.  An aggregate
+    /// Generate a new list from an initial state value and an 'unfolding' function.  An aggregate
     /// state value is threaded through separately to the yielded value.
     /// The unfold function generates the items in the resulting list until None is returned.
     /// </summary>
@@ -1110,7 +1108,7 @@ public static class List
     }
 
     /// <summary>
-    /// Generate a new list from an intial state value and an 'unfolding' function.  An aggregate
+    /// Generate a new list from an initial state value and an 'unfolding' function.  An aggregate
     /// state value is threaded through separately to the yielded value.
     /// The unfold function generates the items in the resulting list until None is returned.
     /// </summary>
@@ -1158,14 +1156,6 @@ public static class List
         return false;
     }
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete("headSafe has been deprecated, please use headOrNone")]
-    public static Option<T> headSafe<T>(IEnumerable<T> list) =>
-        (from x in list
-         select Some(x))
-       .DefaultIfEmpty(None)
-       .FirstOrDefault();
-
     /// <summary>
     /// The tails function returns all final segments of the argument, longest first. For example,
     ///  i.e. tails(['a','b','c']) == [['a','b','c'], ['b','c'], ['c'],[]]
@@ -1206,7 +1196,7 @@ public static class List
     public static (IEnumerable<T> Initial, IEnumerable<T> Remainder) span<T>(IEnumerable<T> self, Func<T, bool> pred)
     {
         var iter    = self.GetEnumerator();
-        var diposed = false;
+        var disposed = false;
 
         IEnumerable<T> first(IEnumerator<T> items)
         {
@@ -1222,12 +1212,12 @@ public static class List
                 }
             }
             items.Dispose();
-            diposed = true;
+            disposed = true;
         }
 
         IEnumerable<T> second(IEnumerator<T> items)
         {
-            if (diposed) yield break;
+            if (disposed) yield break;
             while (items.MoveNext())
             {
                 yield return items.Current;

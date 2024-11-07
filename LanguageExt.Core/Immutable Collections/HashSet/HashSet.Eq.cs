@@ -26,7 +26,7 @@ public readonly struct HashSet<EqA, A> :
 {
     public static HashSet<EqA, A> Empty { get; } = new (TrieSet<EqA, A>.Empty);
 
-    readonly TrieSet<EqA, A> value;
+    readonly TrieSet<EqA, A>? value;
     TrieSet<EqA, A> Value => value ?? TrieSet<EqA, A>.Empty;
 
     internal HashSet(TrieSet<EqA, A> value)
@@ -142,7 +142,7 @@ public readonly struct HashSet<EqA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="set">HSet</param>
@@ -151,7 +151,7 @@ public readonly struct HashSet<EqA, A> :
     [Pure]
     public HashSet<EqR, R> Map<EqR, R>(Func<A, R> mapper) where EqR : Eq<R>
     {
-        IEnumerable<R> Yield(TrieSet<EqA, A> map, Func<A, R> f)
+        static IEnumerable<R> Yield(TrieSet<EqA, A> map, Func<A, R> f)
         {
             foreach (var item in map)
             {
@@ -163,7 +163,7 @@ public readonly struct HashSet<EqA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <param name="set">HSet</param>
     /// <param name="mapper">Mapping function</param>
@@ -184,7 +184,7 @@ public readonly struct HashSet<EqA, A> :
     [Pure]
     public HashSet<EqA, A> Filter(Func<A, bool> pred)
     {
-        IEnumerable<A> Yield(TrieSet<EqA, A> map, Func<A, bool> f)
+        static IEnumerable<A> Yield(TrieSet<EqA, A> map, Func<A, bool> f)
         {
             foreach (var item in map)
             {
@@ -198,7 +198,7 @@ public readonly struct HashSet<EqA, A> :
     }
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="set">HSet</param>
@@ -413,7 +413,7 @@ public readonly struct HashSet<EqA, A> :
 
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>

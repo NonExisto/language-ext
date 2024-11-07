@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 namespace LanguageExt
 {
@@ -8,7 +7,7 @@ namespace LanguageExt
     /// </summary>
     internal interface New<A>
     {
-        A New();
+        static abstract A Create();
     }
 
     /// <summary>
@@ -18,8 +17,8 @@ namespace LanguageExt
     /// </summary>
     internal interface New<A, B>
     {
-        A New(B value);
-        void Set(A item, B value);
+        static abstract A Create(B value);
+        static abstract void Set(A item, B value);
     }
 
     /// <summary>
@@ -29,12 +28,12 @@ namespace LanguageExt
     /// </summary>
     internal static class Pool<NewA, A> where NewA : New<A>
     {
-        static ConcurrentStack<A> stack = new ConcurrentStack<A>();
+        static readonly ConcurrentStack<A> stack = new();
 
         public static A Pop() =>
-            stack.TryPop(out A var)
+            stack.TryPop(out A? var)
                 ? var
-                : default(NewA).New();
+                : NewA.Create();
 
         public static void Push(A value) =>
             stack.Push(value);
@@ -47,18 +46,18 @@ namespace LanguageExt
     /// </summary>
     internal static class Pool<NewA, A, B> where NewA : New<A, B>
     {
-        static ConcurrentStack<A> stack = new ConcurrentStack<A>();
+        static readonly ConcurrentStack<A> stack = new();
 
         public static A Pop(B value)
         {
-            if(stack.TryPop(out A var))
+            if(stack.TryPop(out A? var))
             {
-                default(NewA).Set(var, value);
+                NewA.Set(var, value);
                 return var;
             }
             else
             {
-                return default(NewA).New(value);
+                return NewA.Create(value);
             }
         }
 

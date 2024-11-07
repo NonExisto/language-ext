@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using BenchmarkDotNet.Attributes;
-using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt.Benchmarks
 {
     [RPlotExporter, RankColumn]
-    [GenericTypeArguments(typeof(int), typeof(OrdInt))]
-    [GenericTypeArguments(typeof(string), typeof(OrdString))]
-    public class ListAddBenchmarks<T, TOrd>
-        where TOrd : Ord<T>
+    [GenericTypeArguments(typeof(int))]
+    [GenericTypeArguments(typeof(string))]
+    [MemoryDiagnoser(false)]
+    public class ListAddBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
         public int N;
@@ -25,6 +24,30 @@ namespace LanguageExt.Benchmarks
         }
 
         [Benchmark]
+        public List<T> SysColList()
+        {
+            var collection = new List<T>();
+            foreach (var value in values)
+            {
+                collection.Add(value);
+            }
+
+            return collection;
+        }
+
+        [Benchmark]
+        public IList<T> SysColListWrap()
+        {
+            IList<T> collection = new Collection<T>();
+            foreach (var value in values)
+            {
+                collection.Add(value);
+            }
+
+            return collection;
+        }
+
+        [Benchmark]
         public ImmutableList<T> SysColImmutableList()
         {
             var collection = ImmutableList.Create<T>();
@@ -34,6 +57,18 @@ namespace LanguageExt.Benchmarks
             }
 
             return collection;
+        }
+
+        [Benchmark]
+        public ImmutableList<T> SysColImmutableListWithBuilder()
+        {
+            var builder = ImmutableList.CreateBuilder<T>();
+            foreach (var value in values)
+            {
+                builder.Add(value);
+            }
+
+            return builder.ToImmutable();
         }
 
         [Benchmark]

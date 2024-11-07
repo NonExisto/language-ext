@@ -3,6 +3,7 @@ using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 using System;
 using System.Linq;
+using LanguageExt.Common;
 
 namespace LanguageExt;
 
@@ -39,7 +40,7 @@ internal static class PatchInternal
 
     static A minimumBy<A>(Func<A, A, int> compare, Lst<A> list) =>
         list.Count == 0
-            ? throw new Exception("List is empty")
+            ? throw Exceptions.SequenceEmpty
             : list.Fold(list[0], (x, y) => compare(x, y) > 0 ? y : x);
 
     static SpanArray<A> constructN<A>(int n, Func<SpanArray<A>, A> f)

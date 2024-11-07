@@ -1,4 +1,3 @@
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,21 +32,21 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Creates a new atom-hashmap
     /// </summary>
-    public static AtomHashMap<K, V> Empty => new AtomHashMap<K, V>(TrieMap<EqDefault<K>, K, V>.Empty);
+    public static AtomHashMap<K, V> Empty => new(TrieMap<EqDefault<K>, K, V>.Empty);
         
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="items">Trie map</param>
     AtomHashMap(TrieMap<EqDefault<K>, K, V> items) =>
-        this.Items = items;
+        Items = items;
         
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="items">Hash map</param>
     internal AtomHashMap(HashMap<K, V> items) =>
-        this.Items = items.Value;
+        Items = items.Value;
     
     /// <summary>
     /// 'this' accessor
@@ -118,10 +117,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems.Value, nitems.Changes.Value);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -151,10 +148,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -215,10 +210,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
         
@@ -332,7 +325,7 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <returns>Mapped items in a new map</returns>
     public AtomHashMap<K, U> Map<U>(Func<K, V, U> f) =>
-        new AtomHashMap<K, U>(Items.Map(f));
+        new(Items.Map(f));
         
     /// <summary>
     /// Atomically adds a new item to the map
@@ -357,10 +350,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                
+            sw.SpinOnce();
         }
     }
 
@@ -391,10 +382,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
         
@@ -421,10 +410,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -453,10 +440,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -485,10 +470,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -516,10 +499,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -551,10 +532,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -586,10 +565,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -618,10 +595,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+
+            sw.SpinOnce();
         }
     }
 
@@ -649,10 +624,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+
+            sw.SpinOnce();
         }
     }
 
@@ -680,10 +653,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -741,10 +712,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return value;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -771,10 +740,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return nvalue;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }           
 
@@ -804,10 +771,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return nvalue;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }  
         
@@ -834,10 +799,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return nvalue;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }  
 
@@ -863,10 +826,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }  
         
@@ -895,10 +856,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -929,10 +888,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -966,10 +923,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChange(oitems, nitems, key, change);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1036,10 +991,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1065,10 +1018,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1084,20 +1035,18 @@ public class AtomHashMap<K, V> :
         if (sitems.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SetItems(sitems), null)
                                         : oitems.SetItemsWithLog(sitems);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1113,20 +1062,18 @@ public class AtomHashMap<K, V> :
         if (sitems.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SetItems(sitems), null)
                                         : oitems.SetItemsWithLog(sitems);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1142,7 +1089,7 @@ public class AtomHashMap<K, V> :
         if (sitems.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(sitems), null)
@@ -1151,15 +1098,13 @@ public class AtomHashMap<K, V> :
             {
                 return default;
             }
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1175,7 +1120,7 @@ public class AtomHashMap<K, V> :
         if (sitems.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(sitems), null)
@@ -1184,15 +1129,13 @@ public class AtomHashMap<K, V> :
             {
                 return default;
             }
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1213,7 +1156,7 @@ public class AtomHashMap<K, V> :
         if (skeys.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(skeys, Some), null)
@@ -1222,15 +1165,13 @@ public class AtomHashMap<K, V> :
             {
                 return default;
             }
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1245,7 +1186,7 @@ public class AtomHashMap<K, V> :
         if (skeys.IsEmpty) return default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.RemoveRange(skeys), null)
@@ -1254,15 +1195,13 @@ public class AtomHashMap<K, V> :
             {
                 return default;
             }
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1417,10 +1356,8 @@ public class AtomHashMap<K, V> :
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1430,20 +1367,18 @@ public class AtomHashMap<K, V> :
         SpinWait sw = default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Append(rhs.Value), null)
                                         : oitems.AppendWithLog(rhs.Value);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1453,20 +1388,18 @@ public class AtomHashMap<K, V> :
         SpinWait sw = default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Subtract(rhs.Items), null)
                                         : oitems.SubtractWithLog(rhs.Items);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }         
 
@@ -1476,20 +1409,18 @@ public class AtomHashMap<K, V> :
         SpinWait sw = default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Subtract(rhs.Value), null)
                                         : oitems.SubtractWithLog(rhs.Value);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }         
 
@@ -1574,20 +1505,18 @@ public class AtomHashMap<K, V> :
         var      srhs = toSeq(rhs);            
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(srhs), null)
                                         : oitems.IntersectWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1600,20 +1529,18 @@ public class AtomHashMap<K, V> :
         var      srhs = new TrieMap<EqDefault<K>, K, V>(rhs);            
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(srhs), null)
                                         : oitems.IntersectWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1626,20 +1553,18 @@ public class AtomHashMap<K, V> :
         var      srhs = new TrieMap<EqDefault<K>, K, V>(rhs);            
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(srhs, Merge), null)
                                         : oitems.IntersectWithLog(srhs, Merge);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1651,20 +1576,18 @@ public class AtomHashMap<K, V> :
         SpinWait sw = default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(rhs.Value, Merge), null)
                                         : oitems.IntersectWithLog(rhs.Value, Merge);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
         
@@ -1692,20 +1615,18 @@ public class AtomHashMap<K, V> :
         var      srhs = toSeq(rhs);            
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Except(srhs), null)
                                         : oitems.ExceptWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+
+            sw.SpinOnce();
         }
     } 
         
@@ -1719,20 +1640,18 @@ public class AtomHashMap<K, V> :
         var      srhs = toSeq(rhs);            
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Except(srhs), null)
                                         : oitems.ExceptWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+
+            sw.SpinOnce();
         }
     } 
 
@@ -1745,20 +1664,18 @@ public class AtomHashMap<K, V> :
         SpinWait sw = default;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SymmetricExcept(rhs), null)
                                         : oitems.SymmetricExceptWithLog(rhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     } 
 
@@ -1772,20 +1689,18 @@ public class AtomHashMap<K, V> :
         var      srhs = toSeq(rhs);
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SymmetricExcept(srhs), null)
                                         : oitems.SymmetricExceptWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+           
+            sw.SpinOnce();
         }
     } 
         
@@ -1802,20 +1717,18 @@ public class AtomHashMap<K, V> :
         if (srhs.IsEmpty) return unit;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs), null)
                                         : oitems.UnionWithLog(srhs);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }
     }
 
@@ -1833,20 +1746,18 @@ public class AtomHashMap<K, V> :
         if (srhs.IsEmpty) return unit;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs, Merge), null)
                                         : oitems.UnionWithLog(srhs, Merge);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+
+            sw.SpinOnce();
         }
     }
 
@@ -1868,20 +1779,18 @@ public class AtomHashMap<K, V> :
         if (srhs.IsEmpty) return unit;
         while (true)
         {
-            var oitems   = this.Items;
+            var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs, MapRight, Merge), null)
                                         : oitems.UnionWithLog(srhs, MapRight, Merge);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref this.Items, nitems, oitems), oitems))
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+            
+            sw.SpinOnce();
         }            
     }
 
@@ -2057,9 +1966,9 @@ public class AtomHashMap<K, V> :
     /// <returns>Unit</returns>
     public Unit Iter(Action<V> action)
     {
-        foreach (var item in this)
+        foreach (var (_, Value) in this)
         {
-            action(item.Value);
+            action(Value);
         }
         return unit;
     }
@@ -2087,9 +1996,9 @@ public class AtomHashMap<K, V> :
     /// <returns>Unit</returns>
     public Unit Iter(Action<KeyValuePair<K, V>> action)
     {
-        foreach (var item in this)
+        foreach (var (Key, Value) in this)
         {
-            action(new KeyValuePair<K, V>(item.Key, item.Value));
+            action(new KeyValuePair<K, V>(Key, Value));
         }
         return unit;
     }

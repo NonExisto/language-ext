@@ -65,10 +65,10 @@ public sealed class EntryMapped<A, B> :
     public override bool Equals(Change<B>? obj) =>
         obj is EntryMapped<A, B> rhs && Equals(rhs);
 
-    public bool Equals(EntryMapped<A, B>? rhs) =>
-        !ReferenceEquals(rhs, null)         &&
-        EqDefault<A>.Equals(From, rhs.From) &&
-        EqDefault<B>.Equals(To, rhs.To);
+    public bool Equals(EntryMapped<A, B>? other) =>
+        other is not null &&
+        EqDefault<A>.Equals(From, other.From) &&
+        EqDefault<B>.Equals(To, other.To);
 
     public override int GetHashCode() =>
         FNV32.Next(
@@ -88,4 +88,7 @@ public sealed class EntryMapped<A, B> :
         @from = From;
         to = To;
     }
+
+    public override bool Equals(object? obj) => 
+        Equals(obj as EntryMapped<A, B>);
 }

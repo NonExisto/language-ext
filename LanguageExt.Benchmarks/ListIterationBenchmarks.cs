@@ -1,16 +1,13 @@
 ﻿using System.Collections.Immutable;
 using BenchmarkDotNet.Attributes;
-using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt.Benchmarks
 {
     [RPlotExporter, RankColumn]
-    [GenericTypeArguments(typeof(int), typeof(OrdInt))]
-    [GenericTypeArguments(typeof(string), typeof(OrdString))]
-    public class ListIterationBenchmarks<T, TOrd>
-        where TOrd : Ord<T>
+    [GenericTypeArguments(typeof(int))]
+    [GenericTypeArguments(typeof(string))]
+    public class ListIterationBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
         public int N;
@@ -27,6 +24,20 @@ namespace LanguageExt.Benchmarks
             immutableList = ImmutableList.CreateRange(ValuesGenerator.Default.GenerateUniqueValues<T>(N));
             lst = ValuesGenerator.Default.GenerateUniqueValues<T>(N).AsIterable().ToLst();
             seq = toSeq(ValuesGenerator.Default.GenerateUniqueValues<T>(N)).Strict();
+        }
+
+        [Benchmark]
+        public T SysArray()
+        {
+            T result = default;
+
+            var collection = values;
+            foreach (var item in collection)
+            {
+                result = item;
+            }
+
+            return result;
         }
 
         [Benchmark]

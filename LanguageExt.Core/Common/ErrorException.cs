@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -29,7 +29,7 @@ namespace LanguageExt.Common;
 /// i.e. it is either created from an exception or it isn't.  This allows for expected errors to be represented
 /// without throwing exceptions.  
 /// </remarks>
-public abstract class ErrorException : Exception, IEnumerable<ErrorException>, Monoid<ErrorException>
+public abstract class ErrorException : InvalidOperationException, IEnumerable<ErrorException>, Monoid<ErrorException>
 {
     protected ErrorException(int code) =>
         HResult = code;
@@ -77,7 +77,7 @@ public abstract class ErrorException : Exception, IEnumerable<ErrorException>, M
     /// </summary>
     /// <remarks>Single errors will be converted to `ManyErrors`;  `ManyErrors` will have their collection updated</remarks>
     [Pure]
-    public abstract ErrorException Combine(ErrorException error);
+    public abstract ErrorException Combine(ErrorException rhs);
 
     [Pure]
     public static ErrorException Empty => 
@@ -236,10 +236,10 @@ public class ExpectedException(string message, int code, Option<ErrorException> 
     /// </summary>
     /// <remarks>Single errors will be converted to `ManyErrors`;  `ManyErrors` will have their collection updated</remarks>
     [Pure]
-    public override ErrorException Combine(ErrorException error) =>
-        error is ManyExceptions m
-            ? new ManyExceptions(error.Cons(m.Errors))
-            : new ManyExceptions(Seq(this, error));
+    public override ErrorException Combine(ErrorException rhs) =>
+        rhs is ManyExceptions m
+            ? new ManyExceptions(rhs.Cons(m.Errors))
+            : new ManyExceptions(Seq(this, rhs));
 }
 
 /// <summary>
@@ -277,16 +277,12 @@ public class ExceptionalException : ErrorException
         Message = Exception.Message;
     }
 
-    public ExceptionalException(string Message, int Code) : base(Code)
-    {
-        this.Code = Code;
-        this.Message = Message;
-    }
+    public ExceptionalException(string Message, int Code) : base(Code) => this.Message = Message;
 
     public ExceptionalException(string Message, Exception Exception) : base(Exception.HResult)
     {
-        Code = Exception.HResult;
         this.Message = Message;
+        this.Exception = Exception;
     }
 
     public readonly Exception? Exception;
@@ -336,13 +332,13 @@ public class ExceptionalException : ErrorException
     /// Append an error to this error
     /// </summary>
     /// <remarks>Single errors will be converted to `ManyErrors`;  `ManyErrors` will have their collection updated</remarks>
-    /// <param name="error">Error</param>
+    /// <param name="rhs">Error</param>
     /// <returns></returns>
     [Pure]
-    public override ErrorException Combine(ErrorException error) =>
-        error is ManyExceptions m
-            ? new ManyExceptions(error.Cons(m.Errors))
-            : new ManyExceptions(Seq(this, error));
+    public override ErrorException Combine(ErrorException rhs) =>
+        rhs is ManyExceptions m
+            ? new ManyExceptions(rhs.Cons(m.Errors))
+            : new ManyExceptions(Seq(this, rhs));
 }
 
 /// <summary>
@@ -429,13 +425,13 @@ public sealed class ManyExceptions(Seq<ErrorException> errors) : ErrorException(
     /// Append an error to this error
     /// </summary>
     /// <remarks>Single errors will be converted to `ManyErrors`;  `ManyErrors` will have their collection updated</remarks>
-    /// <param name="error">Error</param>
+    /// <param name="rhs">Error</param>
     /// <returns></returns>
     [Pure]
-    public override ErrorException Combine(ErrorException error) =>
-        error is ManyExceptions m
+    public override ErrorException Combine(ErrorException rhs) =>
+        rhs is ManyExceptions m
             ? new ManyExceptions(Errors + m.Errors)
-            : new ManyExceptions(Seq(this, error));
+            : new ManyExceptions(Seq(this, rhs));
 
     [Pure]
     public override IEnumerator<ErrorException> GetEnumerator() =>
@@ -468,7 +464,7 @@ public class BottomException() :
     public override Error ToError() => 
         BottomError.Default;
     
-    public override ErrorException Combine(ErrorException error) => throw new NotImplementedException();
+    public override ErrorException Combine(ErrorException rhs) => throw new NotImplementedException();
 }
 
 public static class ExceptionExtensions
@@ -476,6 +472,7 @@ public static class ExceptionExtensions
     /// <summary>
     /// Throw the error as an exception
     /// </summary>
+    [DoesNotReturn]
     public static Unit Rethrow(this Exception e)
     {
         ExceptionDispatchInfo.Capture(e).Throw();
@@ -485,6 +482,7 @@ public static class ExceptionExtensions
     /// <summary>
     /// Throw the error as an exception
     /// </summary>
+    [DoesNotReturn]
     public static R Rethrow<R>(this Exception e)
     {
         ExceptionDispatchInfo.Capture(e).Throw();

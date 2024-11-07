@@ -38,17 +38,17 @@ public class AtomQue<A> :
     IEnumerable<A>,
     K<AtomQue, A>
 {
-    QueInternal<A> items;
+    volatile QueInternal<A> items;
     public event AtomDequeuedEvent<A>? Dequeued;
     public event AtomEnqueuedEvent<A>? Enqueued;
 
-    internal AtomQue() =>
+    public AtomQue() =>
         items = QueInternal<A>.Empty;
 
-    internal AtomQue(IEnumerable<A> items) =>
+    public AtomQue(IEnumerable<A> items) =>
         this.items = new QueInternal<A>(items);
 
-    internal AtomQue(Que<A> items) =>
+    public AtomQue(Que<A> items) =>
         this.items = new QueInternal<A>(items);
 
     /// <summary>
@@ -134,15 +134,13 @@ public class AtomQue<A> :
                 {
                     foreach (var x in oitems)
                     {
-                        Dequeued?.Invoke(x);
+                        Dequeued.Invoke(x);
                     }
                 }
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -177,10 +175,8 @@ public class AtomQue<A> :
                 Dequeued?.Invoke(top);
                 return top;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
     
@@ -203,10 +199,8 @@ public class AtomQue<A> :
                 Dequeued?.Invoke(top);
                 return top;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -226,10 +220,8 @@ public class AtomQue<A> :
                 Enqueued?.Invoke(value);
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
     
@@ -270,10 +262,8 @@ public class AtomQue<A> :
                 }
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -297,10 +287,8 @@ public class AtomQue<A> :
                 }
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 

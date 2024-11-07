@@ -18,14 +18,17 @@ public sealed class NoChange<A> :
     private NoChange()
     { }
 
-    public override bool Equals(Change<A>? obj) =>
-        obj is NoChange<A>;
+    public override bool Equals(Change<A>? other) =>
+        other is NoChange<A>;
 
-    public bool Equals(NoChange<A>? rhs) =>
-        rhs is not null;
+    public bool Equals(NoChange<A>? other) =>
+        other is not null;
 
     public override int GetHashCode() => 
         FNV32.OffsetBasis;
 
     public override string ToString() => $"No Change";
+
+    public override bool Equals(object? obj) => 
+        Equals(obj as NoChange<A>);
 }

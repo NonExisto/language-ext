@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 using System;
 using System.Collections;
@@ -40,7 +39,7 @@ public readonly struct Map<K, V> :
     public static Map<K, V> Empty { get; } =
         new(MapInternal<OrdDefault<K>, K, V>.Empty);
 
-    readonly MapInternal<OrdDefault<K>, K, V> value;
+    readonly MapInternal<OrdDefault<K>, K, V>? value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Map<K, V> Wrap(MapInternal<OrdDefault<K>, K, V> map) =>
@@ -748,15 +747,6 @@ public readonly struct Map<K, V> :
     }
 
     /// <summary>
-    /// Enumerable of in-order tuples that make up the map
-    /// </summary>
-    /// <returns>Tuples</returns>
-    [Pure]
-    [Obsolete("Use Pairs instead")]
-    public Iterable<(K Key, V Value)> ValueTuples =>
-        Value.Pairs;
-
-    /// <summary>
     /// GetEnumerator - IEnumerable interface
     /// </summary>
     [Pure]
@@ -787,7 +777,7 @@ public readonly struct Map<K, V> :
 
     /// <summary>
     /// Format the collection as `[(key: value), (key: value), (key: value), ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>
@@ -822,86 +812,6 @@ public readonly struct Map<K, V> :
         new (new MapInternal<OrdDefault<K>, K, V>(root, Value.Rev));
 
     [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(ValueTuple<(K, V)> items) =>
-        [items.Item1];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V)) items) =>
-        [items.Item1, items.Item2];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15];
-
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiser)]
-    public static implicit operator Map<K, V>(((K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V), (K, V)) items) =>
-        [items.Item1, items.Item2, items.Item3, items.Item4, items.Item5, items.Item6, items.Item7, items.Item8, items.Item9, items.Item10, items.Item11, items.Item12, items.Item13, items.Item14, items.Item15, items.Item16];
-
-    [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Map<K, V> lhs, Map<K, V> rhs) =>
         lhs.Equals(rhs);
@@ -933,8 +843,8 @@ public readonly struct Map<K, V> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Map<K, V> Combine(Map<K, V> y) =>
-        this + y;
+    public Map<K, V> Combine(Map<K, V> rhs) =>
+        this + rhs;
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -959,8 +869,8 @@ public readonly struct Map<K, V> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Map<K, V> y) =>
-        Value.Equals<EqDefault<V>>(y.Value);
+    public bool Equals(Map<K, V> other) =>
+        Value.Equals<EqDefault<V>>(other.Value);
 
     /// <summary>
     /// Equality of keys and values

@@ -6,7 +6,9 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
+#pragma warning disable CA2260 // Use correct type parameter
 sealed class IterableEnumerable<A>(IEnumerable<A> runEnumerable) : Iterable<A>
+#pragma warning restore CA2260 // Use correct type parameter
 {
     /// <summary>
     /// Number of items in the sequence.

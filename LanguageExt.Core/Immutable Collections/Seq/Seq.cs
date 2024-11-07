@@ -40,12 +40,12 @@ public readonly struct Seq<A> :
     /// <summary>
     /// Internal representation of the sequence (SeqStrict|SeqLazy|SeqEmptyInternal)
     /// </summary>
-    readonly ISeqInternal<A> value;
+    readonly SeqInternal<A>? value;
 
     /// <summary>
     /// Internal value accessor - protects against `default`
     /// </summary>
-    internal ISeqInternal<A> Value
+    internal SeqInternal<A> Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value ?? SeqEmptyInternal<A>.Default;
@@ -67,7 +67,7 @@ public readonly struct Seq<A> :
     /// Constructor
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Seq(ISeqInternal<A> value) =>
+    internal Seq(SeqInternal<A> value) =>
         this.value = value;
 
     /// <summary>
@@ -91,8 +91,8 @@ public readonly struct Seq<A> :
     /// Head lens
     /// </summary>
     public static Lens<Seq<A>, A> head => Lens<Seq<A>, A>.New(
-        Get: la => la.IsEmpty ? throw new IndexOutOfRangeException() : la[0],
-        Set: a => la => la.IsEmpty ? throw new IndexOutOfRangeException() : a.Cons(la.Tail)
+        Get: la => la.IsEmpty ? throw Exceptions.SequenceEmpty : la[0],
+        Set: a => la => la.IsEmpty ? throw Exceptions.SequenceEmpty : a.Cons(la.Tail)
     );
 
     /// <summary>
@@ -115,8 +115,8 @@ public readonly struct Seq<A> :
     /// Last lens
     /// </summary>
     public static Lens<Seq<A>, A> last => Lens<Seq<A>, A>.New(
-        Get: la => la.IsEmpty ? throw new IndexOutOfRangeException() : (A)la.Last,
-        Set: a => la => la.IsEmpty ? throw new IndexOutOfRangeException() : la.Take(la.Count - 1).Add(a)
+        Get: la => la.IsEmpty ? throw Exceptions.SequenceEmpty : (A)la.Last,
+        Set: a => la => la.IsEmpty ? throw Exceptions.SequenceEmpty : la.Take(la.Count - 1).Add(a)
     );
 
     /// <summary>
@@ -132,7 +132,7 @@ public readonly struct Seq<A> :
     [Pure]
     public static Lens<Seq<A>, Seq<B>> map<B>(Lens<A, B> lens) => Lens<Seq<A>, Seq<B>>.New(
         Get: la => la.Map(lens.Get),
-        Set: lb => la => la.Zip(lb).Map(ab => lens.Set(ab.Item2, ab.Item1))
+        Set: lb => la => la.Zip(lb).Map(ab => lens.Set(ab.Second, ab.First))
     );
 
     /// <summary>
@@ -333,17 +333,17 @@ public readonly struct Seq<A> :
                     // lhs lazy, rhs lazy
                     // return SeqConcat
                     case SeqType.Lazy:
-                        return new Seq<A>(new SeqConcat<A>(Seq(value, rhs.value)));
+                        return new Seq<A>(new SeqConcat<A>(Seq(Value, rhs.Value)));
 
                     // lhs lazy, rhs strict
                     // force lhs to be strict and concat the two 
                     case SeqType.Strict:
-                        return new Seq<A>(((SeqStrict<A>)value.Strict()).Append((SeqStrict<A>)rhs.value));
+                        return new Seq<A>(((SeqStrict<A>)Value.Strict()).Append((SeqStrict<A>)rhs.Value));
 
                     // lhs lazy, rhs concat
                     // prepend rhs with lhs
                     case SeqType.Concat:
-                        return new Seq<A>(((SeqConcat<A>)rhs.value).ConsSeq(value));
+                        return new Seq<A>(((SeqConcat<A>)rhs.Value).ConsSeq(Value));
                 }
                 break;
 
@@ -359,17 +359,17 @@ public readonly struct Seq<A> :
                     // lhs strict, rhs lazy
                     // return SeqConcat
                     case SeqType.Lazy:
-                        return new Seq<A>(new SeqConcat<A>(Seq(value, rhs.value)));
+                        return new Seq<A>(new SeqConcat<A>(Seq(Value, rhs.Value)));
 
                     // lhs strict, rhs strict
                     // append the two
                     case SeqType.Strict:
-                        return new Seq<A>(((SeqStrict<A>)value).Append((SeqStrict<A>)rhs.value));
+                        return new Seq<A>(((SeqStrict<A>)Value).Append((SeqStrict<A>)rhs.Value));
 
                     // lhs strict, rhs concat
                     // prepend rhs with lhs
                     case SeqType.Concat:
-                        return new Seq<A>(((SeqConcat<A>)rhs.value).ConsSeq(value));
+                        return new Seq<A>(((SeqConcat<A>)rhs.Value).ConsSeq(Value));
                 }
                 break;
 
@@ -386,12 +386,12 @@ public readonly struct Seq<A> :
                     // add rhs to concat
                     case SeqType.Lazy:
                     case SeqType.Strict:
-                        return new Seq<A>(((SeqConcat<A>)value).AddSeq(rhs.value));
+                        return new Seq<A>(((SeqConcat<A>)Value).AddSeq(rhs.Value));
 
                     // lhs concat, rhs concat
                     // add rhs to concat
                     case SeqType.Concat:
-                        return new Seq<A>(((SeqConcat<A>)value).AddSeqRange(((SeqConcat<A>)rhs.value).ms));
+                        return new Seq<A>(((SeqConcat<A>)Value).AddSeqRange(((SeqConcat<A>)rhs.Value).ms));
                 }
                 break;
         }
@@ -858,8 +858,8 @@ public readonly struct Seq<A> :
         CollectionFormat.ToFullArrayString(this, separator);
 
     [Pure]
-    public Seq<A> Combine(Seq<A> y) =>
-        this + y;
+    public Seq<A> Combine(Seq<A> rhs) =>
+        this + rhs;
 
     /// <summary>
     /// Append operator
@@ -967,8 +967,8 @@ public readonly struct Seq<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Seq<A> rhs) =>
-        Equals<EqDefault<A>>(rhs);
+    public bool Equals(Seq<A> other) =>
+        Equals<EqDefault<A>>(other);
 
     /// <summary>
     /// Equality test
@@ -1195,8 +1195,8 @@ public readonly struct Seq<A> :
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo(Seq<A> rhs) =>
-        CompareTo<OrdDefault<A>>(rhs);
+    public int CompareTo(Seq<A> other) =>
+        CompareTo<OrdDefault<A>>(other);
 
     /// <summary>
     /// Compare to another sequence

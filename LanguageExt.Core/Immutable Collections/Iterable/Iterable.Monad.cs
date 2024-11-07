@@ -1,10 +1,9 @@
 using System;
 using LanguageExt.Traits;
-using G = System.Collections.Generic;
 
 namespace LanguageExt;
 
-public partial class Iterable : 
+public sealed partial class Iterable : 
     Monad<Iterable>, 
     Alternative<Iterable>, 
     Traversable<Iterable>

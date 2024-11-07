@@ -3,6 +3,7 @@ using Xunit;
 using System;
 using System.Linq;
 using LanguageExt.ClassInstances;
+using FluentAssertions;
 
 namespace LanguageExt.Tests;
 
@@ -19,7 +20,7 @@ public class MapTests
     [Fact]
     public void MapGeneratorAndMatchTest()
     {
-        Map<int, string> m2 = ((1, "a"), (2, "b"), (3, "c"));
+        Map<int, string> m2 = [(1, "a"), (2, "b"), (3, "c")];
 
         m2 = add(m2, 100, "world");
 
@@ -60,7 +61,7 @@ public class MapTests
     [Fact]
     public void MapOrdSetTest()
     {
-        var m1 = Map<OrdStringOrdinalIgnoreCase, string, int>(("one", 1), ("two",2), ("three", 3));
+        Map<OrdStringOrdinalIgnoreCase, string, int> m1 = [("one", 1), ("two",2), ("three", 3)];
         var m2 = m1.SetItem("One", -1);
             
         Assert.Equal(3, m2.Count);
@@ -81,55 +82,55 @@ public class MapTests
     public void MapAddInOrderTest()
     {
         var m = Map((1, 1));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
 
         m = Map((1, 1), (2, 2));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
 
         m = Map((1, 1), (2, 2), (3, 3));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
 
         m = Map((1, 1), (2, 2), (3, 3), (4, 4));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
-        m.Find(4).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
+        m.Find(4).IfNone(() => failwith<int>("Broken")).Should().Be(4);
 
         m = Map((1, 1), (2, 2), (3, 3), (4, 4), (5, 5));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
-        m.Find(4).IfNone(() => failwith<int>("Broken"));
-        m.Find(5).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
+        m.Find(4).IfNone(() => failwith<int>("Broken")).Should().Be(4);
+        m.Find(5).IfNone(() => failwith<int>("Broken")).Should().Be(5);
     }
 
     [Fact]
     public void MapAddInReverseOrderTest()
     {
         var m = Map((2, 2), (1, 1));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
 
         m = Map((3, 3), (2, 2), (1, 1));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
 
         m = Map((4, 4), (3, 3), (2, 2), (1, 1));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
-        m.Find(4).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
+        m.Find(4).IfNone(() => failwith<int>("Broken")).Should().Be(4);
 
         m = Map((5, 5), (4, 4), (3, 3), (2, 2), (1, 1));
-        m.Find(1).IfNone(() => failwith<int>("Broken"));
-        m.Find(2).IfNone(() => failwith<int>("Broken"));
-        m.Find(3).IfNone(() => failwith<int>("Broken"));
-        m.Find(4).IfNone(() => failwith<int>("Broken"));
-        m.Find(5).IfNone(() => failwith<int>("Broken"));
+        m.Find(1).IfNone(() => failwith<int>("Broken")).Should().Be(1);
+        m.Find(2).IfNone(() => failwith<int>("Broken")).Should().Be(2);
+        m.Find(3).IfNone(() => failwith<int>("Broken")).Should().Be(3);
+        m.Find(4).IfNone(() => failwith<int>("Broken")).Should().Be(4);
+        m.Find(5).IfNone(() => failwith<int>("Broken")).Should().Be(5);
     }
 
     [Fact]

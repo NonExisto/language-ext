@@ -1,12 +1,8 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-
-using LanguageExt.ClassInstances;
+﻿using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt;

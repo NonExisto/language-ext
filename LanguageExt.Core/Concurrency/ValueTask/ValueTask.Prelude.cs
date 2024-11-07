@@ -19,7 +19,7 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     public static ValueTask<A> ValueTaskFail<A>(Exception ex) =>
-        Task.FromException<A>(ex).ToValue();
+        ValueTask.FromException<A>(ex);
 
     /// <summary>
     /// Flatten the nested Task type

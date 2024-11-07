@@ -1,11 +1,7 @@
 ﻿using LanguageExt.ClassInstances;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using LanguageExt.Common;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt;
@@ -16,12 +12,8 @@ public static class TaskExtensions
         ma is { IsCompleted: true, IsFaulted: false, IsCanceled: false };
 
     [Pure]
-    public static Task<A> AsFailedTask<A>(this Exception ex)
-    {
-        var tcs = new TaskCompletionSource<A>();
-        tcs.SetException(ex);
-        return tcs.Task;
-    }
+    public static Task<A> AsFailedTask<A>(this Exception ex) => 
+        Task.FromException<A>(ex);
 
     /// <summary>
     /// Convert a value to a Task that completes immediately
@@ -265,7 +257,7 @@ public static class TaskExtensions
 
     public static async Task<A> Cast<A>(this Task source)
     {
-        if (source == null) throw new ArgumentNullException(nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         await source.ConfigureAwait(false);
             
         return source.GetType() switch
@@ -281,144 +273,5 @@ public static class TaskExtensions
     {
         await source.ConfigureAwait(false);
         return unit;
-    }
-
-    /// <summary>
-    /// Tasks a lazy sequence of tasks and iterates them in a 'measured way'.  A default window size of
-    /// `Sys.DefaultAsyncSequenceConcurrency` tasks is used, which means there are `Environment.ProcessorCount / 2`
-    /// 'await streams' (by default).  An await stream essentially awaits one task from the sequence, and on
-    /// completion goes and gets the next task from the lazy sequence and awaits that too.  This continues until the
-    /// end of the lazy sequence, or forever for infinite streams.
-    /// </summary>
-    internal static Task<IList<B>> WindowMap<A, B>(this IEnumerable<Task<A>> ma, Func<A, B> f, CancellationToken token) =>
-        WindowMap(ma, SysInfo.DefaultAsyncSequenceParallelism, f, token);
-
-    /// <summary>
-    /// Tasks a lazy sequence of tasks and maps them in a 'measured way'.  A default window size of
-    /// `windowSize` tasks is used, which means there are `windowSize` 'await streams'.  An await stream 
-    /// essentially awaits one task from the sequence, and on completion goes and gets the next task from 
-    /// the lazy sequence and awaits that too.  This continues until the end of the lazy sequence, or forever 
-    /// for infinite streams.  Therefore there are at most `windowSize` tasks running concurrently.
-    /// </summary>
-    internal static async Task<IList<B>> WindowMap<A, B>(
-        this IEnumerable<Task<A>> ma, 
-        int windowSize, 
-        Func<A, B> f,
-        CancellationToken token)
-    {
-        var sync = new object();
-        using var wait = new CountdownEvent(windowSize);
-        using var iter = ma.GetEnumerator();
-
-        var index = -1;
-        var results = new List<B>();
-        var errors = new List<Exception>();
-
-        for (var i = 0; i < windowSize; i++)
-        {
-            #pragma warning disable CS4014 // call is not awaited
-            Task.Run(go, token);
-            #pragma warning restore CS4014
-        }
-
-        Option<(int Index, Task<B>)> next()
-        {
-            lock (sync)
-            {
-                index++;
-                try
-                {
-                    if (iter.MoveNext())
-                    {
-                        results.Add(default);
-                        return Some((index, iter.Current.Map(f)));
-                    }
-                    else
-                    {
-                        return default;
-                    }
-                }
-                catch (Exception e)
-                {
-                    errors.Add(e);
-                    return default;
-                }
-            }
-        }
-        
-        void go()
-        {
-            try
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    var otask = next();
-                    if (otask.IsNone) return;
-                    var (ix, task) = ((int, Task<B>))otask;
-
-                    SpinWait sw = default;
-                    while (!task.IsCompleted && !token.IsCancellationRequested)
-                    {
-                        sw.SpinOnce();
-                    }
-                    
-                    lock (sync)
-                    {
-                        
-                        if (token.IsCancellationRequested)
-                        {
-                            throw new TaskCanceledException();
-                        }
-                        else if (task.IsCanceled)
-                        {
-                            errors.Add(task.Exception is not null ? task.Exception : new TaskCanceledException());
-                        }
-                        else if (task.IsFaulted)
-                        {
-                            if (task.Exception is not null) errors.Add(task.Exception);
-                        }
-                        else if (task.IsCompleted)
-                        {
-                            results[ix] = task.Result;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                lock (sync)
-                {
-                    errors.Clear();
-                    errors.Add(e);
-                }
-            }
-            finally
-            {
-                wait.Signal();
-            }
-        }
-
-        await wait.WaitHandle.WaitOneAsync(token).ConfigureAwait(false);
-        
-        if (errors.Count > 0)
-        {
-            var allErrors = errors
-                .SelectMany(e => e is AggregateException ae ? ae.InnerExceptions.ToArray() : new[] { e })
-                .ToArray();
-
-            if (allErrors.Length > 1)
-            {
-                // Throw an aggregate of all exceptions
-                throw new AggregateException(allErrors);
-            }
-            else if (allErrors.Length == 1)
-            {
-                // Throw an aggregate of all exceptions
-                allErrors[0].Rethrow();
-                return default!;
-            }
-        }
-
-        return results;
     }
 }

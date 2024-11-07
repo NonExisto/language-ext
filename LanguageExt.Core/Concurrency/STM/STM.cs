@@ -18,12 +18,12 @@ public static class STM
 {
     static long refIdNext;
     static readonly AtomHashMap<EqLong, long, RefState> state;
-    static readonly AsyncLocal<Transaction> transaction;
+    static readonly AsyncLocal<Transaction?> transaction;
 
     static STM()
     {
         state       = AtomHashMap<EqLong, long, RefState>();
-        transaction = new AsyncLocal<Transaction>();
+        transaction = new AsyncLocal<Transaction?>();
     }
 
     static void OnChange(TrieMap<EqLong, long, Change<RefState>> patch) 
@@ -117,7 +117,7 @@ public static class STM
             finally
             {
                 // Clear the current transaction on the way out
-                transaction.Value = null!;
+                transaction.Value = null;
                     
                 // Announce changes
                 OnChange(t.changes);
@@ -229,7 +229,7 @@ public static class STM
             finally
             {
                 // Clear the current transaction on the way out
-                transaction.Value = Transaction.None;
+                transaction.Value = null;
                     
                 // Announce changes
                 OnChange(t.changes);
@@ -264,7 +264,7 @@ public static class STM
             finally
             {
                 // Clear the current transaction on the way out
-                transaction.Value = Transaction.None;
+                transaction.Value = null;
                     
                 // Announce changes
                 OnChange(t.changes);
@@ -517,8 +517,6 @@ public static class STM
         public readonly System.Collections.Generic.HashSet<long> reads = new();
         public readonly System.Collections.Generic.HashSet<long> writes = new();
         public readonly System.Collections.Generic.List<(long Id, Func<object, object> Fun)> commutes = new();
-
-        public static readonly Transaction None = new (TrieMap<EqLong, long, RefState>.Empty);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Transaction(TrieMap<EqLong, long, RefState> state)

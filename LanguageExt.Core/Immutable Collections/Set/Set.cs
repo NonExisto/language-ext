@@ -33,7 +33,7 @@ public readonly struct Set<A> :
 {
     public static Set<A> Empty { get; } = new(SetInternal<OrdDefault<A>, A>.Empty);
 
-    readonly SetInternal<OrdDefault<A>, A> value;
+    readonly SetInternal<OrdDefault<A>, A>? value;
 
     internal SetInternal<OrdDefault<A>, A> Value => value ?? Empty.Value;
 
@@ -378,7 +378,7 @@ public readonly struct Set<A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="mapper">Mapping function</param>
@@ -582,7 +582,7 @@ public readonly struct Set<A> :
     /// </summary>
     /// <param name="lhs">Left hand side set</param>
     /// <param name="rhs">Right hand side set</param>
-    /// <returns>Subtractd set</returns>
+    /// <returns>Subtracted set</returns>
     [Pure]
     public static Set<A> operator -(Set<A> lhs, Set<A> rhs) =>
         Wrap(lhs.Value - rhs.Value);

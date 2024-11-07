@@ -137,11 +137,11 @@ public static class StackExtensions
     /// <param name="stack">Stack to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S FoldWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<T, bool> preditem) =>
-        List.foldWhile(stack, state, folder, preditem: preditem);
+    public static S FoldWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<T, bool> pred) =>
+        List.foldWhile(stack, state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection, threading an accumulator 
@@ -155,11 +155,11 @@ public static class StackExtensions
     /// <param name="stack">Stack to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S FoldWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<S, bool> predstate) =>
-        List.foldWhile(stack, state, folder, predstate: predstate);
+    public static S FoldWhileState<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<S, bool> pred) =>
+        List.foldWhileState(stack, state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection (from last element to first)
@@ -174,11 +174,11 @@ public static class StackExtensions
     /// <param name="stack">Stack to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="preditem">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S FoldBackWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<T, bool> preditem) =>
-        List.foldBackWhile(stack, state, folder, preditem: preditem);
+    public static S FoldBackWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<T, bool> pred) =>
+        List.foldBackWhile(stack, state, folder, pred);
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection (from last element to first), 
@@ -193,11 +193,11 @@ public static class StackExtensions
     /// <param name="stack">Stack to fold</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
-    /// <param name="predstate">Predicate function</param>
+    /// <param name="pred">Predicate function</param>
     /// <returns>Aggregate value</returns>
     [Pure]
-    public static S FoldBackWhile<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<S, bool> predstate) =>
-        List.foldBackWhile(stack, state, folder, predstate: predstate);
+    public static S FoldBackWhileState<S, T>(this Stck<T> stack, S state, Func<S, T, S> folder, Func<S, bool> pred) =>
+        List.foldBackWhileState(stack, state, folder, pred);
 
     /// <summary>
     /// Applies a function to each element of the collection, threading an accumulator argument 

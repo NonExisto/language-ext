@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using static LanguageExt.Prelude;
@@ -166,7 +164,7 @@ public static partial class LstExtensions
     /// Reverses the list (Reverse in LINQ)
     /// </summary>
     /// <typeparam name="A">List item type</typeparam>
-    /// <param name="list">Listto reverse</param>
+    /// <param name="list">List to reverse</param>
     /// <returns>Reversed list</returns>
     [Pure]
     public static Lst<A> Rev<A>(this Lst<A> list) =>

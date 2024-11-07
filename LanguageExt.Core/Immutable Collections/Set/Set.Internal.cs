@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
@@ -17,7 +16,7 @@ namespace LanguageExt;
 /// </summary>
 /// <typeparam name="A">List item type</typeparam>
 [Serializable]
-internal class SetInternal<OrdA, A> :
+internal sealed class SetInternal<OrdA, A> :
     IEnumerable<A>,
     IEquatable<SetInternal<OrdA, A>>
     where OrdA : Ord<A>
@@ -205,14 +204,6 @@ internal class SetInternal<OrdA, A> :
     }
 
     /// <summary>
-    /// Get the number of elements in the set
-    /// </summary>
-    /// <returns>Number of elements</returns>
-    [Pure]
-    public int Length() =>
-        Count;
-
-    /// <summary>
     /// Attempts to find an item in the set.  
     /// </summary>
     /// <param name="value">Value to find</param>
@@ -263,8 +254,8 @@ internal class SetInternal<OrdA, A> :
     [Pure]
     public Iterable<A> FindRange(A keyFrom, A keyTo)
     {
-        if (isnull(keyFrom)) throw new ArgumentNullException(nameof(keyFrom));
-        if (isnull(keyTo)) throw new ArgumentNullException(nameof(keyTo));
+        ArgumentNullException.ThrowIfNull(keyFrom);
+        ArgumentNullException.ThrowIfNull(keyTo);
         return OrdA.Compare(keyFrom, keyTo) > 0
                    ? SetModule.FindRange<OrdA, A>(set, keyTo, keyFrom).AsIterable()
                    : SetModule.FindRange<OrdA, A>(set, keyFrom, keyTo).AsIterable();
@@ -375,14 +366,6 @@ internal class SetInternal<OrdA, A> :
     }
 
     /// <summary>
-    /// Clears the set
-    /// </summary>
-    /// <returns>An empty set</returns>
-    [Pure]
-    public SetInternal<OrdA, A> Clear() =>
-        Empty;
-
-    /// <summary>
     /// Get enumerator
     /// </summary>
     /// <returns>IEnumerator T</returns>
@@ -431,7 +414,7 @@ internal class SetInternal<OrdA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="f">Mapping function</param>
@@ -442,7 +425,7 @@ internal class SetInternal<OrdA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="f">Mapping function</param>
@@ -505,18 +488,6 @@ internal class SetInternal<OrdA, A> :
     [Pure]
     public bool IsEmpty => 
         Count == 0;
-
-    /// <summary>
-    /// IsReadOnly - Always true
-    /// </summary>
-    [Pure]
-    public bool IsReadOnly
-    {
-        get
-        {
-            return true;
-        }
-    }
 
     /// <summary>
     /// Returns True if 'other' is a proper subset of this set
@@ -656,10 +627,9 @@ internal class SetInternal<OrdA, A> :
     /// <param name="index">Index into the array to start</param>
     public void CopyTo(A[] array, int index)
     {
-        if (array == null) throw new ArgumentNullException(nameof(array));
-        if (index < 0 || index > array.Length) throw new IndexOutOfRangeException();
-        if (index + Count > array.Length) throw new IndexOutOfRangeException();
-
+        ArgumentNullException.ThrowIfNull(array);
+        if (index < 0 || index + Count > array.Length) throw new ArgumentOutOfRangeException(nameof(index));
+        
         foreach (var element in this)
         {
             array[index++] = element;
@@ -673,10 +643,9 @@ internal class SetInternal<OrdA, A> :
     /// <param name="index">Index into the array to start</param>
     public void CopyTo(Array array, int index)
     {
-        if (array == null) throw new ArgumentNullException(nameof(array));
-        if (index < 0 || index > array.Length) throw new IndexOutOfRangeException();
-        if (index + Count > array.Length) throw new IndexOutOfRangeException();
-
+        ArgumentNullException.ThrowIfNull(array);
+        if (index < 0 || index + Count > array.Length) throw new ArgumentOutOfRangeException(nameof(index));
+        
         foreach (var element in this)
         {
             array.SetValue(element, index++);
@@ -707,7 +676,7 @@ internal class SetInternal<OrdA, A> :
     /// </summary>
     /// <param name="lhs">Left hand side set</param>
     /// <param name="rhs">Right hand side set</param>
-    /// <returns>Subtractd set</returns>
+    /// <returns>Subtracted set</returns>
     [Pure]
     public static SetInternal<OrdA, A> operator -(SetInternal<OrdA, A> lhs, SetInternal<OrdA, A> rhs) =>
         lhs.Subtract(rhs);
@@ -716,7 +685,7 @@ internal class SetInternal<OrdA, A> :
     /// Subtract operator - performs a subtract of the two sets
     /// </summary>
     /// <param name="rhs">Right hand side set</param>
-    /// <returns>Subtractd set</returns>
+    /// <returns>Subtracted set</returns>
     [Pure]
     public SetInternal<OrdA, A> Subtract(SetInternal<OrdA, A> rhs)
     {
@@ -787,9 +756,12 @@ internal class SetInternal<OrdA, A> :
 
     IEnumerator IEnumerable.GetEnumerator() =>
         new SetModule.SetEnumerator<A>(set, false, 0);
+
+    public override bool Equals(object? obj) => Equals(obj as SetInternal<OrdA, A>);
 }
 
-internal class SetItem<K>
+[Serializable]
+internal sealed class SetItem<K>
 {
     public static readonly SetItem<K> Empty = new (0, 0, default!, default!, default!);
 
@@ -1411,7 +1383,7 @@ internal static class SetModule
     {
         internal struct NewStack : New<SetItem<K>[]>
         {
-            public SetItem<K>[] New() =>
+            public static SetItem<K>[] Create() =>
                 new SetItem<K>[32];
         }
 

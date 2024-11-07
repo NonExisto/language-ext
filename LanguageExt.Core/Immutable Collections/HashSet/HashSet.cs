@@ -27,7 +27,7 @@ public readonly struct HashSet<A> :
 {
     public static HashSet<A> Empty { get; } = new (TrieSet<EqDefault<A>, A>.Empty);
 
-    readonly TrieSet<EqDefault<A>, A> value;
+    readonly TrieSet<EqDefault<A>, A>? value;
     internal TrieSet<EqDefault<A>, A> Value => value ?? TrieSet<EqDefault<A>, A>.Empty;
 
     internal HashSet(TrieSet<EqDefault<A>, A> value)
@@ -36,9 +36,6 @@ public readonly struct HashSet<A> :
     }
 
     HashSet<A> Wrap(TrieSet<EqDefault<A>, A> value) =>
-        new (value);
-
-    static HashSet<B> Wrap<B>(TrieSet<EqDefault<B>, B> value) =>
         new (value);
 
     /// <summary>
@@ -144,7 +141,7 @@ public readonly struct HashSet<A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>
@@ -154,7 +151,7 @@ public readonly struct HashSet<A> :
     [Pure]
     public HashSet<R> Map<R>(Func<A, R> mapper)
     {
-        IEnumerable<R> Yield(TrieSet<EqDefault<A>, A> map, Func<A, R> f)
+        static IEnumerable<R> Yield(TrieSet<EqDefault<A>, A> map, Func<A, R> f)
         {
             foreach (var item in map)
             {
@@ -202,7 +199,7 @@ public readonly struct HashSet<A> :
     [Pure]
     public HashSet<A> Filter(Func<A, bool> pred)
     {
-        IEnumerable<A> Yield(TrieSet<EqDefault<A>, A> map, Func<A, bool> f)
+        static IEnumerable<A> Yield(TrieSet<EqDefault<A>, A> map, Func<A, bool> f)
         {
             foreach (var item in map)
             {
@@ -216,7 +213,7 @@ public readonly struct HashSet<A> :
     }
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>
@@ -431,7 +428,7 @@ public readonly struct HashSet<A> :
 
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>
@@ -596,7 +593,7 @@ public readonly struct HashSet<A> :
     /// <returns>A set which contains all items from both sets</returns>
     [Pure]
     public HashSet<A> Union(IEnumerable<A> rhs) =>
-        this.TryAddRange(rhs);
+        TryAddRange(rhs);
 
     /// <summary>
     /// Copy the items from the set into the specified array

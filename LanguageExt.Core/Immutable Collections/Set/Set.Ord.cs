@@ -25,7 +25,7 @@ public readonly struct Set<OrdA, A> :
 {
     public static readonly Set<OrdA, A> Empty = new (SetInternal<OrdA, A>.Empty);
 
-    readonly SetInternal<OrdA, A> value;
+    readonly SetInternal<OrdA, A>? value;
 
     SetInternal<OrdA, A> Value => value ?? Empty.Value;
 
@@ -354,7 +354,7 @@ public readonly struct Set<OrdA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="mapper">Mapping function</param>
@@ -365,7 +365,7 @@ public readonly struct Set<OrdA, A> :
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="mapper">Mapping function</param>

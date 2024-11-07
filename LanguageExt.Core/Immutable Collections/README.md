@@ -5,11 +5,11 @@ This a suite of [very high-performance immutable-collections](https://github.com
   appending), as it would be a performance hit.
   `Seq<A>` is backed by an array, and so it has exceptional memory locality, `Lst<A>` is an AVL tree to allow for efficient  
   insertion, but suffers from poorer memory locality.
-* For 'dictionaries' or maps as we prefer to call them, then `HashMap` is the fastest implemention you'll find in .NET-land.  It is 
+* For 'dictionaries' or maps as we prefer to call them, then `HashMap` is the fastest implementation you'll find in .NET-land.  It is 
   unsorted.  If you need a sorted dictionary, use `Map`.  `HashMap` uses the CHAMP data-structure, `Map` uses an AVL tree.
 * The same goes for sets, prefer `HashSet` over `Set`, unless you need the set to be sorted.
 
-You can construct the collection types using the constrctor functions in the `Prelude`:
+You can construct the collection types using the constructor functions in the `Prelude`:
 
     HashMap<string, int> hashSet = HashMap(("a", 1), ("b", 2), ("c", 3));
     HashSet<int> hashMap         = HashSet(1, 2, 3);

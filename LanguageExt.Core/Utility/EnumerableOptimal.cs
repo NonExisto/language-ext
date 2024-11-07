@@ -73,7 +73,7 @@ public static class EnumerableOptimal
         Seq<IEnumerable<A>> ms;
         IEnumerator<A> iter;
         int index;
-        A current;
+        A? current;
 
         public ConcatIter(Seq<IEnumerable<A>> ms)
         {
@@ -84,9 +84,9 @@ public static class EnumerableOptimal
         }
 
         public readonly A Current => 
-            current;
+            current!;
 
-        readonly object IEnumerator.Current => 
+        readonly object? IEnumerator.Current => 
             current;
 
         public void Dispose() =>
@@ -135,9 +135,9 @@ public static class EnumerableOptimal
     {
         readonly Func<A, IEnumerable<B>> f;
         readonly IEnumerable<A> ema;
-        IEnumerator<A> ma;
-        IEnumerator<B> mb;
-        B current;
+        IEnumerator<A>? ma;
+        IEnumerator<B>? mb;
+        B? current;
 
         public BindIter(IEnumerable<A> ma, Func<A, IEnumerable<B>> f)
         {
@@ -149,9 +149,9 @@ public static class EnumerableOptimal
         }
 
         public B Current =>
-            current;
+            current!;
 
-        object IEnumerator.Current =>
+        object? IEnumerator.Current =>
             current;
 
         public void Dispose()
@@ -172,10 +172,6 @@ public static class EnumerableOptimal
                     {
                         current = mb.Current;
                         return true;
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
                 ma.Dispose();
@@ -200,10 +196,6 @@ public static class EnumerableOptimal
                         {
                             current = mb.Current;
                             return true;
-                        }
-                        else
-                        {
-                            continue;
                         }
                     }
                     ma.Dispose();

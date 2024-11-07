@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 using LSeq = LanguageExt.Seq;
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 
 namespace LanguageExt;
 
@@ -13,7 +12,7 @@ public static partial class Prelude
     /// <summary>
     /// Represents an empty sequence
     /// </summary>
-    public static readonly SeqEmpty Empty = new();
+    public static readonly SeqEmpty Empty;
 
     /// <summary>
     /// Construct a sequence from any value
@@ -153,7 +152,8 @@ public static partial class Prelude
         get
         {
             return Go().AsIterable();
-            IEnumerable<int> Go()
+
+            static IEnumerable<int> Go()
             {
                 for (var i = 0; i < int.MaxValue; i++)
                 {
@@ -172,7 +172,8 @@ public static partial class Prelude
         get
         {
             return Go().AsIterable();
-            IEnumerable<long> Go()
+
+            static IEnumerable<long> Go()
             {
                 for (var i = 0L; i < long.MaxValue; i++)
                 {
@@ -892,21 +893,6 @@ public static partial class Prelude
     public static Seq<A> Seq<A>() =>
         Empty;
         
-    /// <summary>
-    /// Construct a sequence from any value
-    ///
-    ///     var list = Seq1(124);
-    /// 
-    /// </summary>
-    [Pure]
-    [Obsolete(Change.UseCollectionIntialiserSeq)]
-    public static Seq<A> Seq1<A>(A value)
-    {
-        var arr = new A[4];
-        arr[2] = value;
-        return new Seq<A>(new SeqStrict<A>(arr, 2, 1, 0, 0));
-    }
-       
     /// <summary>
     /// Construct a singleton sequence from any value
     ///

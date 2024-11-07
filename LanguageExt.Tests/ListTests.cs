@@ -387,7 +387,7 @@ public class ListTests
         var list = List(1, 2, 3, 4);
 
         Assert.Equal(list.RemoveRange(2, 2), List(1, 2));
-        Assert.Throws<IndexOutOfRangeException>(() => list.RemoveRange(2, 3));
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveRange(2, 3));
     }
 
     [Fact]
@@ -496,13 +496,13 @@ public class ListTests
         var output1 = foldWhile(input, "", (s, x) => s + x.ToString(), x => x < 40);
         Assert.Equal("102030", output1);
 
-        var output2 = foldWhile(input, "", (s, x) => s + x.ToString(), (string s) => s.Length < 6);
+        var output2 = foldWhileState(input, "", (s, x) => s + x.ToString(), (string s) => s.Length < 6);
         Assert.Equal("102030", output2);
 
-        var output3 = foldWhile(input, 0, (s, x) => s + x, preditem: x => x < 40);
+        var output3 = foldWhile(input, 0, (s, x) => s + x, x => x < 40);
         Assert.Equal(60, output3);
 
-        var output4 = foldWhile(input, 0, (s, x) => s + x, predstate: s => s < 60);
+        var output4 = foldWhileState(input, 0, (s, x) => s + x, s => s < 60);
         Assert.Equal(60, output4);
     }
 
@@ -514,13 +514,13 @@ public class ListTests
         var output1 = foldBackWhile(input, "", (s, x) => s + x.ToString(), x => x >= 40);
         Assert.Equal("5040", output1);
 
-        var output2 = foldBackWhile(input, "", (s, x) => s + x.ToString(), (string s) => s.Length < 4);
+        var output2 = foldBackWhileState(input, "", (s, x) => s + x.ToString(), (string s) => s.Length < 4);
         Assert.Equal("5040", output2);
 
-        var output3 = foldBackWhile(input, 0, (s, x) => s + x, preditem: x => x >= 40);
+        var output3 = foldBackWhile(input, 0, (s, x) => s + x, x => x >= 40);
         Assert.Equal(90, output3);
 
-        var output4 = foldBackWhile(input, 0, (s, x) => s + x, predstate: s => s < 90);
+        var output4 = foldBackWhileState(input, 0, (s, x) => s + x, s => s < 90);
         Assert.Equal(90, output4);
     }
 
@@ -532,13 +532,13 @@ public class ListTests
         var output1 = foldUntil(input, "", (s, x) => s + x.ToString(), x => x >= 40);
         Assert.Equal("102030", output1);
 
-        var output2 = foldUntil(input, "", (s, x) => s + x.ToString(), (string s) => s.Length >= 6);
+        var output2 = foldUntilState(input, "", (s, x) => s + x.ToString(), (string s) => s.Length >= 6);
         Assert.Equal("102030", output2);
 
-        var output3 = foldUntil(input, 0, (s, x) => s + x, preditem: x => x >= 40);
+        var output3 = foldUntil(input, 0, (s, x) => s + x, x => x >= 40);
         Assert.Equal(60, output3);
 
-        var output4 = foldUntil(input, 0, (s, x) => s + x, predstate: s => s >= 60);
+        var output4 = foldUntilState(input, 0, (s, x) => s + x, s => s >= 60);
         Assert.Equal(60, output4);
     }
 
@@ -550,13 +550,13 @@ public class ListTests
         var output1 = foldBackUntil(input, "", (s, x) => s + x.ToString(), x => x < 40);
         Assert.Equal("5040", output1);
 
-        var output2 = foldBackUntil(input, "", (s, x) => s + x.ToString(), (string s) => s.Length >= 4);
+        var output2 = foldBackUntilState(input, "", (s, x) => s + x.ToString(), (string s) => s.Length >= 4);
         Assert.Equal("5040", output2);
 
-        var output3 = foldBackUntil(input, 0, (s, x) => s + x, preditem: x => x < 40);
+        var output3 = foldBackUntil(input, 0, (s, x) => s + x, x => x < 40);
         Assert.Equal(90, output3);
 
-        var output4 = foldBackUntil(input, 0, (s, x) => s + x, predstate: s => s >= 90);
+        var output4 = foldBackUntilState(input, 0, (s, x) => s + x, s => s >= 90);
         Assert.Equal(90, output4);
     }
 

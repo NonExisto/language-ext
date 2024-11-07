@@ -1,5 +1,6 @@
 ﻿using LanguageExt.Traits;
 using static LanguageExt.Prelude;
+using static LanguageExt.Bit;
 using System;
 using System.Runtime.CompilerServices;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace LanguageExt;
 /// <remarks>
 /// Used by internally by `LanguageExt.HashMap`
 /// </remarks>
-internal class TrieMap<EqK, K, V> :
+internal sealed class TrieMap<EqK, K, V> :
     IEnumerable<(K Key, V Value)>,
     IEquatable<TrieMap<EqK, K, V>>
     where EqK : Eq<K>
@@ -192,18 +193,6 @@ internal class TrieMap<EqK, K, V> :
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<EqK, K, V> Map, Change<V> Change) AddOrMaybeUpdateWithLog(K key, Func<V, V> Some, Func<Option<V>> None)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdateWithLog(key, Some(value!))
-                   : None().Map(x => AddOrUpdateWithLog(key, x)).IfNone((this, Change<V>.None));
-    }
-
-    /// <summary>
-    /// Add an item to the map, if it exists update the value
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieMap<EqK, K, V> AddOrUpdate(K key, Func<V, V> Some, V None)
     {
         var (found, _, value) = FindInternal(key);
@@ -232,9 +221,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> AddRange(IEnumerable<(K Key, V Value)> items)
     {
         var self = this;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            self = self.Add(item.Key, item.Value);
+            self = self.Add(Key, Value);
         }
         return self;
     }
@@ -248,13 +237,13 @@ internal class TrieMap<EqK, K, V> :
     {
         var self    = this;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            var pair = self.AddWithLog(item.Key, item.Value);
+            var pair = self.AddWithLog(Key, Value);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -336,9 +325,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> TryAddRange(IEnumerable<(K Key, V Value)> items)
     {
         var self = this;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            self = self.TryAdd(item.Key, item.Value);
+            self = self.TryAdd(Key, Value);
         }
         return self;
     }
@@ -352,13 +341,13 @@ internal class TrieMap<EqK, K, V> :
     {
         var self    = this;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            var pair = self.TryAddWithLog(item.Key, item.Value);
+            var pair = self.TryAddWithLog(Key, Value);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -432,9 +421,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> AddOrUpdateRange(IEnumerable<(K Key, V Value)> items)
     {
         var self = this;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            self = self.AddOrUpdate(item.Key, item.Value);
+            self = self.AddOrUpdate(Key, Value);
         }
         return self;
     }
@@ -448,13 +437,13 @@ internal class TrieMap<EqK, K, V> :
     {
         var self    = this;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            var pair = self.AddOrUpdateWithLog(item.Key, item.Value);
+            var pair = self.AddOrUpdateWithLog(Key, Value);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -528,9 +517,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> SetItems(IEnumerable<(K Key, V Value)> items)
     {
         var self = this;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            self = self.SetItem(item.Key, item.Value);
+            self = self.SetItem(Key, Value);
         }
         return self;
     }
@@ -544,13 +533,13 @@ internal class TrieMap<EqK, K, V> :
     {
         var self    = this;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            var pair = self.SetItemWithLog(item.Key, item.Value);
+            var pair = self.SetItemWithLog(Key, Value);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -624,9 +613,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> TrySetItems(IEnumerable<(K Key, V Value)> items)
     {
         var self = this;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            self = self.TrySetItem(item.Key, item.Value);
+            self = self.TrySetItem(Key, Value);
         }
         return self;
     }
@@ -640,13 +629,13 @@ internal class TrieMap<EqK, K, V> :
     {
         var self    = this;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var item in items)
+        foreach (var (Key, Value) in items)
         {
-            var pair = self.TrySetItemWithLog(item.Key, item.Value);
+            var pair = self.TrySetItemWithLog(Key, Value);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -891,33 +880,11 @@ internal class TrieMap<EqK, K, V> :
     /// <summary>
     /// Get a key value pair from a key
     /// </summary>
-    public (K Key, V Value) Get(K key)
-    {
-        var (found, nkey, value) = FindInternal(key);
-        return found
-                   ? (nkey, value!)
-                   : throw new ArgumentException($"Key doesn't exist in map: {key}");
-    }
-
-    /// <summary>
-    /// Get a key value pair from a key
-    /// </summary>
     public Option<(K Key, V Value)> GetOption(K key)
     {
-        var (found, nkey, value) = FindInternal(key);
+        var (found, newKey, value) = FindInternal(key);
         return found
-                   ? Some((nkey, value!))
-                   : default;
-    }
-
-    /// <summary>
-    /// Get a key value pair from a key
-    /// </summary>
-    public Option<K> GetKeyOption(K key)
-    {
-        var (found, nkey, _) = FindInternal(key);
-        return found
-                   ? Some(nkey)
+                   ? Some((newKey, value!))
                    : default;
     }
 
@@ -941,7 +908,7 @@ internal class TrieMap<EqK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override int GetHashCode() =>
         hash == 0
-            ? (hash = FNV32.Hash<HashablePair<EqK, HashableDefault<V>, K, V>, (K, V)>(AsIterable()))
+            ? (hash = FNV32.Hash<HashableTuple<EqK, HashableDefault<V>, K, V>, (K, V)>(AsIterable()))
             : hash;
 
     /// <summary>
@@ -1150,43 +1117,6 @@ internal class TrieMap<EqK, K, V> :
     public Seq<V> FindAll(K key) =>
         Find(key).ToSeq();
 
-    internal static TrieMap<EqK, K, Change<V>> FindChanges(TrieMap<EqK, K, V> mx, TrieMap<EqK, K, V> my)
-    {
-        var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-
-        foreach (var x in mx)
-        {
-            var y = my.Find(x.Key);
-            if (y.IsSome)
-            {
-                if (!ReferenceEquals(x.Value, y.Value) ||
-                    !EqDefault<V>.Equals(x.Value, y.Value!)
-                   )
-                {
-                    if (!EqDefault<V>.Equals(x.Value, y.Value!))
-                    {
-                        changes = changes.AddOrUpdateInPlace(x.Key, Change<V>.Mapped(x.Value, y.Value!));
-                    }
-                }
-            }
-            else
-            {
-                changes = changes.AddOrUpdateInPlace(x.Key, Change<V>.Removed(x.Value));
-            }
-        }
-
-        foreach (var y in my)
-        {
-            var x = mx.Find(y.Key);
-            if (x.IsNone)
-            {
-                changes = changes.AddOrUpdateInPlace(y.Key, Change<V>.Added(y.Value));
-            }
-        }
-
-        return changes;
-    }
-
     /// <summary>
     /// Map from V to U
     /// </summary>
@@ -1203,11 +1133,11 @@ internal class TrieMap<EqK, K, V> :
         var target  = TrieMap<EqK, K, U>.EmptyForMutating;
         var changes = TrieMap<EqK, K, Change<U>>.EmptyForMutating;
             
-        foreach (var pair in this)
+        foreach (var (Key, Value) in this)
         {
-            var newv = f(pair.Value);
-            target = target.AddOrUpdateInPlace(pair.Key, newv);
-            changes = changes.AddOrUpdateInPlace(pair.Key, new EntryMapped<V, U>(pair.Value, newv));
+            var value = f(Value);
+            target = target.AddOrUpdateInPlace(Key, value);
+            changes = changes.AddOrUpdateInPlace(Key, new EntryMapped<V, U>(Value, value));
         }
         return (target, changes);
     }
@@ -1218,24 +1148,6 @@ internal class TrieMap<EqK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieMap<EqK, K, U> Map<U>(Func<K, V, U> f) =>
         new (AsIterable().Select(kv => (kv.Key, f(kv.Key, kv.Value))), false);
-
-    /// <summary>
-    /// Map from V to U
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<EqK, K, U> Map, TrieMap<EqK, K, Change<U>> Changes) MapWithLog<U>(Func<K, V, U> f)
-    {
-        var target  = TrieMap<EqK, K, U>.EmptyForMutating;
-        var changes = TrieMap<EqK, K, Change<U>>.EmptyForMutating;
-            
-        foreach (var pair in this)
-        {
-            var newv = f(pair.Key, pair.Value);
-            target = target.AddOrUpdateInPlace(pair.Key, newv);
-            changes = changes.AddOrUpdateInPlace(pair.Key, new EntryMapped<V, U>(pair.Value, newv));
-        }
-        return (target, changes);
-    }
 
     /// <summary>
     /// Filter
@@ -1253,16 +1165,16 @@ internal class TrieMap<EqK, K, V> :
         var target  = EmptyForMutating;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
             
-        foreach (var pair in this)
+        foreach (var (Key, Value) in this)
         {
-            var pred = f(pair.Value);
+            var pred = f(Value);
             if (pred)
             {
-                target = target.AddOrUpdateInPlace(pair.Key, pair.Value);
+                target = target.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(pair.Key, Change<V>.Removed(pair.Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (target, changes);
@@ -1284,16 +1196,16 @@ internal class TrieMap<EqK, K, V> :
         var target  = EmptyForMutating;
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
             
-        foreach (var pair in this)
+        foreach (var (Key, Value) in this)
         {
-            var pred = f(pair.Key, pair.Value);
+            var pred = f(Key, Value);
             if (pred)
             {
-                target = target.AddOrUpdateInPlace(pair.Key, pair.Value);
+                target = target.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(pair.Key, Change<V>.Removed(pair.Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (target, changes);
@@ -1348,20 +1260,6 @@ internal class TrieMap<EqK, K, V> :
     }
 
     /// <summary>
-    /// Union
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TrieMap<EqK, K, V> operator +(TrieMap<EqK, K, V> lhs, TrieMap<EqK, K, V> rhs) =>
-        lhs.Append(rhs);
-
-    /// <summary>
-    /// Subtract
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TrieMap<EqK, K, V> operator -(TrieMap<EqK, K, V> lhs, TrieMap<EqK, K, V> rhs) =>
-        lhs.Subtract(rhs);
-
-    /// <summary>
     /// Equality
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1396,7 +1294,7 @@ internal class TrieMap<EqK, K, V> :
         where EqV : Eq<V>
     {
         if (ReferenceEquals(this, rhs)) return true;
-        if (ReferenceEquals(rhs, null)) return false;
+        if (rhs is null) return false;
         if (Count != rhs.Count) return false;
         using var iterA = GetEnumerator();
         using var iterB = rhs.GetEnumerator();
@@ -1412,20 +1310,6 @@ internal class TrieMap<EqK, K, V> :
         }
         return true;
     }
-
-    /// <summary>
-    /// Update an item in the map
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieMap<EqK, K, V> Update(K key, V value) =>
-        Update(key, value, UpdateType.Add, false);
-
-    /// <summary>
-    /// Update an item in the map
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<EqK, K, V> Map, Change<V> Change) UpdateWithLog(K key, V value) =>
-        UpdateWithLog(key, value, UpdateType.Add, false);
         
     /// <summary>
     /// Update an item in the map - can mutate if needed
@@ -1543,9 +1427,9 @@ internal class TrieMap<EqK, K, V> :
         }
 
         var matches = 0;
-        foreach (var item in other)
+        foreach (var (Key, Value) in other)
         {
-            if (ContainsKey(item.Key))
+            if (ContainsKey(Key))
             {
                 matches++;
             }
@@ -1659,8 +1543,7 @@ internal class TrieMap<EqK, K, V> :
         var res = new List<(K, V)>();
         foreach (var item in other)
         {
-            var litem = GetOption(item);
-            if (litem.IsSome) res.Add(((K, V))litem);
+            GetOption(item).Do(res.Add);
         }
         return new TrieMap<EqK, K, V>(res);
     }
@@ -1674,15 +1557,15 @@ internal class TrieMap<EqK, K, V> :
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
         var res     = EmptyForMutating;
             
-        foreach (var item in this)
+        foreach (var (Key, Value) in this)
         {
-            if (set.Contains(item.Key))
+            if (set.Contains(Key))
             {
-                res = res.AddOrUpdateInPlace(item.Key, item.Value);
+                res = res.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(item.Key, Change<V>.Removed(item.Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (res, changes);
@@ -1694,10 +1577,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> Intersect(IEnumerable<(K Key, V Value)> other)
     {
         var res = new List<(K, V)>();
-        foreach (var item in other)
+        foreach (var (Key, Value) in other)
         {
-            var litem = GetOption(item.Key);
-            if (litem.IsSome) res.Add(((K, V))litem);
+            GetOption(Key).Do(res.Add);
         }
         return new TrieMap<EqK, K, V>(res);
     }
@@ -1717,13 +1599,13 @@ internal class TrieMap<EqK, K, V> :
         WhenMatched<K, V, V, V> Merge)
     {
         var t = EmptyForMutating;
-        foreach (var py in other)
+        foreach (var (Key, Value) in other)
         {
-            var px = Find(py.Key);
+            var px = Find(Key);
             if (px.IsSome)
             {
-                var r = Merge(py.Key, px.Value!, py.Value);
-                t = t.AddOrUpdateInPlace(py.Key, r);
+                var r = Merge(Key, px.Value!, Value);
+                t = t.AddOrUpdateInPlace(Key, r);
             }
         }
         return t;
@@ -1738,21 +1620,21 @@ internal class TrieMap<EqK, K, V> :
     {
         var t = EmptyForMutating;
         var c = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
-        foreach (var px in this)
+        foreach (var (Key, Value) in this)
         {
-            var py = other.Find(px.Key);
+            var py = other.Find(Key);
             if (py.IsSome)
             {
-                var r = Merge(px.Key, px.Value, py.Value!);
-                t = t.AddOrUpdateInPlace(px.Key, r);
-                if (!EqDefault<V>.Equals(px.Value, r))
+                var r = Merge(Key, Value, py.Value!);
+                t = t.AddOrUpdateInPlace(Key, r);
+                if (!EqDefault<V>.Equals(Value, r))
                 {
-                    c = c.AddOrUpdateInPlace(px.Key, Change<V>.Mapped(px.Value, r));
+                    c = c.AddOrUpdateInPlace(Key, Change<V>.Mapped(Value, r));
                 }
             }
             else
             {
-                c = c.AddOrUpdateInPlace(px.Key, Change<V>.Removed(px.Value));
+                c = c.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
 
@@ -1801,9 +1683,9 @@ internal class TrieMap<EqK, K, V> :
     public TrieMap<EqK, K, V> Except(IEnumerable<(K Key, V Value)> other)
     {
         var self = this;
-        foreach (var item in other)
+        foreach (var (Key, Value) in other)
         {
-            self = self.Remove(item.Key);
+            self = self.Remove(Key);
         }
         return self;
     }
@@ -1824,12 +1706,12 @@ internal class TrieMap<EqK, K, V> :
     {
         var self = this;
             
-        foreach (var item in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(item.Key);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(item.Key, item.Value);
+                self = self.Add(Key, Value);
             }
         }
         return self;
@@ -1844,13 +1726,13 @@ internal class TrieMap<EqK, K, V> :
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
         var self    = this;
             
-        foreach (var item in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(item.Key);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(item.Key, item.Value);
-                changes = changes.AddOrUpdateInPlace(item.Key, Change<V>.Added(item.Value));
+                self = self.Add(Key, Value);
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Added(Value));
             }
         }
         return (self, changes);
@@ -1864,12 +1746,12 @@ internal class TrieMap<EqK, K, V> :
     {
         var self = this;
             
-        foreach (var item in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(item.Key);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(item.Key, item.Value);
+                self = self.Add(Key, Value);
             }
             else
             {
@@ -1888,18 +1770,18 @@ internal class TrieMap<EqK, K, V> :
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
         var self    = this;
             
-        foreach (var item in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(item.Key);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(item.Key, item.Value);
-                changes = changes.AddOrUpdateInPlace(item.Key, Change<V>.Added(item.Value));
+                self = self.Add(Key, Value);
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Added(Value));
             }
             else
             {
                 self = pair.Map;
-                changes = changes.AddOrUpdateInPlace(item.Key, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -1983,40 +1865,6 @@ internal class TrieMap<EqK, K, V> :
         WhenMatched<K, V, W, V> Merge) =>
         UnionWithLog(other, MapLeft: static (_, v) => v, MapRight, Merge);
 
-    /// <summary>
-    /// Union two maps.  
-    /// </summary>
-    /// <remarks>
-    /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
-    /// sensible value.
-    /// </remarks>
-    /// <remarks>
-    /// The `WhenMissing` function is called when there is a key in the left-hand side, but not the right-hand-side.
-    /// This allows the `V` value-type to be mapped to the target `V2` value-type. 
-    /// </remarks>
-    public TrieMap<EqK, K, W> Union<W>(
-        IEnumerable<(K Key, W Value)> other,
-        WhenMissing<K, V, W> MapLeft, 
-        WhenMatched<K, V, W, W> Merge) =>
-        Union(other, MapLeft, MapRight: static (_, v2) => v2, Merge);
-
-    /// <summary>
-    /// Union two maps.  
-    /// </summary>
-    /// <remarks>
-    /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
-    /// sensible value.
-    /// </remarks>
-    /// <remarks>
-    /// The `WhenMissing` function is called when there is a key in the left-hand side, but not the right-hand-side.
-    /// This allows the `V` value-type to be mapped to the target `V2` value-type. 
-    /// </remarks>
-    public (TrieMap<EqK, K, W> Map, TrieMap<EqK, K, Change<W>> Changes) UnionWithLog<W>(
-        IEnumerable<(K Key, W Value)> other,
-        WhenMissing<K, V, W> MapLeft,
-        WhenMatched<K, V, W, W> Merge) =>
-        UnionWithLog(other, MapLeft, MapRight: static (_, v2) => v2, Merge);
-        
     /// <summary>
     /// Union two maps.  
     /// </summary>
@@ -2132,7 +1980,7 @@ internal class TrieMap<EqK, K, V> :
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //
-    // NOTE: Here be dragons!  The code below is has been optimised for performace.  Yes, it's 
+    // NOTE: Here be dragons!  The code below is has been optimized for performance.  Yes, it's 
     //       ugly, yes there's repetition, but it's all to squeeze the last few nanoseconds of 
     //       performance out of the system.  Don't hate me ;)
     //
@@ -2140,7 +1988,7 @@ internal class TrieMap<EqK, K, V> :
     /// <summary>
     /// Contains items and sub-nodes
     /// </summary>
-    internal class Entries : Node
+    internal sealed class Entries : Node
     {
         public readonly uint EntryMap;
         public readonly uint NodeMap;
@@ -2155,14 +2003,6 @@ internal class TrieMap<EqK, K, V> :
             NodeMap = nodeMap;
             Items = items;
             Nodes = nodes;
-        }
-
-        public void Deconstruct(out uint entryMap, out uint nodeMap, out (K, V)[] items, out Node[] nodes)
-        {
-            entryMap = EntryMap;
-            nodeMap = NodeMap;
-            items = Items;
-            nodes = Nodes;
         }
 
         public (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section)
@@ -2265,8 +2105,8 @@ internal class TrieMap<EqK, K, V> :
                 var entryIndex = BitCount((int)EntryMap & (((int)mask) - 1));                     
                 if (EqK.Equals(Items[entryIndex].Key, key))
                 {
-                    var item = Items[entryIndex];
-                    return (true, item.Key, item.Value);
+                    var (Key, Value) = Items[entryIndex];
+                    return (true, Key, Value);
                 }
                 else
                 {
@@ -2419,7 +2259,7 @@ internal class TrieMap<EqK, K, V> :
     /// <summary>
     /// Contains items that share the same hash but have different keys
     /// </summary>
-    internal class Collision : Node
+    internal sealed class Collision : Node
     {
         public readonly (K Key, V Value)[] Items;
         public readonly uint Hash;
@@ -2434,11 +2274,11 @@ internal class TrieMap<EqK, K, V> :
 
         public (bool Found, K Key, V Value) Read(K key, uint hash, Sec section)
         {
-            foreach (var kv in Items)
+            foreach (var (Key, Value) in Items)
             {
-                if (EqK.Equals(kv.Key, key))
+                if (EqK.Equals(Key, key))
                 {
-                    return (true, kv.Key, kv.Value);
+                    return (true, Key, Value);
                 }
             }
             return default;
@@ -2475,9 +2315,9 @@ internal class TrieMap<EqK, K, V> :
                     }
                 }
 
-                var nitems = Yield(Items, key).ToArray();
+                var result = Yield(Items, key).ToArray();
 
-                return (nitems.Length - Items.Length, new Collision(nitems, hash), oldValue);
+                return (result.Length - Items.Length, new Collision(result, hash), oldValue);
             }
         }
 
@@ -2522,10 +2362,10 @@ internal class TrieMap<EqK, K, V> :
                     return (0, this, default);
                 }
 
-                var nitems = new (K, V)[Items.Length + 1];
-                Array.Copy(Items, nitems, Items.Length);
-                nitems[Items.Length] = change;
-                return (1, new Collision(nitems, hash), default);
+                var result = new (K, V)[Items.Length + 1];
+                Array.Copy(Items, result, Items.Length);
+                result[Items.Length] = change;
+                return (1, new Collision(result, hash), default);
             }
         }
 
@@ -2539,7 +2379,7 @@ internal class TrieMap<EqK, K, V> :
     /// <summary>
     /// Empty node
     /// </summary>
-    internal class EmptyNode : Node
+    internal sealed class EmptyNode : Node
     {
         public static readonly EmptyNode Default = new EmptyNode();
 
@@ -2622,27 +2462,6 @@ internal class TrieMap<EqK, K, V> :
         Root.GetEnumerator();
 
     /// <summary>
-    /// Counts the number of 1-bits in bitmap
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static int BitCount(int bits)
-    {
-        var c2 = bits - ((bits >> 1) & 0x55555555);
-        var c4 = (c2                 & 0x33333333) + ((c2 >> 2) & 0x33333333);
-        var c8 = (c4 + (c4                                >> 4)) & 0x0f0f0f0f;
-        return (c8 * 0x01010101) >> 24;
-    }
-
-    /// <summary>
-    /// Finds the number of set bits below the bit at `location`
-    /// This function is used to find where in the array of entries or nodes 
-    /// the item should be inserted
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static int Index(uint bits, int location) =>
-        BitCount((int)bits & (location - 1));
-
-    /// <summary>
     /// Finds the number of 1-bits below the bit at `location`
     /// This function is used to find where in the array of entries or nodes 
     /// the item should be inserted
@@ -2674,22 +2493,11 @@ internal class TrieMap<EqK, K, V> :
         else
         {
             var old    = items[index]; 
-            var nitems = new A[items.Length];
-            Array.Copy(items, nitems, items.Length);
-            nitems[index] = value;
-            return (nitems, old);
+            var result = new A[items.Length];
+            Array.Copy(items, result, items.Length);
+            result[index] = value;
+            return (result, old);
         }
-    }
-
-    /// <summary>
-    /// Clones part of an existing array
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static A[] Clone<A>(A[] items, int count)
-    {
-        var nitems = new A[count];
-        Array.Copy(items, nitems, count);
-        return nitems;
     }
 
     /// <summary>
@@ -2699,9 +2507,9 @@ internal class TrieMap<EqK, K, V> :
     static A[] Clone<A>(A[] items)
     {
         var len    = items.Length;
-        var nitems = new A[len];
-        Array.Copy(items, nitems, len);
-        return nitems;
+        var result = new A[len];
+        Array.Copy(items, result, len);
+        return result;
     }
 
     /// <summary>
@@ -2710,11 +2518,11 @@ internal class TrieMap<EqK, K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static A[] Insert<A>(A[] array, int index, A value)
     {
-        var narray = new A[array.Length + 1];
-        Array.Copy(array, 0, narray, 0, index);
-        Array.Copy(array, index, narray, index + 1, array.Length - index);
-        narray[index] = value;
-        return narray;
+        var result = new A[array.Length + 1];
+        Array.Copy(array, 0, result, 0, index);
+        Array.Copy(array, index, result, index + 1, array.Length - index);
+        result[index] = value;
+        return result;
     }
 
     /// <summary>
@@ -2728,16 +2536,16 @@ internal class TrieMap<EqK, K, V> :
             return array;
         }
 
-        var narray = new A[array.Length - 1];
+        var result = new A[array.Length - 1];
         if (index > 0)
         {
-            Array.Copy(array, 0, narray, 0, index);
+            Array.Copy(array, 0, result, 0, index);
         }
         if (index + 1 < array.Length)
         {
-            Array.Copy(array, index + 1, narray, index, array.Length - index - 1);
+            Array.Copy(array, index + 1, result, index, array.Length - index - 1);
         }
-        return narray;
+        return result;
     }
 
     public override string ToString() =>
@@ -2753,21 +2561,6 @@ internal class TrieMap<EqK, K, V> :
 
     public Iterable<V> Values =>
         AsIterable().Map(kv => kv.Value);
-
-    public bool TryGetValue(K key, out V value)
-    {
-        var ov = Find(key);
-        if (ov.IsSome)
-        {
-            value = (V)ov;
-            return true;
-        }
-        else
-        {
-            value = default!;
-            return false;
-        }
-    }
 }
 
 internal readonly struct Sec
@@ -2784,58 +2577,23 @@ internal readonly struct Sec
         new (Offset + 5);
 }
 
-internal static class Bit
-{
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Set(uint value, int bit, bool flag) =>
-        flag
-            ? value | (uint)bit
-            : value & ~(uint)bit;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Set(uint value, uint bit, bool flag) =>
-        flag
-            ? value | bit
-            : value & ~bit;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Get(uint value, int bit) =>
-        (value & (uint)bit) == (uint)bit;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Get(uint value, uint bit) =>
-        (value & bit) == bit;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Get(uint data, Sec section) =>
-        (int)((data & (uint)(Sec.Mask << section.Offset)) >> section.Offset);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Set(uint data, Sec section, int value)
-    {
-        value <<= section.Offset;
-        var offsetMask = (0xFFFF & Sec.Mask) << section.Offset;
-        return data & ~(uint)offsetMask | (uint)value & (uint)offsetMask;
-    }
-}
-
-internal static class TrieMapExtentsions
+internal static class TrieMapExtensions
 {
     public static TrieMap<EqK, K, V> Merge<EqK, K, V>(this TrieMap<EqK, K, V> lhs, TrieMap<EqK, K, V> rhs)
         where EqK : Eq<K>
         where V : Semigroup<V>
     {
         var self = lhs;
-        foreach (var iy in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            var ix = self.Find(iy.Key);
+            var ix = self.Find(Key);
             if (ix.IsSome)
             {
-                self = self.SetItem(iy.Key, ix.Value!.Combine(iy.Value));
+                self = self.SetItem(Key, ix.Value!.Combine(Value));
             }
             else
             {
-                self = self.Add(iy.Key, iy.Value);
+                self = self.Add(Key, Value);
             }
         }
         return self;

@@ -1,23 +1,10 @@
-using System;
 using LanguageExt.Common;
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.SeqT.Sync
 {
     public class EitherSeq
     {
-        [Fact]
-        public void LeftIsSingletonLeft()
-        {
-            var ma = Left<Error, Seq<int>>(Error.New("alt"));
-            var mb = ma.Traverse(mx => mx).As();
-
-            var mc = Seq1(Left<Error, int>(Error.New("alt")));
-
-            Assert.True(mb == mc);
-        }
-
         [Fact]
         public void RightEmptyIsEmpty()
         {

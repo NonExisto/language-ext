@@ -34,6 +34,6 @@ public static partial class Prelude
     public static Unit iter<A>(ValueTuple<A> self, Action<A> func)
     {
         func(self.Item1);
-        return Unit.Default;
+        return default;
     }
 }

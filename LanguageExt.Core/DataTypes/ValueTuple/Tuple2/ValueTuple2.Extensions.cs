@@ -82,7 +82,7 @@ public static class ValueTuple2Extensions
     public static Unit Iter<T1, T2>(this ValueTuple<T1, T2> self, Action<T1, T2> func)
     {
         func(self.Item1, self.Item2);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static class ValueTuple2Extensions
     {
         first(self.Item1);
         second(self.Item2);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>

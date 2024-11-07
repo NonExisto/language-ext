@@ -1,6 +1,6 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using static LanguageExt.Prelude;
+using static LanguageExt.Bit;
 using System;
 using System.Runtime.CompilerServices;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace LanguageExt;
 /// <remarks>
 /// Used by internally by `LanguageExt.HashSet`
 /// </remarks>
-internal class TrieSet<EqK, K> :
+internal sealed class TrieSet<EqK, K> :
     IEquatable<TrieSet<EqK, K>>,
     IReadOnlyCollection<K>
     where EqK : Eq<K>
@@ -207,13 +207,6 @@ internal class TrieSet<EqK, K> :
         Update(key, UpdateType.TrySetItem, false);
 
     /// <summary>
-    /// Update an item in the map
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieSet<EqK, K> Update(K key) =>
-        Update(key, UpdateType.Add, false);
-
-    /// <summary>
     /// Remove an item from the map
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -235,19 +228,12 @@ internal class TrieSet<EqK, K> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            var (found, nkey) = FindInternal(key);
+            var (found, newKey) = FindInternal(key);
             return found
-                       ? nkey
+                       ? newKey
                        : throw new ArgumentException($"Key doesn't exist in map: {key}");
         }
     }
-
-    /// <summary>
-    /// Create an empty map
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieSet<EqK, K> Clear() =>
-        Empty;
 
     /// <summary>
     /// Get the hash code of the items in the map
@@ -271,9 +257,9 @@ internal class TrieSet<EqK, K> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<K> Find(K key)
     {
-        var (found, nkey) = FindInternal(key);
+        var (found, newKey) = FindInternal(key);
         return found
-                   ? Some(nkey)
+                   ? Some(newKey)
                    : default;
     }
 
@@ -287,28 +273,6 @@ internal class TrieSet<EqK, K> :
         Sec section = default;
         return Root.Read(key, hash, section);
     }
-
-    /// <summary>
-    /// Map from K to U
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieSet<EqU, U> Map<EqU, U>(Func<K, U> f) 
-        where EqU : Eq<U> =>
-        new (AsEnumerable().Select(f), true);
-
-    /// <summary>
-    /// Map from K to K
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieSet<EqK, K> Map(Func<K, K> f) =>
-        new (AsEnumerable().Select(f), true);
-
-    /// <summary>
-    /// Filter
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieSet<EqK, K> Filter(Func<K, bool> f) =>
-        new (AsEnumerable().Filter(f), false);
 
     /// <summary>
     /// Associative union
@@ -330,20 +294,6 @@ internal class TrieSet<EqK, K> :
         }
         return lhs;
     }
-
-    /// <summary>
-    /// Union
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TrieSet<EqK, K> operator +(TrieSet<EqK, K> lhs, TrieSet<EqK, K> rhs) =>
-        lhs.Append(rhs);
-
-    /// <summary>
-    /// Subtract
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TrieSet<EqK, K> operator -(TrieSet<EqK, K> lhs, TrieSet<EqK, K> rhs) =>
-        lhs.Subtract(rhs);
 
     /// <summary>
     /// Equality
@@ -480,33 +430,6 @@ internal class TrieSet<EqK, K> :
     /// Returns True if 'other' is a superset of this set
     /// </summary>
     /// <returns>True if 'other' is a superset of this set</returns>
-    public bool IsSubsetOf(TrieSet<EqK, K> other)
-    {
-        if (IsEmpty)
-        {
-            // All empty sets are subsets
-            return true;
-        }
-        if(Count > other.Count)
-        {
-            // A subset must be smaller or equal in size
-            return false;
-        }
-
-        foreach(var item in this)
-        {
-            if(!other.Contains(item))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// Returns True if 'other' is a superset of this set
-    /// </summary>
-    /// <returns>True if 'other' is a superset of this set</returns>
     public bool IsSupersetOf(IEnumerable<K> other)
     {
         foreach (var item in other)
@@ -547,8 +470,7 @@ internal class TrieSet<EqK, K> :
         var res = new List<K>();
         foreach (var item in other)
         {
-            var litem = Find(item);
-            if (litem.IsSome) res.Add((K)litem);
+            Find(item).Do(res.Add);
         }
         return new TrieSet<EqK, K>(res);
     }
@@ -602,15 +524,6 @@ internal class TrieSet<EqK, K> :
     }
 
     /// <summary>
-    /// Finds the union of two sets and produces a new set with 
-    /// the results
-    /// </summary>
-    /// <param name="other">Other set to union with</param>
-    /// <returns>A set which contains all items from both sets</returns>
-    public TrieSet<EqK, K> Union(IEnumerable<K> other) =>
-        this.TryAddRange(other);
-
-    /// <summary>
     /// Nodes in the CHAMP hash trie map can be in one of three states:
     /// 
     ///     Empty - nothing in the map
@@ -628,7 +541,7 @@ internal class TrieSet<EqK, K> :
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //
-    // NOTE: Here be dragons!  The code below is has been optimised for performace.  Yes, it's 
+    // NOTE: Here be dragons!  The code below is has been optimized for performance.  Yes, it's 
     //       ugly, yes there's repetition, but it's all to squeeze the last few nanoseconds of 
     //       performance out of the system.  Don't hate me ;)
     //
@@ -636,7 +549,7 @@ internal class TrieSet<EqK, K> :
     /// <summary>
     /// Contains items and sub-nodes
     /// </summary>
-    internal class Entries : Node
+    internal sealed class Entries : Node
     {
         public readonly uint EntryMap;
         public readonly uint NodeMap;
@@ -651,14 +564,6 @@ internal class TrieSet<EqK, K> :
             NodeMap = nodeMap;
             Items = items;
             Nodes = nodes;
-        }
-
-        public void Deconstruct(out uint entryMap, out uint nodeMap, out K[] items, out Node[] nodes)
-        {
-            entryMap = EntryMap;
-            nodeMap = NodeMap;
-            items = Items;
-            nodes = Nodes;
         }
 
         public (int CountDelta, Node Node) Remove(K key, uint hash, Sec section)
@@ -908,7 +813,7 @@ internal class TrieSet<EqK, K> :
     /// <summary>
     /// Contains items that share the same hash but have different keys
     /// </summary>
-    internal class Collision : Node
+    internal sealed class Collision : Node
     {
         public readonly K[] Items;
         public readonly uint Hash;
@@ -948,7 +853,7 @@ internal class TrieSet<EqK, K> :
             }
             else
             {
-                IEnumerable<K> Yield(K[] items, K ikey)
+                static IEnumerable<K> Yield(K[] items, K ikey)
                 {
                     foreach (var item in items)
                     {
@@ -959,9 +864,9 @@ internal class TrieSet<EqK, K> :
                     }
                 }
 
-                var nitems = Yield(Items, key).ToArray();
+                var result = Yield(Items, key).ToArray();
 
-                return (nitems.Length - Items.Length, new Collision(nitems, hash));
+                return (result.Length - Items.Length, new Collision(result, hash));
             }
         }
 
@@ -1006,10 +911,10 @@ internal class TrieSet<EqK, K> :
                     return (0, this);
                 }
 
-                var nitems = new K[Items.Length + 1];
-                System.Array.Copy(Items, nitems, Items.Length);
-                nitems[Items.Length] = change;
-                return (1, new Collision(nitems, hash));
+                var result = new K[Items.Length + 1];
+                System.Array.Copy(Items, result, Items.Length);
+                result[Items.Length] = change;
+                return (1, new Collision(result, hash));
             }
         }
 
@@ -1023,7 +928,7 @@ internal class TrieSet<EqK, K> :
     /// <summary>
     /// Empty node
     /// </summary>
-    internal class EmptyNode : Node
+    internal sealed class EmptyNode : Node
     {
         public static readonly EmptyNode Default = new EmptyNode();
 
@@ -1103,26 +1008,7 @@ internal class TrieSet<EqK, K> :
     IEnumerator IEnumerable.GetEnumerator() =>
         Root.GetEnumerator();
 
-    /// <summary>
-    /// Counts the number of 1-bits in bitmap
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static int BitCount(int bits)
-    {
-        var c2 = bits - ((bits >> 1) & 0x55555555);
-        var c4 = (c2                 & 0x33333333) + ((c2 >> 2) & 0x33333333);
-        var c8 = (c4 + (c4                                >> 4)) & 0x0f0f0f0f;
-        return (c8 * 0x01010101) >> 24;
-    }
-
-    /// <summary>
-    /// Finds the number of set bits below the bit at `location`
-    /// This function is used to find where in the array of entries or nodes 
-    /// the item should be inserted
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static int Index(uint bits, int location) =>
-        BitCount((int)bits & (location - 1));
+    
 
     /// <summary>
     /// Finds the number of 1-bits below the bit at `location`
@@ -1162,17 +1048,6 @@ internal class TrieSet<EqK, K> :
     }
 
     /// <summary>
-    /// Clones part of an existing array
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static A[] Clone<A>(A[] items, int count)
-    {
-        var nitems = new A[count];
-        System.Array.Copy(items, nitems, count);
-        return nitems;
-    }
-
-    /// <summary>
     /// Clones an existing array
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1190,11 +1065,11 @@ internal class TrieSet<EqK, K> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static A[] Insert<A>(A[] array, int index, A value)
     {
-        var narray = new A[array.Length + 1];
-        System.Array.Copy(array, 0, narray, 0, index);
-        System.Array.Copy(array, index, narray, index + 1, array.Length - index);
-        narray[index] = value;
-        return narray;
+        var newArray = new A[array.Length + 1];
+        System.Array.Copy(array, 0, newArray, 0, index);
+        System.Array.Copy(array, index, newArray, index + 1, array.Length - index);
+        newArray[index] = value;
+        return newArray;
     }
 
     /// <summary>
@@ -1208,16 +1083,16 @@ internal class TrieSet<EqK, K> :
             return array;
         }
 
-        var narray = new A[array.Length - 1];
+        var result = new A[array.Length - 1];
         if (index > 0)
         {
-            System.Array.Copy(array, 0, narray, 0, index);
+            System.Array.Copy(array, 0, result, 0, index);
         }
         if (index + 1 < array.Length)
         {
-            System.Array.Copy(array, index + 1, narray, index, array.Length - index - 1);
+            System.Array.Copy(array, index + 1, result, index, array.Length - index - 1);
         }
-        return narray;
+        return result;
     }
 
     public override string ToString() =>

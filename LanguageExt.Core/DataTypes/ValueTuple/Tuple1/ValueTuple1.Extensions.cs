@@ -40,7 +40,7 @@ public static class ValueTuple1Extensions
     public static Unit Iter<A>(this ValueTuple<A> self, Action<A> func)
     {
         func(self.Item1);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>

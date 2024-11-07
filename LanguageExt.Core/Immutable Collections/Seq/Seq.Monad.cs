@@ -5,7 +5,7 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
-public partial class Seq : 
+public sealed partial class Seq : 
     Monad<Seq>, 
     Alternative<Seq>, 
     Traversable<Seq>

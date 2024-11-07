@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -8,7 +7,7 @@ using LanguageExt.Common;
 
 namespace LanguageExt;
 
-internal class SeqLazy<A> : ISeqInternal<A>
+internal sealed class SeqLazy<A> : SeqInternal<A>, IEnumerable<A>
 {
     const int DefaultCapacity = 8;
     const int NoCons = 1;
@@ -69,7 +68,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         consDisallowed = noCons;
     }
 
-    public A this[int index]
+    public override A this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -81,13 +80,13 @@ internal class SeqLazy<A> : ISeqInternal<A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Option<A> At(int index)
+    public override Option<A> At(int index)
     {
         if (index < 0) return default;
         if (index < count) return data[^count];
         var lazyIndex = index                      - count + seqStart;
-        var (succ, val) = StreamTo(lazyIndex);
-        return succ
+        var (success, val) = StreamTo(lazyIndex);
+        return success
                    ? val
                    : default(Option<A>);
     }
@@ -106,7 +105,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
     }
 
 
-    public A Head
+    public override A Head
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -121,8 +120,8 @@ internal class SeqLazy<A> : ISeqInternal<A>
             }
             else
             {
-                var (succ, val) = seq.Get(seqStart);
-                return succ
+                var (success, val) = seq.Get(seqStart);
+                return success
                            ? val!
                            : throw Exceptions.SequenceEmpty;
 
@@ -130,7 +129,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public ISeqInternal<A> Tail
+    public override SeqInternal<A> Tail
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -145,8 +144,8 @@ internal class SeqLazy<A> : ISeqInternal<A>
             }
             else
             {
-                var (succ, _) = StreamTo(seq.Count);
-                if(succ)
+                var (success, _) = StreamTo(seq.Count);
+                if(success)
                 {
                     return new SeqLazy<A>(data, start, count, NoCons, seq, seqStart + 1);
                 }
@@ -158,13 +157,13 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public bool IsEmpty
+    public override bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => !(count > 0 || seq.Count - seqStart > 0 || seq.Get(seqStart).Success);
     }
 
-    public A Last
+    public override A Last
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -176,7 +175,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public ISeqInternal<A> Init
+    public override SeqInternal<A> Init
     {
         get
         {
@@ -187,7 +186,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public int Count
+    public override int Count
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -197,7 +196,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public ISeqInternal<A> Add(A value)
+    public override SeqInternal<A> Add(A value)
     {
         InternalStrict();
         var seqCount = seq.Count - seqStart;
@@ -205,22 +204,22 @@ internal class SeqLazy<A> : ISeqInternal<A>
         var len      = DefaultCapacity;
         while (len < total) len <<= 1;
 
-        var ndata = new A[len];
+        var result = new A[len];
 
         if (count > 0)
         {
-            Array.Copy(data, data.Length - count, ndata, 0, count);
+            Array.Copy(data, data.Length - count, result, 0, count);
         }
         if (seqCount > 0)
         {
-            Array.Copy(seq.Data, seqStart, ndata, count, seqCount);
+            Array.Copy(seq.Data, seqStart, result, count, seqCount);
         }
-        ndata[count + seqCount] = value;
+        result[count + seqCount] = value;
 
-        return new SeqStrict<A>(ndata, 0, total, 0, 0);
+        return new SeqStrict<A>(result, 0, total, 0, 0);
     }
 
-    public ISeqInternal<A> Cons(A value)
+    public override SeqInternal<A> Cons(A value)
     {
         if (1 == Interlocked.Exchange(ref consDisallowed, 1) || start == 0)
         {
@@ -228,8 +227,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
         else
         {
-            var nstart = start - 1;
-            data[nstart] = value;
+            data[start - 1] = value;
             return new SeqLazy<A>(data, start - 1, count + 1, 0, seq, seqStart);
         }
     }
@@ -279,7 +277,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public S Fold<S>(S state, Func<S, A, S> f)
+    public override S Fold<S>(S state, Func<S, A, S> f)
     {
         InternalStrict();
         if (count > 0)
@@ -301,7 +299,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return state;
     }
 
-    public S FoldBack<S>(S state, Func<S, A, S> f)
+    public override S FoldBack<S>(S state, Func<S, A, S> f)
     {
         InternalStrict();
         if (seq.Count - seqStart > 0)
@@ -323,7 +321,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return state;
     }
 
-    public ISeqInternal<A> Skip(int amount)
+    public override SeqInternal<A> Skip(int amount)
     {
         if(amount < count)
         {
@@ -364,7 +362,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public ISeqInternal<A> Strict()
+    public override SeqInternal<A> Strict()
     {
         InternalStrict();
 
@@ -386,7 +384,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return new SeqStrict<A>(ndata, nstart, ncount, 0, 0);
     }
 
-    public ISeqInternal<A> Take(int amount)
+    public override SeqInternal<A> Take(int amount)
     {
         if(amount <= count)
         {
@@ -435,7 +433,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    public IEnumerator<A> GetEnumerator()
+    public override IEnumerator<A> GetEnumerator()
     {
         var nstart = data.Length - count;
         var nend   = data.Length;
@@ -458,30 +456,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        var nstart = data.Length - count;
-        var nend   = data.Length;
-
-        for (var i = nstart; i < nend; i++)
-        {
-            yield return data[i];
-        }
-        for (var i = seqStart; ; i++)
-        {
-            var (succ, val) = seq.Get(i);
-            if (succ)
-            {
-                yield return val!;
-            }
-            else
-            {
-                yield break;
-            }
-        }
-    }
-
-    public Unit Iter(Action<A> f)
+    public override Unit Iter(Action<A> f)
     {
         foreach(var item in this)
         {
@@ -490,7 +465,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return default;
     }
 
-    public bool Exists(Func<A, bool> f)
+    public override bool Exists(Func<A, bool> f)
     {
         foreach(var item in this)
         {
@@ -502,7 +477,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return false;
     }
 
-    public bool ForAll(Func<A, bool> f)
+    public override bool ForAll(Func<A, bool> f)
     {
         foreach (var item in this)
         {
@@ -514,7 +489,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
         return true;
     }
 
-    public SeqType Type => 
+    public override SeqType Type => 
         SeqType.Lazy;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -523,7 +498,7 @@ internal class SeqLazy<A> : ISeqInternal<A>
             ? selfHash = GetHashCode(FNV32.OffsetBasis)
             : selfHash;
 
-    public int GetHashCode(int hash)
+    public override int GetHashCode(int hash)
     {
         InternalStrict();
         if (count > 0)

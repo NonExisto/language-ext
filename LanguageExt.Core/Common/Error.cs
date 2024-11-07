@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -386,6 +387,7 @@ public abstract record Error : Monoid<Error>
     /// <summary>
     /// Throw the error as an exception
     /// </summary>
+    [DoesNotReturn]
     public Unit Throw()
     {
         ExceptionDispatchInfo.Capture(ToException()).Throw();

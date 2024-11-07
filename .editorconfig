@@ -180,3 +180,14 @@ indent_style = space
 
 # http://kent-boogaart.com/blog/editorconfig-reference-for-c-developers#insert_final_newline
 insert_final_newline = true
+
+[*.{cs,vb}]
+dotnet_diagnostic.CA1000.severity = none
+[*.{cs,vb}]
+dotnet_diagnostic.CA2225.severity = none
+[*.{cs,vb}]
+dotnet_diagnostic.CA1062.severity = none
+[*.{cs,vb}]
+dotnet_diagnostic.CA1708.severity = none
+[*.{cs,vb}]
+dotnet_diagnostic.CA1715.severity = none

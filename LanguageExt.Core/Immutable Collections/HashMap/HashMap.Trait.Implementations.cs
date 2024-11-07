@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class HashMap<Key> : 
+public sealed partial class HashMap<Key> : 
     Foldable<HashMap<Key>>, 
     Functor<HashMap<Key>>, 
     MonoidK<HashMap<Key>>

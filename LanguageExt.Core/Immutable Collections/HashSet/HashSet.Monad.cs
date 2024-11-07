@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class HashSet : 
+public sealed partial class HashSet : 
     Monad<HashSet>, 
     Alternative<HashSet>, 
     Traversable<HashSet>

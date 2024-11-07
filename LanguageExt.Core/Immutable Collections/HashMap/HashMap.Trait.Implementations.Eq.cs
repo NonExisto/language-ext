@@ -4,7 +4,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class HashMapEq<EqKey, Key> : 
+public sealed partial class HashMapEq<EqKey, Key> : 
     Foldable<HashMapEq<EqKey, Key>>, 
     MonoidK<HashMapEq<EqKey, Key>>,
     Functor<HashMapEq<EqKey, Key>>

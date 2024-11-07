@@ -4,7 +4,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public class AtomQue : Foldable<AtomQue>
+public sealed class AtomQue : Foldable<AtomQue>
 {
     static S Foldable<AtomQue>.FoldWhile<A, S>(
         Func<A, Func<S, S>> f, 

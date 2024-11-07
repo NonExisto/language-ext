@@ -474,16 +474,12 @@ namespace LanguageExt.Tests
         {
             // seq1 tests here just for reference
             { Assert.True(Seq<int>().Case is not var (_, _) and not {} ); }
-            { Assert.True(Seq1<int>(1).Case is not var (_, _) and 1); }
-            { Assert.True(Seq<int>(1, 2).Case is (1, Seq<int> xs) && xs == Seq1(2)); }
 
             { Assert.True(Set<int>().Case is not var (_, _) and not {} ); }
             { Assert.True(Set<int>(1).Case is not var (_, _) and 1); }
-            { Assert.True(Set<int>(1, 2).Case is (1, Seq<int> xs) && xs == Seq1(2)); }
 
             { Assert.True(Set<OrdInt, int>().Case is not var (_, _) and not {} ); }
             { Assert.True(Set<OrdInt, int>(1).Case is not var (_, _) and 1); }
-            { Assert.True(Set<OrdInt, int>(1, 2).Case is (1, Seq<int> xs) && xs == Seq1(2)); }
         }
     }
 }

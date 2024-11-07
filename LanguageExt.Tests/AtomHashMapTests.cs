@@ -1,5 +1,4 @@
-﻿using static LanguageExt.Prelude;
-using Xunit;
+﻿using Xunit;
 
 namespace LanguageExt.Tests;
 
@@ -10,7 +9,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Swap(m => m.Add("biz", 99));
@@ -26,7 +25,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.SwapKey("foo", i => i + 1);
@@ -43,7 +42,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.SwapKey("foo", i => None);
@@ -60,7 +59,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42), ("biz", 7));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FilterInPlace(i => i % 2 == 0);
@@ -79,7 +78,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42), ("biz", 7));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FilterInPlace((k, i) => k[0] == 'b' && i % 2 == 0);
@@ -98,7 +97,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42), ("biz", 7));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.MapInPlace(i => i * 3);
@@ -118,7 +117,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Add("biz", 7);
@@ -136,7 +135,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.TryAdd("biz", 7);
@@ -154,7 +153,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.AddOrUpdate("biz", 7);
@@ -172,7 +171,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.AddRange(Seq(("biz", 7), ("baz", 9)));
@@ -191,7 +190,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.TryAddRange(Seq(("biz", 7), ("baz", 9)));
@@ -210,7 +209,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.AddOrUpdateRange(Seq(("biz", 7), ("baz", 9)));
@@ -229,7 +228,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Remove("bar");
@@ -247,7 +246,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42), ("biz", 7));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.RemoveRange(Seq("bar", "biz"));
@@ -266,7 +265,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FindOrAdd("biz", () => 7);
@@ -284,7 +283,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FindOrAdd("biz", 7);
@@ -302,7 +301,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FindOrMaybeAdd("biz", () => Some(7));
@@ -320,7 +319,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.FindOrMaybeAdd("biz", Some(7));
@@ -338,7 +337,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.SetItems(Seq(("foo", 80), ("bar", 17)));
@@ -357,7 +356,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.TrySetItems(Seq(("foo", 80), ("bar", 17), ("biz", 33)));
@@ -376,7 +375,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.SetItem("foo", i => i * 2);
@@ -394,7 +393,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.TrySetItem("foo", 80);
@@ -412,7 +411,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.TrySetItem("foo", i => i * 2);
@@ -430,7 +429,7 @@ public class AtomHashMapTests
     {
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Clear();
@@ -450,7 +449,7 @@ public class AtomHashMapTests
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       toAppend     = HashMap(("foo", 7), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Append(toAppend);
@@ -471,7 +470,7 @@ public class AtomHashMapTests
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       toAppend     = AtomHashMap(("foo", 7), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Append(toAppend);
@@ -495,7 +494,7 @@ public class AtomHashMapTests
             ("foo", 3), ("bar", 42), ("biz", 7), ("baz", 9));
         var                       toSubtract   = HashMap(("foo", 7), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Subtract(toSubtract);
@@ -520,7 +519,7 @@ public class AtomHashMapTests
             ("foo", 3), ("bar", 42), ("biz", 7), ("baz", 9));
         var                       toSubtract   = AtomHashMap(("foo", 7), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Subtract(toSubtract);
@@ -546,7 +545,7 @@ public class AtomHashMapTests
         var toIntersect = HashMap(
             ("foo", 7), ("biz", 7), ("baz", 9), ("bin", 0));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Intersect(toIntersect);
@@ -570,7 +569,7 @@ public class AtomHashMapTests
         var toIntersect = AtomHashMap(
             ("foo", 7), ("biz", 7), ("baz", 9), ("bin", 0));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Intersect(toIntersect);
@@ -594,7 +593,7 @@ public class AtomHashMapTests
         var toExcept = HashMap(
             ("foo", 7), ("biz", 7), ("baz", 9), ("bin", 0));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Except(toExcept);
@@ -619,7 +618,7 @@ public class AtomHashMapTests
             ("foo", 3), ("bar", 42), ("biz", 7), ("baz", 9));
         var                       toExcept     = Seq("biz", "baz");
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Except(toExcept);
@@ -643,7 +642,7 @@ public class AtomHashMapTests
         var                       toExcept     = AtomHashMap(("foo", 3), ("biz", 7), ("baz", 9));
         var                       expected     = HashMap(("bar", 42), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.SymmetricExcept(toExcept);
@@ -664,7 +663,7 @@ public class AtomHashMapTests
         var                       hashMap      = AtomHashMap(("foo", 3), ("bar", 42));
         var                       toUnion      = AtomHashMap(("foo", 7), ("biz", 7), ("baz", 9));
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Union(toUnion);
@@ -684,11 +683,11 @@ public class AtomHashMapTests
     [Fact]
     public void Union_TakeRight_InvokesChange()
     {
-        var hashMap = AtomHashMap<string, int>(("foo", 3), ("bar", 42));
-        var toUnion = AtomHashMap<string, int>(("foo", 7), ("biz", 7), ("baz", 9));
+        var hashMap = AtomHashMap(("foo", 3), ("bar", 42));
+        var toUnion = AtomHashMap(("foo", 7), ("biz", 7), ("baz", 9));
             
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Union(toUnion, Merge: (_, _, r) => r);
@@ -709,11 +708,11 @@ public class AtomHashMapTests
     [Fact]
     public void Union_TakeLeft_InvokesChange()
     {
-        var hashMap = AtomHashMap<string, int>(("foo", 3), ("bar", 42));
-        var toUnion = AtomHashMap<string, int>(("foo", 7), ("biz", 7), ("baz", 9));
+        var hashMap = AtomHashMap(("foo", 3), ("bar", 42));
+        var toUnion = AtomHashMap(("foo", 7), ("biz", 7), ("baz", 9));
             
         var                       initialValue = hashMap.ToHashMap();
-        HashMapPatch<string, int> state        = default;
+        HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
         hashMap.Union(toUnion, Merge: (_, l, _) => l);

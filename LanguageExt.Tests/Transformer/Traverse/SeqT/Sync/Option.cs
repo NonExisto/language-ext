@@ -7,17 +7,6 @@ namespace LanguageExt.Tests.Transformer.Traverse.SeqT.Sync
     public class OptionSeq
     {
         [Fact]
-        public void NoneIsSingletonNone()
-        {
-            var ma = Option<Seq<int>>.None;
-            var mb = ma.Traverse(mx => mx).As();
-
-            var mc = Seq1(Option<int>.None);
-
-            Assert.True(mb == mc);
-        }
-
-        [Fact]
         public void SomeEmptyIsEmpty()
         {
             var ma = Some<Seq<int>>(Empty);

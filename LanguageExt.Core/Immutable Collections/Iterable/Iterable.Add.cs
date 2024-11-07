@@ -4,7 +4,9 @@ using System.Diagnostics.Contracts;
 
 namespace LanguageExt;
 
+#pragma warning disable CA2260 // Use correct type parameter
 sealed class IterableAdd<A>(SeqStrict<A> Prefix, Iterable<A> Source, SeqStrict<A> Postfix) : Iterable<A>
+#pragma warning restore CA2260 // Use correct type parameter
 {
     /// <summary>
     /// Number of items in the sequence.

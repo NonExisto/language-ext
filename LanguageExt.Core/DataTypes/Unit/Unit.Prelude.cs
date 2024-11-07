@@ -8,7 +8,7 @@ public static partial class Prelude
     /// Unit constructor
     /// </summary>
     public static Unit unit =>
-        Unit.Default;
+        default;
 
     /// <summary>
     /// Takes any value, ignores it, returns a unit

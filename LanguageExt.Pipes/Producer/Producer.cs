@@ -67,9 +67,9 @@ public static class Producer
            .ToProducer();
 
     [Pure, MethodImpl(mops)]
-    public static Producer<X, M, Unit> yieldAll<M, X>(IObservable<X> xs)
+    public static Producer<X, M, Unit> yieldAll<M, X>(IObservable<X> xs, CancellationToken cancellationToken = default)
         where M : Monad<M> =>
-        yieldAll<M, X>(xs.ToAsyncEnumerable(new CancellationToken()));
+        yieldAll<M, X>(xs.ToAsyncEnumerable(cancellationToken));
 
     /// <summary>
     /// Repeat a monadic action indefinitely, yielding each result

@@ -108,7 +108,7 @@ public static partial class Prelude
     public static Unit iter<A, B, C, D, E>((A, B, C, D, E) self, Action<A, B, C, D, E> func)
     {
         func(self.Item1, self.Item2, self.Item3, self.Item4, self.Item5);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static partial class Prelude
         third(self.Item3);
         fourth(self.Item4);
         fifth(self.Item5);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>

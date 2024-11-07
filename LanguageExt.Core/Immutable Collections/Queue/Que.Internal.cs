@@ -8,7 +8,7 @@ using LanguageExt.ClassInstances;
 namespace LanguageExt;
 
 [Serializable]
-internal class QueInternal<A> : IEnumerable<A>
+internal sealed class QueInternal<A> : IEnumerable<A>
 {
     public static readonly QueInternal<A> Empty = new ();
 
@@ -65,10 +65,6 @@ internal class QueInternal<A> : IEnumerable<A>
         forward.IsEmpty && backward.IsEmpty;
 
     [Pure]
-    public QueInternal<A> Clear() =>
-        Empty;
-
-    [Pure]
     public A Peek() =>
         forward.Peek();
 
@@ -85,13 +81,6 @@ internal class QueInternal<A> : IEnumerable<A>
             return Empty;
         }
         return new QueInternal<A>(BackwardRev, StckInternal<A>.Empty);
-    }
-
-    [Pure]
-    public QueInternal<A> Dequeue(out A outValue)
-    {
-        outValue = Peek();
-        return Dequeue();
     }
 
     [Pure]

@@ -71,11 +71,12 @@ public static partial class Proxy
     /// `IObservable` down stream
     /// </summary>
     /// <param name="xs">Items to `yield`</param>
+    /// <param name="cancellationToken"></param>
     /// <typeparam name="X">Type of the value to `yield`</typeparam>
     /// <returns>`Producer`</returns>
     [Pure, MethodImpl(mops)]
-    public static Producer<X, Unit> yieldAll<X>(IObservable<X> xs) =>
-        yieldAll(xs.ToAsyncEnumerable(new CancellationToken()));
+    public static Producer<X, Unit> yieldAll<X>(IObservable<X> xs, CancellationToken cancellationToken = default) =>
+        yieldAll(xs.ToAsyncEnumerable(cancellationToken));
 
     // TODO: IMPLEMENT TAIL CALLS
     [Pure, MethodImpl(mops)]

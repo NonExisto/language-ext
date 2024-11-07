@@ -54,7 +54,7 @@ public sealed class Atom<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Option<Atom<A>> New(A value, Func<A, bool> validator)
     {
-        var atom = new Atom<A>(value, validator ?? throw new ArgumentNullException(nameof(validator)));
+        var atom = new Atom<A>(value, validator);
         return validator(value)
                    ? Some(atom)
                    : None;
@@ -82,8 +82,8 @@ public sealed class Atom<A>
     /// </returns>
     public A Swap(Func<A, A> f)
     {
-        f = f ?? throw new ArgumentNullException(nameof(f));
-
+        ArgumentNullException.ThrowIfNull(f);
+        
         SpinWait sw = default;
         while (true)
         {
@@ -121,7 +121,7 @@ public sealed class Atom<A>
     /// </returns>
     public A Swap(Func<A, Option<A>> f)
     {
-        f = f ?? throw new ArgumentNullException(nameof(f));
+        ArgumentNullException.ThrowIfNull(f);
 
         SpinWait sw = default;
         while (true)

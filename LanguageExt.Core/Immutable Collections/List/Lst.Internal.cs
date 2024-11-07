@@ -15,7 +15,7 @@ namespace LanguageExt;
 /// </summary>
 /// <typeparam name="A">Value type</typeparam>
 [Serializable]
-internal class LstInternal<A> : 
+internal sealed class LstInternal<A> : 
     IReadOnlyList<A>,
     IEquatable<LstInternal<A>>,
     ListInfo 
@@ -38,8 +38,7 @@ internal class LstInternal<A> :
         }
         else
         {
-            root = ListItem<A>.EmptyM;
-            root = ListModuleM.InsertMany<A>(root, items, 0);
+            root = ListModuleM.InsertMany(ListItem<A>.EmptyM, items, 0);
         }
     }
 
@@ -47,8 +46,7 @@ internal class LstInternal<A> :
     internal LstInternal(ReadOnlySpan<A> items)
     {
         hashCode = 0;
-        root = ListItem<A>.EmptyM;
-        root = ListModuleM.InsertMany<A>(root, items, 0);
+        root = ListModuleM.InsertMany(ListItem<A>.EmptyM, items, 0);
     }
 
 
@@ -91,7 +89,7 @@ internal class LstInternal<A> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
+            if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
             return ListModule.GetItem(Root, index);
         }
     }
@@ -119,7 +117,7 @@ internal class LstInternal<A> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
+            if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
             return ListModule.GetItem(Root, index);
         }
     }
@@ -140,16 +138,8 @@ internal class LstInternal<A> :
     public LstInternal<A> AddRange(IEnumerable<A> items)
     {
         if (Count == 0) return new LstInternal<A>(items);
-        return Wrap(ListModule.AddRange<A>(Root, items));
+        return Wrap(ListModule.AddRange(Root, items));
     }
-
-    /// <summary>
-    /// Clear the list
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public LstInternal<A> Clear() =>
-        Empty;
 
     /// <summary>
     /// Get enumerator
@@ -172,7 +162,7 @@ internal class LstInternal<A> :
         equalityComparer ??= EqualityComparer<A>.Default;
 
         if (count == 0) return -1;
-        if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
+        if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
 
         foreach (var x in Skip(index))
         {
@@ -194,7 +184,7 @@ internal class LstInternal<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> Insert(int index, A value)
     {
-        if (index < 0 || index > Root.Count) throw new IndexOutOfRangeException();
+        if (index < 0 || index > Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
         return Wrap(ListModule.Insert(Root, value, index));
     }
 
@@ -205,8 +195,8 @@ internal class LstInternal<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> InsertRange(int index, IEnumerable<A> items)
     {
-        if (index < 0 || index > Root.Count) throw new IndexOutOfRangeException();
-        return Wrap(ListModule.InsertMany<A>(Root, items, index));
+        if (index < 0 || index > Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
+        return Wrap(ListModule.InsertMany(Root, items, index));
     }
 
     /// <summary>
@@ -250,7 +240,7 @@ internal class LstInternal<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> RemoveAt(int index)
     {
-        if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
+        if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
         return Wrap(ListModule.Remove(Root, index));
     }
 
@@ -261,8 +251,8 @@ internal class LstInternal<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> RemoveRange(int index, int count)
     {
-        if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
-        if (index + count > Root.Count) throw new IndexOutOfRangeException();
+        if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
+        if (index + count > Root.Count) throw new ArgumentOutOfRangeException(nameof(count));
 
         var self = this;
         for (; count > 0; count--)
@@ -279,8 +269,8 @@ internal class LstInternal<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> SetItem(int index, A value)
     {
-        if (isnull(value)) throw new ArgumentNullException(nameof(value));
-        if (index < 0 || index >= Root.Count) throw new IndexOutOfRangeException();
+        ArgumentNullException.ThrowIfNull(value);
+        if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
         return new LstInternal<A>(ListModule.SetItem(Root, value, index));
     }
 
@@ -318,20 +308,6 @@ internal class LstInternal<A> :
         new (this.AsEnumerable().Reverse());
 
     /// <summary>
-    /// Fold
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public S Fold<S>(S state, Func<S, A, S> folder)
-    {
-        foreach (var item in this)
-        {
-            state = folder(state, item);
-        }
-        return state;
-    }
-
-    /// <summary>
     /// Map
     /// </summary>
     [Pure]
@@ -344,7 +320,7 @@ internal class LstInternal<A> :
     public Iterable<A> FindRange(int index, int count)
     {
         if (index < 0 || index >= Count) throw new ArgumentOutOfRangeException(nameof(index));
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         return Iterable.createRange(Go());
 
         IEnumerable<A> Go()
@@ -379,28 +355,8 @@ internal class LstInternal<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LstInternal<A> operator +(LstInternal<A> lhs, A rhs) =>
-        lhs.Add(rhs);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LstInternal<A> operator +(A rhs, LstInternal<A> lhs) =>
-        new (rhs.Cons(lhs));
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LstInternal<A> operator +(LstInternal<A> lhs, LstInternal<A> rhs) =>
-        lhs.Combine(rhs);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> Combine(LstInternal<A> rhs) =>
         AddRange(rhs);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LstInternal<A> operator -(LstInternal<A> lhs, LstInternal<A> rhs) =>
-        lhs.Subtract(rhs);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -466,26 +422,10 @@ internal class LstInternal<A> :
         }
         return 0;
     }
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo<OrdA>(LstInternal<A> other) where OrdA : Ord<A>
-    {
-        var cmp = Count.CompareTo(other.Count);
-        if (cmp != 0) return cmp;
-        using var iterA = GetEnumerator();
-        using var iterB = other.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = OrdA.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-        return 0;
-    }
 }
 
 [Serializable]
-class ListItem<T>
+sealed class ListItem<T>
 {
     public static ListItem<T> EmptyM => new (0, 0, null!, default!, null!);
     public static readonly ListItem<T> Empty = new(0, 0, null!, default!, null!);
@@ -758,7 +698,7 @@ static class ListModule
     {
         if (node.IsEmpty)
         {
-            throw new ArgumentException("Index outside the bounds of the list");
+            throw new ArgumentOutOfRangeException(nameof(index), "Index outside the bounds of the list");
         }
 
         if (index == node.Left.Count)
@@ -779,7 +719,7 @@ static class ListModule
     {
         if (node.IsEmpty)
         {
-            throw new ArgumentException("Index outside the bounds of the list");
+            throw new ArgumentOutOfRangeException(nameof(index), "Index outside the bounds of the list");
         }
 
         if (index == node.Left.Count)
@@ -1062,13 +1002,13 @@ public struct ListEnumerator<T> : IEnumerator<T>
 {
     internal struct NewStack : New<ListItem<T>[]>
     {
-        public ListItem<T>[] New() =>
+        public static ListItem<T>[] Create() =>
             new ListItem<T>[32];
     }
 
-    ListItem<T>[] stack;
+    ListItem<T>[]? stack;
     int stackDepth;
-    readonly ListItem<T> map;
+    readonly ListItem<T>? map;
     int left;
     readonly bool rev;
     readonly int start;
@@ -1102,7 +1042,7 @@ public struct ListEnumerator<T> : IEnumerator<T>
         get => NodeCurrent.Key;
     }
 
-    object IEnumerator.Current
+    readonly object IEnumerator.Current
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => NodeCurrent.Key!;
@@ -1113,33 +1053,36 @@ public struct ListEnumerator<T> : IEnumerator<T>
         if (stack != null)
         {
             Pool<NewStack, ListItem<T>[]>.Push(stack);
-            stack = null!;
+            stack = null;
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ListItem<T> Next(ListItem<T> node) =>
+    private readonly ListItem<T> Next(ListItem<T> node) =>
         rev ? node.Left : node.Right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ListItem<T> Prev(ListItem<T> node) =>
+    private readonly ListItem<T> Prev(ListItem<T> node) =>
         rev ? node.Right : node.Left;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Push(ListItem<T> node)
     {
-        while (!node.IsEmpty)
+        if(stack is not null)
         {
-            stack[stackDepth] = node;
-            stackDepth++;
-            node = Prev(node);
+            while (!node.IsEmpty)
+            {
+                stack[stackDepth] = node;
+                stackDepth++;
+                node = Prev(node);
+            }
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
-        if (count > 0 && left > 0 && stackDepth > 0)
+        if (count > 0 && left > 0 && stackDepth > 0 && stack is not null)
         {
             stackDepth--;
             NodeCurrent = stack[stackDepth];
@@ -1156,31 +1099,34 @@ public struct ListEnumerator<T> : IEnumerator<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Reset()
     {
-        var skip = rev ? map.Count - start - 1 : start;
-
-        stackDepth = 0;
-        NodeCurrent = map;
-        left = map.Count;
-
-        while (!NodeCurrent.IsEmpty && skip != Prev(NodeCurrent).Count)
+        if (map is not null && stack is not null)
         {
-            if (skip < Prev(NodeCurrent).Count)
+            var skip = rev ? map.Count - start - 1 : start;
+    
+            stackDepth = 0;
+            NodeCurrent = map;
+            left = map.Count;
+    
+            while (!NodeCurrent.IsEmpty && skip != Prev(NodeCurrent).Count)
+            {
+                if (skip < Prev(NodeCurrent).Count)
+                {
+                    stack[stackDepth] = NodeCurrent;
+                    stackDepth++;
+                    NodeCurrent = Prev(NodeCurrent);
+                }
+                else
+                {
+                    skip -= Prev(NodeCurrent).Count + 1;
+                    NodeCurrent = Next(NodeCurrent);
+                }
+            }
+    
+            if (!NodeCurrent.IsEmpty)
             {
                 stack[stackDepth] = NodeCurrent;
                 stackDepth++;
-                NodeCurrent = Prev(NodeCurrent);
             }
-            else
-            {
-                skip -= Prev(NodeCurrent).Count + 1;
-                NodeCurrent = Next(NodeCurrent);
-            }
-        }
-
-        if (!NodeCurrent.IsEmpty)
-        {
-            stack[stackDepth] = NodeCurrent;
-            stackDepth++;
         }
     }
 }

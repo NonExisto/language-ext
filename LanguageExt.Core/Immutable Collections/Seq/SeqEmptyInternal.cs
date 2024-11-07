@@ -1,83 +1,77 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using LanguageExt.Common;
 
 namespace LanguageExt;
 
-internal class SeqEmptyInternal<A> : ISeqInternal<A>
+internal sealed class SeqEmptyInternal<A> : SeqInternal<A>, IEnumerable<A>
 {
-    public static ISeqInternal<A> Default = new SeqEmptyInternal<A>();
+    public static readonly SeqInternal<A> Default = new SeqEmptyInternal<A>();
 
-    public A this[int index] => 
+    public override A this[int index] => 
         throw new IndexOutOfRangeException();
 
-    public Option<A> At(int index) => 
+    public override Option<A> At(int index) => 
         default;
 
-    public A Head =>
+    public override A Head =>
         throw Exceptions.SequenceEmpty;
 
-    public ISeqInternal<A> Tail =>
+    public override SeqInternal<A> Tail =>
         this;
 
-    public bool IsEmpty => 
+    public override bool IsEmpty => 
         true;
 
-    public ISeqInternal<A> Init =>
+    public override SeqInternal<A> Init =>
         this;
 
-    public A Last =>
+    public override A Last =>
         throw Exceptions.SequenceEmpty;
 
-    public int Count => 
+    public override int Count => 
         0;
 
-    public ISeqInternal<A> Add(A value) =>
+    public override SeqInternal<A> Add(A value) =>
         SeqStrict<A>.FromSingleValue(value);
 
-    public ISeqInternal<A> Cons(A value) =>
+    public override SeqInternal<A> Cons(A value) =>
         SeqStrict<A>.FromSingleValue(value);
 
-    public S Fold<S>(S state, Func<S, A, S> f) =>
+    public override S Fold<S>(S state, Func<S, A, S> f) =>
         state;
 
-    public S FoldBack<S>(S state, Func<S, A, S> f) =>
+    public override S FoldBack<S>(S state, Func<S, A, S> f) =>
         state;
 
-    public ISeqInternal<A> Skip(int amount) =>
+    public override SeqInternal<A> Skip(int amount) =>
         this;
 
-    public ISeqInternal<A> Strict() =>
+    public override SeqInternal<A> Strict() =>
         this;
 
-    public ISeqInternal<A> Take(int amount) =>
+    public override SeqInternal<A> Take(int amount) =>
         this;
         
-    public IEnumerator<A> GetEnumerator()
-    {
-        yield break;
-    }
-            
-    IEnumerator IEnumerable.GetEnumerator()
+    public override IEnumerator<A> GetEnumerator()
     {
         yield break;
     }
 
-    public Unit Iter(Action<A> f) =>
+    public override Unit Iter(Action<A> f) =>
         default;
 
-    public bool Exists(Func<A, bool> f) => 
+    public override bool Exists(Func<A, bool> f) => 
         false;
 
-    public bool ForAll(Func<A, bool> f) =>
+    public override bool ForAll(Func<A, bool> f) =>
         true;
 
-    public SeqType Type => SeqType.Empty;
+    public override SeqType Type => SeqType.Empty;
 
     public override int GetHashCode() =>
         FNV32.OffsetBasis;
 
-    public int GetHashCode(int offsetBasis) =>
+    public override int GetHashCode(int offsetBasis) =>
         offsetBasis;
 }

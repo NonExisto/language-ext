@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-using System;
-using System.Linq;
+﻿using System;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 

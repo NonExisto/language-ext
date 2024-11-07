@@ -36,7 +36,7 @@ public class AtomSeq<A> :
     /// <summary>
     /// Internal representation of the sequence (SeqStrict|SeqLazy|SeqEmptyInternal)
     /// </summary>
-    volatile ISeqInternal<A> items;
+    volatile SeqInternal<A> items;
 
     /// <summary>
     /// Constructor from lazy sequence
@@ -48,7 +48,7 @@ public class AtomSeq<A> :
     /// Constructor
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal AtomSeq(ISeqInternal<A> items) =>
+    internal AtomSeq(SeqInternal<A> items) =>
         this.items = items;
 
     /// <summary>
@@ -116,10 +116,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
         
@@ -131,7 +129,7 @@ public class AtomSeq<A> :
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    internal Unit SwapInternal(Func<ISeqInternal<A>, ISeqInternal<A>> swap)
+    internal Unit SwapInternal(Func<SeqInternal<A>, SeqInternal<A>> swap)
     {
         SpinWait sw = default;
         while (true)
@@ -147,10 +145,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
         
@@ -173,10 +169,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -418,10 +412,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -439,10 +431,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -462,7 +452,7 @@ public class AtomSeq<A> :
     public Seq<A> Tail
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new Seq<A>(items.Tail);
+        get => new(items.Tail);
     }
 
     /// <summary>
@@ -471,7 +461,7 @@ public class AtomSeq<A> :
     public Seq<A> Init
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new Seq<A>(items.Init);
+        get => new(items.Init);
     }
 
     /// <summary>
@@ -704,7 +694,7 @@ public class AtomSeq<A> :
     public Seq<B> Map<B>(Func<A, B> f)
     {
         return new Seq<B>(new SeqLazy<B>(Yield(items)));
-        IEnumerable<B> Yield(ISeqInternal<A> items)
+        IEnumerable<B> Yield(SeqInternal<A> items)
         {
             foreach (var item in items)
             {
@@ -734,10 +724,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }        
         
@@ -761,7 +749,7 @@ public class AtomSeq<A> :
     [Pure]
     public Seq<B> Bind<B>(Func<A, Seq<B>> f)
     {
-        static IEnumerable<B> Yield(ISeqInternal<A> ma, Func<A, Seq<B>> bnd)
+        static IEnumerable<B> Yield(SeqInternal<A> ma, Func<A, Seq<B>> bnd)
         {
             foreach (var a in ma)
             {
@@ -794,10 +782,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     } 
 
@@ -810,7 +796,7 @@ public class AtomSeq<A> :
     [Pure]
     public Seq<C> SelectMany<B, C>(Func<A, Seq<B>> bind, Func<A, B, C> project)
     {
-        static IEnumerable<C> Yield(ISeqInternal<A> ma, Func<A, Seq<B>> bnd, Func<A, B, C> prj)
+        static IEnumerable<C> Yield(SeqInternal<A> ma, Func<A, Seq<B>> bnd, Func<A, B, C> prj)
         {
             foreach (var a in ma)
             {
@@ -832,7 +818,7 @@ public class AtomSeq<A> :
     public Seq<A> Filter(Func<A, bool> f)
     {
         return new Seq<A>(new SeqLazy<A>(Yield(items, f)));
-        static IEnumerable<A> Yield(ISeqInternal<A> items, Func<A, bool> f)
+        static IEnumerable<A> Yield(SeqInternal<A> items, Func<A, bool> f)
         {
             foreach (var item in items)
             {
@@ -868,10 +854,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
         
@@ -971,10 +955,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -999,7 +981,7 @@ public class AtomSeq<A> :
 
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>
@@ -1082,16 +1064,16 @@ public class AtomSeq<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Seq<A> rhs) =>
-        Equals<EqDefault<A>>(rhs);
+    public bool Equals(Seq<A> other) =>
+        Equals<EqDefault<A>>(other);
 
     /// <summary>
     /// Equality test
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(AtomSeq<A>? rhs) =>
-        rhs is not null && Equals<EqDefault<A>>(rhs);
+    public bool Equals(AtomSeq<A>? other) =>
+        other is not null && Equals<EqDefault<A>>(other);
 
     /// <summary>
     /// Equality test
@@ -1177,10 +1159,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
         
@@ -1204,10 +1184,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -1236,10 +1214,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
         
@@ -1269,10 +1245,8 @@ public class AtomSeq<A> :
             {
                 return default;
             }
-            else
-            {
-                sw.SpinOnce();
-            }
+                            
+            sw.SpinOnce();
         }
     }
 
@@ -1348,17 +1322,17 @@ public class AtomSeq<A> :
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo(Seq<A> rhs) =>
-        CompareTo<OrdDefault<A>>(rhs);
+    public int CompareTo(Seq<A> other) =>
+        CompareTo<OrdDefault<A>>(other);
 
     /// <summary>
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo(AtomSeq<A>? rhs) =>
-        rhs is null 
+    public int CompareTo(AtomSeq<A>? other) =>
+        other is null 
             ? 1
-            : CompareTo<OrdDefault<A>>(rhs);
+            : CompareTo<OrdDefault<A>>(other);
 
     /// <summary>
     /// Compare to another sequence

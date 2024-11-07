@@ -1,12 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Collections;
-using System.Collections.Generic;
-using static LanguageExt.Prelude;
-using LanguageExt.ClassInstances;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 
 namespace LanguageExt;
 

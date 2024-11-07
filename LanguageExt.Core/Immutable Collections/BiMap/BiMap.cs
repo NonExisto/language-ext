@@ -31,7 +31,7 @@ public readonly struct BiMap<A, B> :
     { }
 
     public BiMap(IEnumerable<(A Left, B Right)> items, bool tryAdd) : 
-        this(new Map<A, B>(items), new Map<B, A>(items.Select(pair => (pair.Right, pair.Left)))) { }
+        this(new Map<A, B>(items), new Map<B, A>(items.Select(pair => (pair.Right, pair.Left)), tryAdd)) { }
 
 
     /// <summary>
@@ -325,16 +325,7 @@ public readonly struct BiMap<A, B> :
     [Pure]
     public IReadOnlyDictionary<B, A> ToDictionaryRight() => Right;
 
-    /// <summary>
-    /// Enumerable of in-order tuples that make up the map
-    /// </summary>
-    /// <returns>Tuples</returns>
-    [Pure]
-    [Obsolete("Use Pairs instead")]
-    public Iterable<(A Key, B Value)> Tuples =>
-        Left.Pairs;
-
-    /// <summary>
+     /// <summary>
     /// Enumerable of in-order tuples that make up the map
     /// </summary>
     /// <returns>Tuples</returns>
@@ -347,8 +338,8 @@ public readonly struct BiMap<A, B> :
         Prelude.toSeq(this);
 
     [Pure]
-    public bool Equals(BiMap<A, B> y) =>
-        Left.Equals(y.Left);
+    public bool Equals(BiMap<A, B> other) =>
+        Left.Equals(other.Left);
 
 
 
@@ -371,8 +362,8 @@ public readonly struct BiMap<A, B> :
         Left.GetEnumerator();
 
     [Pure]
-    public int CompareTo(BiMap<A, B> rhs) =>
-        Left.CompareTo(rhs.Left);
+    public int CompareTo(BiMap<A, B> other) =>
+        Left.CompareTo(other.Left);
 
     [Pure]
     public int CompareTo(object? obj) =>
@@ -417,8 +408,6 @@ public readonly struct BiMap<A, B> :
     [Pure]
     public override int GetHashCode() =>
         Left.GetHashCode();
-
-
 
     /// <summary>
     /// Implicit conversion from an untyped empty list

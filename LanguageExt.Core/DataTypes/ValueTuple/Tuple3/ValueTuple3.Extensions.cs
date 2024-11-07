@@ -114,7 +114,7 @@ public static class ValueTuple3Extensions
     public static Unit Iter<T1, T2, T3>(this ValueTuple<T1, T2, T3> self, Action<T1, T2, T3> func)
     {
         func(self.Item1, self.Item2, self.Item3);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public static class ValueTuple3Extensions
         first(self.Item1);
         second(self.Item2);
         third(self.Item3);
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>

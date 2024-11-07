@@ -181,7 +181,7 @@ public partial class Set
     /// <returns>Number of elements</returns>
     [Pure]
     public static int length<OrdT, T>(Set<OrdT, T> set) where OrdT : Ord<T> =>
-        set.Count();
+        set.Length;
 
     /// <summary>
     /// Returns setA - setB.  Only the items in setA that are not in 
@@ -275,7 +275,7 @@ public partial class Set
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>
@@ -290,7 +290,7 @@ public partial class Set
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
-    /// mapper function to tranform the source values.
+    /// mapper function to transform the source values.
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>

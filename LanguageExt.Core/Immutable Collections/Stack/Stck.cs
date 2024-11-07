@@ -24,7 +24,7 @@ public readonly struct Stck<A> :
 {
     public static Stck<A> Empty { get; } = new(StckInternal<A>.Empty);
 
-    readonly StckInternal<A> value;
+    readonly StckInternal<A>? value;
     StckInternal<A> Value => value ?? StckInternal<A>.Empty;
 
     /// <summary>
@@ -140,7 +140,7 @@ public readonly struct Stck<A> :
 
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
-    /// The elipsis is used for collections over 50 items
+    /// The ellipsis is used for collections over 50 items
     /// To get a formatted string with all the items, use `ToFullString`
     /// or `ToFullArrayString`.
     /// </summary>

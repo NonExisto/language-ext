@@ -19,12 +19,12 @@ public sealed class EntryAdded<A> :
     internal EntryAdded(A value) =>
         Value = value;
 
-    public override bool Equals(Change<A>? obj) =>
-        obj is EntryAdded<A> rhs && Equals(rhs);
+    public override bool Equals(Change<A>? other) =>
+        other is EntryAdded<A> rhs && Equals(rhs);
 
-    public bool Equals(EntryAdded<A>? rhs) =>
-        !ReferenceEquals(rhs, null) &&
-        EqDefault<A>.Equals(Value, rhs.Value);
+    public bool Equals(EntryAdded<A>? other) =>
+        other is not null &&
+        EqDefault<A>.Equals(Value, other.Value);
 
     public override int GetHashCode() =>
         Value?.GetHashCode() ?? FNV32.OffsetBasis;
@@ -33,4 +33,7 @@ public sealed class EntryAdded<A> :
         value = Value;
 
     public override string ToString() => $"+{Value}";
+
+    public override bool Equals(object? obj) => 
+        Equals(obj as EntryAdded<A>);
 }

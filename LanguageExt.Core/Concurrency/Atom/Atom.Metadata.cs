@@ -31,7 +31,7 @@ namespace LanguageExt;
 public sealed class Atom<M, A>
 {
     volatile object value;
-    Func<A, bool> validator;
+    readonly Func<A, bool> validator;
     readonly M metadata;
 
     public event AtomChangedEvent<A>? Change;
@@ -56,7 +56,7 @@ public sealed class Atom<M, A>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Option<Atom<M, A>> New(M metadata, A value, Func<A, bool> validator)
     {
-        var atom = new Atom<M, A>(metadata, value, validator ?? throw new ArgumentNullException(nameof(validator)));
+        var atom = new Atom<M, A>(metadata, value, validator);
         return validator(value)
                    ? Some(atom)
                    : None;
@@ -84,7 +84,7 @@ public sealed class Atom<M, A>
     /// </returns>
     public A Swap(Func<M, A, A> f)
     {
-        f = f ?? throw new ArgumentNullException(nameof(f));
+        ArgumentNullException.ThrowIfNull(f);
 
         SpinWait sw = default;
         while (true)
@@ -123,7 +123,7 @@ public sealed class Atom<M, A>
     /// </returns>
     public A Swap(Func<M, A, Option<A>> f)
     {
-        f = f ?? throw new ArgumentNullException(nameof(f));
+        ArgumentNullException.ThrowIfNull(f);
 
         SpinWait sw = default;
         while (true)

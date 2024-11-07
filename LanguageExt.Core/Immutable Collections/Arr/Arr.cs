@@ -8,6 +8,7 @@ using static LanguageExt.Prelude;
 using LanguageExt.Traits;
 using LanguageExt.ClassInstances;
 using System.Runtime.CompilerServices;
+using LanguageExt.Common;
 
 namespace LanguageExt;
 
@@ -35,10 +36,10 @@ public struct Arr<A> :
     /// Empty array
     /// </summary>
     public static Arr<A> Empty { get; } = new (System.Array.Empty<A>());
-    readonly A[] value;
+    readonly A[]? value;
     int hashCode;
 
-    internal A[] Value
+    internal readonly A[] Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value ?? Empty.Value;
@@ -78,16 +79,16 @@ public struct Arr<A> :
     /// Stream as an enumerable
     /// </summary>
     [Pure]
-    public StreamT<M, A> AsStream<M>()
+    public readonly StreamT<M, A> AsStream<M>()
         where M : Monad<M> =>
         StreamT<M, A>.Lift(this);
     
     [Pure]
-    public ReadOnlySpan<A> AsSpan() =>
+    public readonly ReadOnlySpan<A> AsSpan() =>
         new (Value);
     
     [Pure]
-    public ReadOnlySpan<A> AsSpan(int start, int length) =>
+    public readonly ReadOnlySpan<A> AsSpan(int start, int length) =>
         new (Value, start, length);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,8 +100,8 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     public static Lens<Arr<A>, A> head => Lens<Arr<A>, A>.New(
-        Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[0],
-        Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(0, a));
+        Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[0],
+        Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(0, a));
 
     /// <summary>
     /// Head or none lens
@@ -115,8 +116,8 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     public static Lens<Arr<A>, A> last => Lens<Arr<A>, A>.New(
-        Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[^1],
-        Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(la.Count - 1, a));
+        Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[^1],
+        Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(la.Count - 1, a));
 
     /// <summary>
     /// Last or none lens
@@ -132,8 +133,8 @@ public struct Arr<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<Arr<A>, A> item(int index) => Lens<Arr<A>, A>.New(
-        Get: la => la.Count == 0 ? throw new IndexOutOfRangeException() : la[index],
-        Set: a => la => la.Count == 0 ? throw new IndexOutOfRangeException() : la.SetItem(index, a));
+        Get: la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la[index],
+        Set: a => la => la.Count == 0 ? throw Exceptions.SequenceEmpty : la.SetItem(index, a));
 
     /// <summary>
     /// Item or none at index lens
@@ -157,7 +158,7 @@ public struct Arr<A> :
     /// Index accessor
     /// </summary>
     [Pure]
-    public A this[Index index]
+    public readonly A this[Index index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Value[index];
@@ -184,7 +185,7 @@ public struct Arr<A> :
     ///
     /// </remarks>
     [Pure]
-    public object? Case =>
+    public readonly object? Case =>
         IsEmpty
             ? null
             : Count == 1
@@ -195,7 +196,7 @@ public struct Arr<A> :
     /// Is the stack empty
     /// </summary>
     [Pure]
-    public bool IsEmpty
+    public readonly bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value == null || value.Length == 0;
@@ -205,7 +206,7 @@ public struct Arr<A> :
     /// Number of items in the stack
     /// </summary>
     [Pure]
-    public int Count
+    public readonly int Count
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value?.Length ?? 0;
@@ -215,21 +216,21 @@ public struct Arr<A> :
     /// Alias of Count
     /// </summary>
     [Pure]
-    public int Length
+    public readonly int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value?.Length ?? 0;
     }
 
     [Pure]
-    int IReadOnlyCollection<A>.Count
+    readonly int IReadOnlyCollection<A>.Count
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Count;
     }
 
     [Pure]
-    A IReadOnlyList<A>.this[int index]
+    readonly A IReadOnlyList<A>.this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Value[index];
@@ -240,7 +241,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Add(A valueToAdd)
+    public readonly Arr<A> Add(A valueToAdd)
     {
         var self = Value;
         return self.Length == 0 
@@ -253,7 +254,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> AddRange(IEnumerable<A> items) =>
+    public readonly Arr<A> AddRange(IEnumerable<A> items) =>
         InsertRange(Count, items);
 
     /// <summary>
@@ -261,7 +262,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Clear() =>
+    public readonly Arr<A> Clear() =>
         Empty;
 
     /// <summary>
@@ -269,7 +270,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Enumerator GetEnumerator() =>
+    public readonly Enumerator GetEnumerator() =>
         new (this);
 
     public struct Enumerator
@@ -292,7 +293,7 @@ public struct Arr<A> :
     /// Find the index of an item
     /// </summary>
     [Pure]
-    public int IndexOf(A item, int index = 0, int count = -1, IEqualityComparer<A>? equalityComparer = null)
+    public readonly int IndexOf(A item, int index = 0, int count = -1, IEqualityComparer<A>? equalityComparer = null)
     {
         var eq = equalityComparer ?? EqualityComparer<A>.Default;
 
@@ -308,7 +309,7 @@ public struct Arr<A> :
     /// Find the index of an item
     /// </summary>
     [Pure]
-    public int LastIndexOf(A item, int index = -1, int count = -1, IEqualityComparer<A>? equalityComparer = null)
+    public readonly int LastIndexOf(A item, int index = -1, int count = -1, IEqualityComparer<A>? equalityComparer = null)
     {
         var eq = equalityComparer ?? EqualityComparer<A>.Default;
 
@@ -326,7 +327,7 @@ public struct Arr<A> :
     /// Find the index of an item
     /// </summary>
     [Pure]
-    public int IndexOf<EQ>(A item, int index = 0, int count = -1) where EQ : Eq<A>
+    public readonly int IndexOf<EQ>(A item, int index = 0, int count = -1) where EQ : Eq<A>
     {
         var arr = Value;
         for (; index < arr.Length && count != 0; index++, count--)
@@ -340,7 +341,7 @@ public struct Arr<A> :
     /// Find the index of an item
     /// </summary>
     [Pure]
-    public int LastIndexOf<EQ>(A item, int index = -1, int count = -1) where EQ : Eq<A>
+    public readonly int LastIndexOf<EQ>(A item, int index = -1, int count = -1) where EQ : Eq<A>
     {
         var arr = Value;
         index = index < 0 ? arr.Length - 1 : index;
@@ -356,10 +357,10 @@ public struct Arr<A> :
     /// Insert value at specified index
     /// </summary>
     [Pure]
-    public Arr<A> Insert(int index, A valueToInsert)
+    public readonly Arr<A> Insert(int index, A valueToInsert)
     {
         var arr = Value;
-        if (index < 0 || index > Count) throw new IndexOutOfRangeException(nameof(index));
+        if (index < 0 || index > Count) throw new ArgumentException("Argument out of range", nameof(index));
         if (arr.Length == 0)
         {
             return new Arr<A>([valueToInsert]);
@@ -383,10 +384,10 @@ public struct Arr<A> :
     /// Insert range of values at specified index
     /// </summary>
     [Pure]
-    public Arr<A> InsertRange(int index, IEnumerable<A> items)
+    public readonly Arr<A> InsertRange(int index, IEnumerable<A> items)
     {
         var arr = Value;
-        if (index < 0 || index > arr.Length) throw new IndexOutOfRangeException(nameof(index));
+        if (index < 0 || index > arr.Length) throw new ArgumentException("Argument out of range", nameof(index));
 
         if (arr.Length == 0)
         {
@@ -421,7 +422,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Remove(A valueToRemove) =>
+    public readonly Arr<A> Remove(A valueToRemove) =>
         Remove<EqDefault<A>>(valueToRemove);
 
     /// <summary>
@@ -429,7 +430,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Remove(A valueToRemove, IEqualityComparer<A> equalityComparer)
+    public readonly Arr<A> Remove(A valueToRemove, IEqualityComparer<A> equalityComparer)
     {
         var index = IndexOf(valueToRemove, 0, -1, equalityComparer);
         return index < 0
@@ -442,7 +443,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Remove<EQ>(A valueToRemove) where EQ : Eq<A>
+    public readonly Arr<A> Remove<EQ>(A valueToRemove) where EQ : Eq<A>
     {
         var index = IndexOf<EQ>(valueToRemove);
         return index < 0
@@ -454,7 +455,7 @@ public struct Arr<A> :
     /// Remove all items that match a predicate
     /// </summary>
     [Pure]
-    public Arr<A> RemoveAll(Predicate<A> pred)
+    public readonly Arr<A> RemoveAll(Predicate<A> pred)
     {
         var self = Value;
         if (IsEmpty) return this;
@@ -478,7 +479,7 @@ public struct Arr<A> :
     }
 
     [Pure]
-    private Arr<A> RemoveAtRange(List<int> remove)
+    private readonly Arr<A> RemoveAtRange(List<int> remove)
     {
         var arr = Value;
         if (remove.Count == 0) return this;
@@ -506,18 +507,18 @@ public struct Arr<A> :
     /// <returns></returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> RemoveAt(int index) =>
+    public readonly Arr<A> RemoveAt(int index) =>
         RemoveRange(index, 1);
 
     /// <summary>
     /// Remove a range of items
     /// </summary>
     [Pure]
-    public Arr<A> RemoveRange(int index, int count)
+    public readonly Arr<A> RemoveRange(int index, int count)
     {
         var arr = Value;
-        if (index < 0 || index > arr.Length) throw new IndexOutOfRangeException(nameof(index));
-        if (!(count >= 0 && index + count <= arr.Length)) throw new IndexOutOfRangeException(nameof(index));
+        if (index < 0 || index > arr.Length) throw new ArgumentException("Argument out of range", nameof(index));
+        if (!(count >= 0 && index + count <= arr.Length)) throw new ArgumentException("Argument out of range", nameof(index));
         if (count == 0) return this;
 
         var newArray = new A[arr.Length - count];
@@ -530,10 +531,10 @@ public struct Arr<A> :
     /// Set an item at the specified index
     /// </summary>
     [Pure]
-    public Arr<A> SetItem(int index, A valueToSet)
+    public readonly Arr<A> SetItem(int index, A valueToSet)
     {
         var arr = Value;
-        if (index < 0 || index >= arr.Length) throw new IndexOutOfRangeException(nameof(index));
+        if (index < 0 || index >= arr.Length) throw new ArgumentException("Argument out of range", nameof(index));
 
         var newArray = new A[Count];
         arr.CopyTo(newArray, 0);
@@ -543,23 +544,23 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IEnumerator IEnumerable.GetEnumerator() =>
+    readonly IEnumerator IEnumerable.GetEnumerator() =>
         Value.GetEnumerator();
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IEnumerator<A> IEnumerable<A>.GetEnumerator() =>
+    readonly IEnumerator<A> IEnumerable<A>.GetEnumerator() =>
         // ReSharper disable once NotDisposedResourceIsReturned
         Value.AsEnumerable().GetEnumerator();
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Iterable<A> AsIterable() =>
+    public readonly Iterable<A> AsIterable() =>
         Iterable.createRange(this);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Seq<A> ToSeq() =>
+    public readonly Seq<A> ToSeq() =>
         toSeq(this);
 
     /// <summary>
@@ -570,7 +571,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override string ToString() =>
+    public override readonly string ToString() =>
         CollectionFormat.ToShortArrayString(this, Count);
 
     /// <summary>
@@ -578,7 +579,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ToFullString(string separator = ", ") =>
+    public readonly string ToFullString(string separator = ", ") =>
         CollectionFormat.ToFullString(this, separator);
 
     /// <summary>
@@ -586,12 +587,12 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ToFullArrayString(string separator = ", ") =>
+    public readonly string ToFullArrayString(string separator = ", ") =>
         CollectionFormat.ToFullArrayString(this, separator);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Iterable<A> Skip(int amount) =>
+    public readonly Iterable<A> Skip(int amount) =>
         Value.Skip(amount).AsIterable();
 
     /// <summary>
@@ -599,7 +600,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Reverse() =>
+    public readonly Arr<A> Reverse() =>
         new (Value.Reverse().ToArray());
 
     /// <summary>
@@ -609,7 +610,7 @@ public struct Arr<A> :
     /// Returns the original unmodified structure
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Do(Action<A> f)
+    public readonly Arr<A> Do(Action<A> f)
     {
         this.Iter(f);
         return this;
@@ -620,7 +621,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<B> Map<B>(Func<A, B> map)
+    public readonly Arr<B> Map<B>(Func<A, B> map)
     {
         var arr      = Value;
         var length   = arr.Length;
@@ -641,7 +642,7 @@ public struct Arr<A> :
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
-    public K<F, Arr<B>> Traverse<F, B>(Func<A, K<F, B>> f) 
+    public readonly K<F, Arr<B>> Traverse<F, B>(Func<A, K<F, B>> f) 
         where F : Applicative<F> =>
         F.Map(x => x.As(), Traversable.traverse(f, this));
     
@@ -654,7 +655,7 @@ public struct Arr<A> :
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
-    public K<M, Arr<B>> TraverseM<M, B>(Func<A, K<M, B>> f) 
+    public readonly K<M, Arr<B>> TraverseM<M, B>(Func<A, K<M, B>> f) 
         where M : Monad<M> =>
         M.Map(x => x.As(), Traversable.traverseM(f, this));
     
@@ -663,7 +664,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Filter(Func<A, bool> pred) =>
+    public readonly Arr<A> Filter(Func<A, bool> pred) =>
         RemoveAll(x => !pred(x));
 
     [Pure]
@@ -699,12 +700,12 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<A> Combine(Arr<A> rhs) =>
+    public readonly Arr<A> Combine(Arr<A> rhs) =>
         rhs.InsertRange(0, this);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override bool Equals(object? obj) =>
+    public override readonly bool Equals(object? obj) =>
         obj is Arr<A> @as && Equals(@as);
 
     /// <summary>
@@ -721,12 +722,12 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(object? obj) =>
+    public readonly int CompareTo(object? obj) =>
         obj is Arr<A> t ? CompareTo(t) : 1;
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Arr<A> other)
+    public readonly bool Equals(Arr<A> other)
     {
         if (Count != other.Count) return false;
 
@@ -741,7 +742,7 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(Arr<A> other)
+    public readonly int CompareTo(Arr<A> other)
     {
         if (Count < other.Count) return -1;
         if (Count > other.Count) return 1;
@@ -768,7 +769,7 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Arr<B> Bind<B>(Func<A, Arr<B>> f)
+    public readonly Arr<B> Bind<B>(Func<A, Arr<B>> f)
     {
         var res = new List<B>();
 

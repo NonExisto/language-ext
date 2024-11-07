@@ -7,7 +7,7 @@ public struct MapKeyEnumerator<K, V> : IEnumerator<K>
 {
     struct NewStack : New<MapItem<K, V>[]>
     {
-        public MapItem<K, V>[] New() =>
+        public static MapItem<K, V>[] Create() =>
             new MapItem<K, V>[32];
     }
 

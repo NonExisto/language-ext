@@ -20,7 +20,7 @@ public readonly struct EqDefault<A> : Eq<A>
     /// <param name="y">The right hand side of the equality operation</param>
     /// <returns>True if x and y are equal</returns>
     [Pure]
-    public static bool Equals(A a, A b)
+    public static bool Equals(A? a, A? b)
     {
         if (a is null) return b is null;
         if (b is null) return false;

@@ -72,7 +72,7 @@ public static partial class Prelude
         {
             None();
         }
-        return Unit.Default;
+        return default;
     }
 
     /// <summary>
