@@ -129,7 +129,7 @@ public static partial class IOExtensions
     public static K<M, ForkIO<Option<A>>> ForkIO<M, A>(this StreamT<M, A> ma, Option<TimeSpan> timeout = default)
         where M : Monad<M> =>
         ma.Run()
-          .Map(oht => oht.Map(ht => ht.Item1))
+          .Map(oht => oht.Map(ht => ht.Head))
           .ForkIO(timeout);
     
 

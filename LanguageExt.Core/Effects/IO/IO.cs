@@ -49,8 +49,6 @@ public abstract record IO<A> :
     public static IO<A> Empty { get; } = 
         new IOFail<A>(Errors.None);
 
-    internal abstract bool IsAsync { get; }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //  Lifting

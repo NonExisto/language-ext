@@ -26,12 +26,9 @@ namespace LanguageExt;
 /// </summary>
 /// <param name="runIO">The lifted thunk that is the IO operation</param>
 /// <typeparam name="A">Bound value</typeparam>
-record IOFail<A>(Error Error) : IO<A>
+sealed record IOFail<A>(Error Error) : IO<A>
 {
-    internal override bool IsAsync =>
-        false;
-    
-    public IO<A> ToSync() =>
+     public IO<A> ToSync() =>
         new IOSync<A>(_ => throw Error.ToErrorException());
     
     public IO<A> ToAsync() =>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using LanguageExt.ClassInstances;
@@ -64,6 +65,7 @@ public static partial class Prelude
     /// example</typeparam>
     /// <param name="message">Exception message</param>
     /// <returns>Throws an exception</returns>
+    [DoesNotReturn]
     public static R failwith<R>(string message) =>
         throw new Exception(message);
 
@@ -75,6 +77,7 @@ public static partial class Prelude
     /// example</typeparam>
     /// <param name="message">ApplicationException message</param>
     /// <returns>Throws an ApplicationException</returns>
+    [DoesNotReturn]
     public static R raiseapp<R>(string message) =>
         throw new ApplicationException(message);
 
@@ -86,6 +89,7 @@ public static partial class Prelude
     /// example</typeparam>
     /// <param name="ex">Exception to throw</param>
     /// <returns>Throws an exception</returns>
+    [DoesNotReturn]
     public static R raise<R>(Exception ex) =>
         ex.Rethrow<R>();
 
@@ -213,7 +217,7 @@ public static partial class Prelude
     /// return false.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool notnull<A>([System.Diagnostics.CodeAnalysis.NotNullWhen(true)]A? value) =>
+    public static bool notnull<A>([System.Diagnostics.CodeAnalysis.NotNullWhen(true)]A value) =>
         !ObjectExt.IsNull(value);
     
     /// <summary>

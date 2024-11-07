@@ -26,10 +26,8 @@ namespace LanguageExt;
 /// </summary>
 /// <param name="runIO">The lifted thunk that is the IO operation</param>
 /// <typeparam name="A">Bound value</typeparam>
-record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
+sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
 {
-    internal override bool IsAsync =>
-        true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -255,7 +253,7 @@ record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                                           }
                                           return IOResponse.Complete<Unit>(default); 
                                       }),
-                        LiftAsync(e => AwaitAsync(task, e, token, tsrc)));
+                        LiftAsync(e => IOAsync<A>.AwaitAsync(task, e, token, tsrc)));
             });
 
     /// <summary>
@@ -288,27 +286,6 @@ record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 {
                     case CompleteIO<A> (var x):
                         return x;
-
-                    case BindIO<A> io:
-                        switch(io.Run()) 
-                        {
-                            case IOAsync<A> io1:
-                                response = await io1.runIO(env).ConfigureAwait(false);
-                                break;
-                            case IOSync<A> io1:
-                                response = io1.runIO(env);
-                                break;
-
-                            case IOPure<A> io1:
-                                return io1.Value;
-
-                            case IOFail<A> io1:
-                                return io1.Error.ToErrorException().Rethrow<A>();
-                           
-                            default:
-                                throw new NotSupportedException();
-                        }
-                        break;                    
                     
                     case RecurseIO<A>(IOPure<A> io):
                         return io.Value;
@@ -386,7 +363,7 @@ record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
 
                     foreach (var delay in schedule.Run())
                     {
-                        await Task.Delay((TimeSpan)delay, token);
+                        await IO.yieldFor(delay, token);
                         result = await RunAsync(lenv);
                         
                         // free any resources acquired during a repeat
@@ -485,7 +462,7 @@ record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 
                 foreach(var delay in schedule.Run())
                 {
-                    await Task.Delay((TimeSpan)delay, token);
+                    await IO.yieldFor(delay, token);
                     try
                     {
                         var r = await RunAsync(lenv);
@@ -546,13 +523,13 @@ record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 }
                 throw new TaskCanceledException();
             });
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //  Internal
     //
-    
-    async Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
+
+    static async Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
     {
         if (envIO.Token.IsCancellationRequested) throw new TaskCanceledException();
         if (token.IsCancellationRequested) throw new TaskCanceledException();

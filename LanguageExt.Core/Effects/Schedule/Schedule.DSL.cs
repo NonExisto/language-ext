@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using static LanguageExt.UnitsOfMeasure;
 
@@ -8,7 +7,7 @@ namespace LanguageExt;
 /// <summary>
 /// Time series of durations
 /// </summary>
-internal record SchItems(Iterable<Duration> Items) : Schedule
+internal sealed record SchItems(Iterable<Duration> Items) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Items;
@@ -17,7 +16,7 @@ internal record SchItems(Iterable<Duration> Items) : Schedule
 /// <summary>
 /// Functor map
 /// </summary>
-internal record SchMap(Schedule Schedule, Func<Duration, Duration> F) : Schedule 
+internal sealed record SchMap(Schedule Schedule, Func<Duration, Duration> F) : Schedule 
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Map(F);
@@ -26,7 +25,7 @@ internal record SchMap(Schedule Schedule, Func<Duration, Duration> F) : Schedule
 /// <summary>
 /// Functor map
 /// </summary>
-internal record SchMapIndex(Schedule Schedule, Func<Duration, int, Duration> F) : Schedule 
+internal sealed record SchMapIndex(Schedule Schedule, Func<Duration, int, Duration> F) : Schedule 
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Select(F);
@@ -35,7 +34,7 @@ internal record SchMapIndex(Schedule Schedule, Func<Duration, int, Duration> F) 
 /// <summary>
 /// Filter
 /// </summary>
-internal record SchFilter(Schedule Schedule, Func<Duration, bool> Pred) : Schedule 
+internal sealed record SchFilter(Schedule Schedule, Func<Duration, bool> Pred) : Schedule 
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Filter(Pred);
@@ -44,7 +43,7 @@ internal record SchFilter(Schedule Schedule, Func<Duration, bool> Pred) : Schedu
 /// <summary>
 /// Functor bind
 /// </summary>
-internal record SchBind(Schedule Schedule, Func<Duration, Schedule> BindF) : Schedule
+internal sealed record SchBind(Schedule Schedule, Func<Duration, Schedule> BindF) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Bind(x => BindF(x).Run());
@@ -53,7 +52,7 @@ internal record SchBind(Schedule Schedule, Func<Duration, Schedule> BindF) : Sch
 /// <summary>
 /// Functor bind and project
 /// </summary>
-internal record SchBind2(Schedule Schedule, Func<Duration, Schedule> BindF, Func<Duration, Duration, Duration> Project) : Schedule
+internal sealed record SchBind2(Schedule Schedule, Func<Duration, Schedule> BindF, Func<Duration, Duration, Duration> Project) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Bind(x => BindF(x).Run().Map(y => Project(x, y)));
@@ -62,7 +61,7 @@ internal record SchBind2(Schedule Schedule, Func<Duration, Schedule> BindF, Func
 /// <summary>
 /// Tail of sequence
 /// </summary>
-internal record SchTail(Schedule Schedule) : Schedule
+internal sealed record SchTail(Schedule Schedule) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Tail();
@@ -71,7 +70,7 @@ internal record SchTail(Schedule Schedule) : Schedule
 /// <summary>
 /// Skip items in sequence
 /// </summary>
-internal record SchSkip(Schedule Schedule, int Count) : Schedule
+internal sealed record SchSkip(Schedule Schedule, int Count) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Skip(Count);
@@ -80,7 +79,7 @@ internal record SchSkip(Schedule Schedule, int Count) : Schedule
 /// <summary>
 /// Take items in sequence
 /// </summary>
-internal record SchTake(Schedule Schedule, int Count) : Schedule
+internal sealed record SchTake(Schedule Schedule, int Count) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Take(Count);
@@ -89,7 +88,7 @@ internal record SchTake(Schedule Schedule, int Count) : Schedule
 /// <summary>
 /// Append in sequence
 /// </summary>
-internal record SchCombine(Schedule Left, Schedule Right) : Schedule
+internal sealed record SchCombine(Schedule Left, Schedule Right) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Left.Run().Combine(Right.Run());
@@ -98,7 +97,7 @@ internal record SchCombine(Schedule Left, Schedule Right) : Schedule
 /// <summary>
 /// Interleave items in sequence
 /// </summary>
-internal record SchInterleave(Schedule Left, Schedule Right) : Schedule
+internal sealed record SchInterleave(Schedule Left, Schedule Right) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Left.Run()
@@ -109,7 +108,7 @@ internal record SchInterleave(Schedule Left, Schedule Right) : Schedule
 /// <summary>
 /// Union sequence
 /// </summary>
-internal record SchUnion(Schedule Left, Schedule Right) : Schedule
+internal sealed record SchUnion(Schedule Left, Schedule Right) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -142,7 +141,7 @@ internal record SchUnion(Schedule Left, Schedule Right) : Schedule
 /// <summary>
 /// Intersect sequence
 /// </summary>
-internal record SchIntersect(Schedule Left, Schedule Right) : Schedule
+internal sealed record SchIntersect(Schedule Left, Schedule Right) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Left.Run()
@@ -153,7 +152,7 @@ internal record SchIntersect(Schedule Left, Schedule Right) : Schedule
 /// <summary>
 /// Cons an item onto sequence
 /// </summary>
-internal record SchCons(Duration Left, Schedule Right) : Schedule
+internal sealed record SchCons(Duration Left, Schedule Right) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -169,7 +168,7 @@ internal record SchCons(Duration Left, Schedule Right) : Schedule
     }
 }
 
-internal record SchRepeatForever(Schedule Schedule) : Schedule
+internal sealed record SchRepeatForever(Schedule Schedule) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -183,7 +182,7 @@ internal record SchRepeatForever(Schedule Schedule) : Schedule
     }
 }
 
-internal record SchLinear(Duration Seed, double Factor) : Schedule
+internal sealed record SchLinear(Duration Seed, double Factor) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -203,7 +202,7 @@ internal record SchLinear(Duration Seed, double Factor) : Schedule
     }
 }
 
-internal record SchFibonacci(Duration Seed) : Schedule
+internal sealed record SchFibonacci(Duration Seed) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -225,7 +224,7 @@ internal record SchFibonacci(Duration Seed) : Schedule
     }
 }
 
-internal record SchForever : Schedule
+internal sealed record SchForever : Schedule
 {
     public static readonly Schedule Default = new SchForever();
 
@@ -239,7 +238,7 @@ internal record SchForever : Schedule
     }
 }
 
-internal record SchNever : Schedule
+internal sealed record SchNever : Schedule
 {
     public static readonly Schedule Default = new SchNever();
 
@@ -247,7 +246,7 @@ internal record SchNever : Schedule
         Iterable.empty<Duration>();
 }
 
-internal record SchUpTo(Duration Max, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchUpTo(Duration Max, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -263,7 +262,7 @@ internal record SchUpTo(Duration Max, Func<DateTime>? CurrentTimeFn = null) : Sc
     }
 }
 
-internal record SchFixed(Duration Interval, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchFixed(Duration Interval, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -293,7 +292,7 @@ internal record SchFixed(Duration Interval, Func<DateTime>? CurrentTimeFn = null
     }
 }
 
-internal record SchWindowed(Duration Interval, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchWindowed(Duration Interval, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -311,7 +310,7 @@ internal record SchWindowed(Duration Interval, Func<DateTime>? CurrentTimeFn = n
     }
 }
 
-internal record SchSecondOfMinute(int Second, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchSecondOfMinute(int Second, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -325,7 +324,7 @@ internal record SchSecondOfMinute(int Second, Func<DateTime>? CurrentTimeFn = nu
     }
 }
 
-internal record SchMinuteOfHour(int Minute, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchMinuteOfHour(int Minute, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -339,7 +338,7 @@ internal record SchMinuteOfHour(int Minute, Func<DateTime>? CurrentTimeFn = null
     }
 }
 
-internal record SchHourOfDay(int Hour, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchHourOfDay(int Hour, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -353,7 +352,7 @@ internal record SchHourOfDay(int Hour, Func<DateTime>? CurrentTimeFn = null) : S
     }
 }
 
-internal record SchDayOfWeek(DayOfWeek Day, Func<DateTime>? CurrentTimeFn = null) : Schedule
+internal sealed record SchDayOfWeek(DayOfWeek Day, Func<DateTime>? CurrentTimeFn = null) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -367,13 +366,13 @@ internal record SchDayOfWeek(DayOfWeek Day, Func<DateTime>? CurrentTimeFn = null
     }
 }
 
-internal record SchMaxDelay(Schedule Schedule, Duration Max) : Schedule
+internal sealed record SchMaxDelay(Schedule Schedule, Duration Max) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Map(x => x > Max ? Max : x);
 }
 
-internal record SchMaxCumulativeDelay(Schedule Schedule, Duration Max) : Schedule
+internal sealed record SchMaxCumulativeDelay(Schedule Schedule, Duration Max) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -392,19 +391,19 @@ internal record SchMaxCumulativeDelay(Schedule Schedule, Duration Max) : Schedul
     }
 }
 
-internal record SchJitter1(Schedule Schedule, Duration MinRandom, Duration MaxRandom, Option<int> Seed) : Schedule
+internal sealed record SchJitter1(Schedule Schedule, Duration MinRandom, Duration MaxRandom, Option<int> Seed) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Map(x => (Duration)(x + SingletonRandom.Uniform(MinRandom, MaxRandom, Seed)));
 }
 
-internal record SchJitter2(Schedule Schedule, double Factor, Option<int> Seed) : Schedule
+internal sealed record SchJitter2(Schedule Schedule, double Factor, Option<int> Seed) : Schedule
 {
     public override Iterable<Duration> Run() =>
         Schedule.Run().Map(x => (Duration)(x + SingletonRandom.Uniform(0, x * Factor, Seed)));
 }
 
-internal record SchDecorrelate(Schedule Schedule, double Factor, Option<int> Seed) : Schedule
+internal sealed record SchDecorrelate(Schedule Schedule, double Factor, Option<int> Seed) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -422,7 +421,7 @@ internal record SchDecorrelate(Schedule Schedule, double Factor, Option<int> See
     }
 }
 
-internal record SchResetAfter(Schedule Schedule, Duration Max) : Schedule
+internal sealed record SchResetAfter(Schedule Schedule, Duration Max) : Schedule
 {
     public override Iterable<Duration> Run()
     {
@@ -436,7 +435,7 @@ internal record SchResetAfter(Schedule Schedule, Duration Max) : Schedule
     }
 }
 
-internal record SchRepeat(Schedule Schedule, int Times) : Schedule
+internal sealed record SchRepeat(Schedule Schedule, int Times) : Schedule
 {
     public override Iterable<Duration> Run()
     {

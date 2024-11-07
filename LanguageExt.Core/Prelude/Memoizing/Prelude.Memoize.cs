@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LanguageExt;
 
@@ -84,28 +85,16 @@ public static partial class Prelude
     public static Func<T, R> memoUnsafe<T, R>(Func<T, R> func) where T : notnull
     {
         var cache   = new ConcurrentDictionary<T, R>();
-        var syncMap = new ConcurrentDictionary<T, object>();
-        return inp =>
-               {
-                   if (!cache.TryGetValue(inp, out var res))
-                   {
-                       var sync = syncMap.GetOrAdd(inp, new object());
-                       lock (sync)
-                       {
-                           res = cache.GetOrAdd(inp, func);
-                       }
-                       syncMap.TryRemove(inp, out sync);
-                   }
-                   return res;
-               };
+        
+        return inp => cache.GetOrAdd(inp, func);
     }
 
     /// <summary>
     /// Enumerable memoization.  As an enumerable is enumerated each item is retained
-    /// in an internal list, so that future evalation of the enumerable isn't done. 
+    /// in an internal list, so that future evaluation of the enumerable isn't done. 
     /// Only items not seen before are evaluated.  
     /// 
-    /// This minimises one of the major problems with the IEnumerable / yield return 
+    /// This minimizes one of the major problems with the IEnumerable / yield return 
     /// pattern by causing at-most-once evaluation of each item.  
     /// 
     /// Use the IEnumerable extension method Memo for convenience.
@@ -122,46 +111,46 @@ public static partial class Prelude
 
     /// <summary>
     /// Used internally by the memo function.  It wraps a concurrent dictionary that has 
-    /// its value objects wrapped in a WeakReference<OnFinalise<...>>
-    /// The OnFinalise type is a private class within WeakDict and does nothing but hold
-    /// the value and an Action to call when its finalised.  So when the WeakReference is
-    /// collected by the GC, it forces the finaliser to be called on the OnFinalise object,
+    /// its value objects wrapped in a WeakReference<OnFinalize<...>>
+    /// The OnFinalize type is a private class within WeakDict and does nothing but hold
+    /// the value and an Action to call when its finalized.  So when the WeakReference is
+    /// collected by the GC, it forces the finalizer to be called on the OnFinalize object,
     /// which in turn executes the action which removes it from the ConcurrentDictionary.  
     /// That means that both the key and value are collected when the GC fires rather than 
     /// just the value.  Mitigates memory leak of keys.
     /// </summary>
     private class WeakDict<T, R> where T : notnull
     {
-        private class OnFinalise<V>(Action onFinalise, V value)
+        private class OnFinalize<V>(Action onFinalize, V value)
         {
             public readonly V Value = value;
 
-            ~OnFinalise() =>
-                onFinalise.Invoke();
+            ~OnFinalize() =>
+                onFinalize.Invoke();
         }
 
-        ConcurrentDictionary<T, WeakReference<OnFinalise<R>>> dict = new ConcurrentDictionary<T, WeakReference<OnFinalise<R>>>();
+        ConcurrentDictionary<T, WeakReference<OnFinalize<R>>> dict = new ConcurrentDictionary<T, WeakReference<OnFinalize<R>>>();
 
-        private WeakReference<OnFinalise<R>> NewRef(T key, Func<T, R> addFunc) =>
-            new (new OnFinalise<R>(() => dict.TryRemove(key, out _), addFunc(key)));
+        private WeakReference<OnFinalize<R>> NewRef(T key, Func<T, R> valueFunc) =>
+            new (new OnFinalize<R>(() => dict.TryRemove(key, out _), valueFunc(key)));
 
-        public bool TryGetValue(T key, out R value)
+        public bool TryGetValue(T key, [NotNullWhen(true)]out R? value)
         {
-            if(dict.TryGetValue(key, out var res) && res.TryGetTarget(out var target))
+            if(dict.TryGetValue(key, out var reference) && reference.TryGetTarget(out var target))
             {
-                value = target.Value;
+                value = target.Value!;
                 return true;
             }
             else
             {
-                value = default!;
+                value = default;
                 return false;
             }
         }
 
-        public R GetOrAdd(T key, Func<T, R> addFunc)
+        public R GetOrAdd(T key, Func<T, R> valueFunc)
         {
-            var res = dict.GetOrAdd(key, _ => NewRef(key, addFunc));
+            var res = dict.GetOrAdd(key, _ => NewRef(key, valueFunc));
 
             if (res.TryGetTarget(out var target))
             {
@@ -169,7 +158,7 @@ public static partial class Prelude
             }
             else
             {
-                var upd = NewRef(key, addFunc);
+                var upd = NewRef(key, valueFunc);
                 res = dict.AddOrUpdate(key, upd, (_, _) => upd);
                 if (res.TryGetTarget(out target))
                 {
@@ -224,10 +213,10 @@ public static class MemoExtensions
 
     /// <summary>
     /// Enumerable memoization.  As an enumerable is enumerated each item is retained
-    /// in an internal list, so that future evalation of the enumerable isn't done. 
+    /// in an internal list, so that future evaluation of the enumerable isn't done. 
     /// Only items not seen before are evaluated.  
     /// 
-    /// This minimises one of the major problems with the IEnumerable / yield return 
+    /// This minimizes one of the major problems with the IEnumerable / yield return 
     /// pattern by causing at-most-once evaluation of each item.  
     /// 
     /// Use the IEnumerable extension method Memo for convenience.

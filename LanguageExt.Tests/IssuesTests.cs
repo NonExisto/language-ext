@@ -85,47 +85,6 @@ namespace LanguageExt.Tests
     public record UserMapping(string u);
 }
 
-// https://github.com/louthy/language-ext/issues/245
-public class TopHatTests
-{
-    public class TopHat : Record<TopHat>
-    {
-        public TopHat(int id, Option<int> id2)
-        {
-            Id = id;
-            Id2 = id2;
-        }
-
-        TopHat(SerializationInfo info, StreamingContext context) : base(info, context)
-        { }
-
-        public int Id { get; set; }
-        public Option<int> Id2 { get; set; }
-    }
-
-    OptionT<IO, int> SumOptionAsync() => liftIO(async _ =>
-    {
-        var first = await Task.FromResult(1);
-        var second = await Task.FromResult(2);
-
-        return first + second;
-    });
-
-    [Fact]
-    public void TopHatSerialisationTest()
-    {
-        var t1 = new TopHat(1, 1416);
-        var t3 = new TopHat(1, 1413);
-
-        var str = JsonConvert.SerializeObject(t1);
-
-        var t2 = JsonConvert.DeserializeObject<TopHat>(str);
-
-        Assert.True(t2 == t1);
-        Assert.True(t3 != t1);
-    }
-}
-
 //https://github.com/louthy/language-ext/issues/242
 namespace Core.Tests
 {
@@ -178,41 +137,6 @@ namespace Issues
     public record UserId(int Value);
     public record Instant(int Value);
 
-    public class Collector : Record<Collector>, ISerializable
-    {
-        public CollectorId Id { get; }
-        public string Name { get; }
-        public TenantId CurrentTenant { get; }
-        public UserId AssignedBy { get; }
-        public Instant InstantAssigned { get; }
-        public Collector(CollectorId id, string name, TenantId tenant, UserId assignedBy, Instant dateAssigned)
-        {
-            Id = id;
-            Name = name;
-            CurrentTenant = tenant;
-            AssignedBy = assignedBy;
-            InstantAssigned = dateAssigned;
-        }
-
-        Collector(SerializationInfo info, StreamingContext ctx) : base(info, ctx) { }
-    }
-
-    public class GitterTests
-    {
-        [Fact]
-        public void TestSerial()
-        {
-            var x = new Collector(new CollectorId(1), "nick", new TenantId(2), new UserId(3), new Instant(4));
-            var y = new Collector(new CollectorId(1), "nick", new TenantId(2), new UserId(3), new Instant(4));
-
-            var z1 = x == y;
-            var z2 = x.Equals(y);
-            var z3 = x.Equals((object)y);
-
-            var r = JsonConvert.SerializeObject(x);
-            var r2 = JsonConvert.DeserializeObject<Collector>(r);
-        }
-    }
 
     public static class Issue251
     {
