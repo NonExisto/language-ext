@@ -31,7 +31,7 @@ public static partial class Optional
     /// </summary>
     /// <remarks>Will not accept a null return value from the None operation</remarks>
     /// <param name="None">Operation to invoke if the structure is in a None state</param>
-    /// <returns>Tesult of invoking the None() operation if the optional 
+    /// <returns>Result of invoking the None() operation if the optional 
     /// is in a None state, otherwise the bound Some(x) value is returned.</returns>
     [Pure]
     public static A ifNone<OPT, OA, A>(OA opt, Func<A> None)

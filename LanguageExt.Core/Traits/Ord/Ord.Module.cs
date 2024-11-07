@@ -1,5 +1,4 @@
-﻿using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 

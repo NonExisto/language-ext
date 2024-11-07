@@ -12,10 +12,7 @@ namespace LanguageExt.ClassInstances;
 /// </summary>
 public struct TBool : Ord<bool>, Bool<bool>
 {
-    /// <summary>
-    /// Returns the result of the logical AND operation between `a` and `b`
-    /// </summary>
-    /// <returns>The result of the logical AND operation between `a` and `b`</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool And(bool a, bool b) =>
         a && b;
@@ -45,10 +42,7 @@ public struct TBool : Ord<bool>, Bool<bool>
     public static bool Equals(bool x, bool y) =>
         x == y;
 
-    /// <summary>
-    /// Returns False
-    /// </summary>
-    /// <returns>False</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool False() =>
         false;
@@ -61,51 +55,32 @@ public struct TBool : Ord<bool>, Bool<bool>
     public static int GetHashCode(bool x) =>
         x.GetHashCode();
 
-    /// <summary>
-    /// Returns the result of the logical NOT operation on `a`
-    /// </summary>
-    /// <returns>The result of the logical NOT operation on `a`</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool Not(bool a) =>
         !a;
 
-    /// <summary>
-    /// Returns the result of the logical OR operation between `a` and `b`
-    /// </summary>
-    /// <returns>The result of the logical OR operation between `a` and `b`</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool Or(bool a, bool b) =>
         a || b;
 
-    /// <summary>
-    /// Returns True
-    /// </summary>
-    /// <returns>True</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool True() =>
         true;
 
-    /// <summary>
-    /// Returns the result of the logical exclusive-OR operation between `a` and `b`
-    /// </summary>
-    /// <returns>The result of the logical exclusive-OR operation between `a` and `b`</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool XOr(bool a, bool b) =>
         a ^ b;
 
-    /// <summary>
-    /// Logical implication
-    /// </summary>
-    /// <returns>If `a` is true that implies `b`, else `true`</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool Implies(bool a, bool b) =>
         !a || b;
 
-    /// <summary>
-    /// Logical bi-conditional.  Both `a` and `b` must be `true`, or both `a` and `b` must
-    /// be false.
-    /// </summary>
-    /// <returns>`true` if `a == b`, `false` otherwise</returns>
+    ///<inheritdoc/>
     [Pure]
     public static bool BiCondition(bool a, bool b) =>
         a == b;

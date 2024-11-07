@@ -1,4 +1,6 @@
-﻿namespace LanguageExt.ClassInstances;
+﻿using LanguageExt.Traits;
+
+namespace LanguageExt.ClassInstances;
 
 /// <summary>
 /// Option type equality

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using LanguageExt.Traits;
 using LanguageExt.Traits.Resolve;
 
 namespace LanguageExt.ClassInstances;

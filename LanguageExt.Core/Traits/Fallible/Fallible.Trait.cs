@@ -1,5 +1,6 @@
 using System;
 using LanguageExt.Common;
+using LanguageExt.Attributes;
 
 namespace LanguageExt.Traits;
 
@@ -8,7 +9,8 @@ namespace LanguageExt.Traits;
 /// </summary>
 /// <typeparam name="E">Failure type</typeparam>
 /// <typeparam name="F">Higher-kinded structure</typeparam>
-public interface Fallible<E, F>
+[Trait("Fallible*")]
+public interface Fallible<E, F> : Trait
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //

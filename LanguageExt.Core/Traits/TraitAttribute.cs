@@ -3,7 +3,7 @@
 namespace LanguageExt.Attributes;
 
 [AttributeUsage(AttributeTargets.Interface)]
-public class TraitAttribute : Attribute
+public sealed class TraitAttribute : Attribute
 {
     public readonly string NameFormat;
     public TraitAttribute(string nameFormat) =>

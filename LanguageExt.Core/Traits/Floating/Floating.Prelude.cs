@@ -1,22 +1,10 @@
-﻿#nullable enable
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 
 namespace LanguageExt;
 
 public static partial class Trait
 {
-    /// <summary>
-    /// Ratio constructor
-    /// </summary>
-    /// <typeparam name="A">Value type</typeparam>
-    /// <param name="num">Numerator</param>
-    /// <param name="den">Denominator</param>
-    /// <returns>Ratio struct</returns>
-    [Pure]
-    public static Ratio<A> Ratio<A>(A num, A den) =>
-        new (num, den);
-
     /// <summary>
     /// Returns an approximation of pi.
     /// </summary>

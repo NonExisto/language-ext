@@ -6,7 +6,7 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt.Traits;
 
-public interface Foldable<out T> where T : Foldable<T>
+public interface Foldable<out T> : Trait where T : Foldable<T> 
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //

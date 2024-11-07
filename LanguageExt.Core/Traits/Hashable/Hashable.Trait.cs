@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using LanguageExt.Attributes;
 
-namespace LanguageExt;
+namespace LanguageExt.Traits;
 
 /// <summary>
 /// Hashable trait
@@ -10,7 +10,7 @@ namespace LanguageExt;
 /// The type for which GetHashCode is defined
 /// </typeparam>
 [Trait("Hashable*")]
-public interface Hashable<in A>
+public interface Hashable<in A> : Trait
 {
     /// <summary>
     /// Get the hash-code of the provided value

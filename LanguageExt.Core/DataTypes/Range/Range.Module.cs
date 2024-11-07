@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace LanguageExt;
 
-public partial class Range
+public sealed partial class Range
 {
     /// <summary>
     /// Zero range  

@@ -1,3 +1,5 @@
+using LanguageExt.Traits;
+
 namespace LanguageExt.ClassInstances;
 
 public struct HashableTuple<HashA, HashB, A, B> : Hashable<(A, B)>

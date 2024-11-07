@@ -1,5 +1,4 @@
-﻿#nullable enable
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 
 namespace LanguageExt;

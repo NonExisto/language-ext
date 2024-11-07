@@ -10,7 +10,7 @@ namespace LanguageExt.Traits;
 /// it guides the implementor. It is optional!
 /// </summary>
 /// <remarks>
-/// Primarily makes `@catch` work nicely, but is generally benefical.  
+/// Primarily makes `@catch` work nicely, but is generally beneficial.  
 /// </remarks>
 /// <typeparam name="FA">'Self' type, for example `Either<L, R>`</typeparam>
 /// <typeparam name="F">Trait implementation, for example `Either<L>`</typeparam>

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using LanguageExt.Traits;
 
 namespace LanguageExt.ClassInstances;
 

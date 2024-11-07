@@ -4,7 +4,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class Fin : 
+public sealed partial class Fin : 
     Monad<Fin>, 
     Fallible<Fin>,
     Traversable<Fin>, 

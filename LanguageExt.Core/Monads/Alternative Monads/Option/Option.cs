@@ -46,8 +46,7 @@ public readonly struct Option<A> :
     /// <summary>
     /// None
     /// </summary>
-    public static readonly Option<A> None =
-        default;
+    public static readonly Option<A> None;
 
     /// <summary>
     /// Construct an Option of A in a Some state
