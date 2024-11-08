@@ -309,14 +309,14 @@ public class Iterable<A> :
     public Iterable<A> Distinct<EqA>()
         where EqA : Eq<A>
     {
-        return new IterableEnumerable<A>(Yield());
-        IEnumerable<A> Yield()
+        return new IterableEnumerable<A>(Yield(Traits.Eq.Comparer<EqA, A>()));
+        IEnumerable<A> Yield(IEqualityComparer<A> equalityComparer)
         {
-            HashSet<EqA, A> set = [];
+            HashSet<A> set = new HashSet<A>(equalityComparer);
             foreach (var x in AsEnumerable())
             {
-                if(set.Contains(x)) continue;
-                set = set.Add(x);
+                if(set.Contains(x!)) continue;
+                set = set.Add(x!);
                 yield return x;
             }
         }

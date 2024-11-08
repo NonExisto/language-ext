@@ -1553,7 +1553,7 @@ internal sealed class TrieMap<EqK, K, V> :
     /// </summary>
     public (TrieMap<EqK, K, V> Map, TrieMap<EqK, K, Change<V>> Changes) IntersectWithLog(IEnumerable<K> other)
     {
-        var set     = new TrieSet<EqK, K>(other);
+        var set     = new TrieSet<K>(other, equalityComparer: Traits.Eq.Comparer<EqK, K>());
         var changes = TrieMap<EqK, K, Change<V>>.EmptyForMutating;
         var res     = EmptyForMutating;
             
@@ -2102,7 +2102,7 @@ internal sealed class TrieMap<EqK, K, V> :
             if ((EntryMap & mask) == mask)                                                        
             {
                 // var entryIndex = Index(EntryMap, mask);
-                var entryIndex = BitCount((int)EntryMap & (((int)mask) - 1));                     
+                var entryIndex = Count((int)EntryMap & (((int)mask) - 1));                     
                 if (EqK.Equals(Items[entryIndex].Key, key))
                 {
                     var (Key, Value) = Items[entryIndex];
@@ -2117,7 +2117,7 @@ internal sealed class TrieMap<EqK, K, V> :
             else if ((NodeMap & mask) == mask)                                                   
             {
                 // var entryIndex = Index(NodeMap, mask);
-                var entryIndex = BitCount((int)NodeMap & ((int)mask - 1));                     
+                var entryIndex = Count((int)NodeMap & ((int)mask - 1));                     
                 return Nodes[entryIndex].Read(key, hash, section.Next());
             }
             else
@@ -2136,7 +2136,7 @@ internal sealed class TrieMap<EqK, K, V> :
             if((EntryMap & mask) == mask)
             {
                 //var entryIndex = Index(EntryMap, mask);
-                var entryIndex   = BitCount((int)EntryMap & ((int)mask - 1));
+                var entryIndex   = Count((int)EntryMap & ((int)mask - 1));
                 var currentEntry = Items[entryIndex];
 
                 if (EqK.Equals(currentEntry.Key, change.Key))
@@ -2190,7 +2190,7 @@ internal sealed class TrieMap<EqK, K, V> :
                     var newNodeMap = NodeMap | mask;
 
                     // var nodeIndex = Index(NodeMap, mask);
-                    var nodeIndex = BitCount((int)NodeMap & ((int)mask - 1));
+                    var nodeIndex = Count((int)NodeMap & ((int)mask - 1));
 
                     var newNodes = Insert(Nodes, nodeIndex, node);
 
@@ -2205,7 +2205,7 @@ internal sealed class TrieMap<EqK, K, V> :
             else if (Bit.Get(NodeMap, mask))
             {
                 // var nodeIndex = Index(NodeMap, mask);
-                var nodeIndex = BitCount((int)NodeMap & ((int)mask - 1));
+                var nodeIndex = Count((int)NodeMap & ((int)mask - 1));
 
                 var nodeToUpdate = Nodes[nodeIndex];
                 var (cd, newNode, ov) = nodeToUpdate.Update(env, change, hash, section.Next());
@@ -2226,7 +2226,7 @@ internal sealed class TrieMap<EqK, K, V> :
                 }
 
                 // var entryIndex = Index(EntryMap, mask);
-                var entryIndex = BitCount((int)EntryMap & ((int)mask - 1));
+                var entryIndex = Count((int)EntryMap & ((int)mask - 1));
 
                 // var entries = Bit.Set(EntryMap, mask, true);
                 var entries = EntryMap | mask;
@@ -2468,7 +2468,7 @@ internal sealed class TrieMap<EqK, K, V> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static int Index(uint bitmap, uint location) =>
-        BitCount((int)bitmap & ((int)location - 1));
+        Count((int)bitmap & ((int)location - 1));
 
     /// <summary>
     /// Returns the value used to index into the bit vector

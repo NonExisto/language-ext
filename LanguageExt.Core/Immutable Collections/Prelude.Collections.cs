@@ -741,32 +741,31 @@ public static partial class Prelude
     /// Create an immutable hash-set
     /// </summary>
     [Pure]
-    public static HashSet<EqT, T> HashSet<EqT, T>() where EqT : Eq<T> =>
-        LanguageExt.HashSet.create<EqT, T>();
+    public static HashSet<T> HashSet<T>(IEqualityComparer<T> equalityComparer) =>
+        LanguageExt.HashSet.create(equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-set
     /// </summary>
     [Pure]
-    public static HashSet<EqT, T> HashSet<EqT, T>(T head, params T[] tail) where EqT : Eq<T> =>
-        LanguageExt.HashSet.createRange<EqT, T>(head.Cons(tail));
+    public static HashSet<T> HashSet<T>(IEqualityComparer<T> equalityComparer, T head, params T[] tail) =>
+        LanguageExt.HashSet.createRange<T>(head.Cons(tail), equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-set
     /// </summary>
     [Pure]
-    public static HashSet<EqT, T> toHashSet<EqT, T>(IEnumerable<T> items) where EqT : Eq<T> =>
-        items is HashSet<EqT, T> hs
+    public static HashSet<T> toHashSet<EqT, T>(IEnumerable<T> items, IEqualityComparer<T> equalityComparer) =>
+        items is HashSet<T> hs && hs.HasSameEqualityComparer(equalityComparer)
             ? hs
-            : LanguageExt.HashSet.createRange<EqT, T>(items);
+            : LanguageExt.HashSet.createRange(items, equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-set
     /// </summary>
     [Pure]
-    public static HashSet<EqT, T> toHashSet<EqT, T>(ReadOnlySpan<T> items) where EqT : Eq<T> =>
-        LanguageExt.HashSet.createRange<EqT, T>(items);
-
+    public static HashSet<T> toHashSet<T>(ReadOnlySpan<T> items, IEqualityComparer<T> equalityComparer) =>
+        LanguageExt.HashSet.createRange(items, equalityComparer);
 
 
 
@@ -1306,4 +1305,17 @@ public static partial class Prelude
     /// </summary>
     public static bool Applicable<EqA, A>(this IEnumerable<A> va, Patch<EqA, A> patch) where EqA : Eq<A> =>
         Patch.applicable(patch, va);
+
+
+    [ThreadStatic]
+	private static object? EqualityComparer;
+
+	public static Unit withEqualityComparer<T>(IEqualityComparer<T> equalityComparer)
+	{
+		EqualityComparer = equalityComparer;
+		return unit;
+	}
+
+    public static IEqualityComparer<T> getRegisteredEqualityComparerOrDefault<T>() => 
+			EqualityComparer as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
 }

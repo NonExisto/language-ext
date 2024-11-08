@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
@@ -51,6 +52,24 @@ namespace LanguageExt
         }
 
         /// <summary>
+        /// Calculate the hash code for an array
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Hash<A>([DisallowNull]IEqualityComparer<A> equalityComparer, A[]? items, int offsetBasis = OffsetBasis)
+        {
+            int hash = offsetBasis;
+            if (items == null) return hash;
+
+
+            foreach (A item in items)
+            {
+                hash = Next(equalityComparer.GetHashCode(item), hash);
+            }
+            return hash;
+
+        }
+
+        /// <summary>
         /// Calculate the hash code for an array slice
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,6 +101,24 @@ namespace LanguageExt
             foreach (var item in items)
             {
                 hash = Next(HashA.GetHashCode(item), hash);
+            }
+            return hash;
+
+        }
+
+        /// <summary>
+        /// Calculate the hash code for an enumerable
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Hash<A>([DisallowNull]IEqualityComparer<A> equalityComparer, IEnumerable<A>? items, int offsetBasis = OffsetBasis)
+        {
+            int hash = offsetBasis;
+            if (items == null) return hash;
+
+
+            foreach (A item in items)
+            {
+                hash = Next(equalityComparer.GetHashCode(item), hash);
             }
             return hash;
 

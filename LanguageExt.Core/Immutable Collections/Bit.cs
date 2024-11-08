@@ -22,7 +22,7 @@ internal static class Bit
     /// Counts the number of 1-bits in bitmap
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int BitCount(int bits)
+    public static int Count(int bits)
     {
         var c2 = bits - ((bits >> 1) & 0x55555555);
         var c4 = (c2                 & 0x33333333) + ((c2 >> 2) & 0x33333333);

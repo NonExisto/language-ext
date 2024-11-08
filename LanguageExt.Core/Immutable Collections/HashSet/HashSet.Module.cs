@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 namespace LanguageExt;
@@ -28,6 +28,15 @@ public partial class HashSet
     public static HashSet<T> create<T>() =>
         HashSet<T>.Empty;
 
+/// <summary>
+    /// Create a new empty set
+    /// </summary>
+    /// <typeparam name="T">Element type</typeparam>
+    /// <returns>Empty HSet</returns>
+    [Pure]
+    public static HashSet<T> create<T>(IEqualityComparer<T> equalityComparer) =>
+        new HashSet<T>(equalityComparer);
+
     /// <summary>
     /// Create a singleton collection
     /// </summary>
@@ -44,8 +53,8 @@ public partial class HashSet
     /// <param name="range">Range of items</param>
     /// <returns>HSet</returns>
     [Pure]
-    public static HashSet<T> createRange<T>(IEnumerable<T> range) =>
-        new (range);
+    public static HashSet<T> createRange<T>(IEnumerable<T> range, IEqualityComparer<T>? equalityComparer = null) =>
+        new (range, true, equalityComparer);
 
     /// <summary>
     /// Create a new set pre-populated with the items in range
@@ -53,6 +62,12 @@ public partial class HashSet
     /// <typeparam name="T">Element type</typeparam>
     /// <param name="range">Range of items</param>
     /// <returns>HSet</returns>
+    [Pure]
+    public static HashSet<T> createRange<T>(ReadOnlySpan<T> range, IEqualityComparer<T> equalityComparer) =>
+        range.IsEmpty 
+            ? HashSet<T>.Empty 
+            : new (range, equalityComparer: equalityComparer);
+
     [Pure]
     public static HashSet<T> createRange<T>(ReadOnlySpan<T> range) =>
         range.IsEmpty 
@@ -76,7 +91,7 @@ public partial class HashSet
     /// <param name="value">Value to add to the HSet</param>
     /// <returns>New set with the item added</returns>
     [Pure]
-    public static HashSet<T> add<T>(HashSet<T> set, T value) =>
+    public static HashSet<T> add<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.Add(value);
 
     /// <summary>
@@ -88,7 +103,7 @@ public partial class HashSet
     /// <param name="value">Value to add to the HSet</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public static HashSet<T> tryAdd<T>(HashSet<T> set, T value) =>
+    public static HashSet<T> tryAdd<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.TryAdd(value);
 
     /// <summary>
@@ -100,7 +115,7 @@ public partial class HashSet
     /// <param name="value">Value to add to the HSet</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public static HashSet<T> addOrUpdate<T>(HashSet<T> set, T value) =>
+    public static HashSet<T> addOrUpdate<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.AddOrUpdate(value);
 
     /// <summary>
@@ -111,7 +126,7 @@ public partial class HashSet
     /// <param name="value">Value to find</param>
     /// <returns>Some(T) if found, None otherwise</returns>
     [Pure]
-    public static Option<T> find<T>(HashSet<T> set, T value) =>
+    public static Option<T> find<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.Find(value);
 
     /// <summary>
@@ -254,7 +269,7 @@ public partial class HashSet
     /// <param name="value">Value to check</param>
     /// <returns>True if the item 'value' is in the Set 'set'</returns>
     [Pure]
-    public static bool contains<T>(HashSet<T> set, T value) =>
+    public static bool contains<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.Contains(value);
 
     /// <summary>
@@ -265,7 +280,7 @@ public partial class HashSet
     /// <param name="value">Value to check</param>
     /// <returns>New set with item removed</returns>
     [Pure]
-    public static HashSet<T> remove<T>(HashSet<T> set, T value) =>
+    public static HashSet<T> remove<T>(HashSet<T> set, [DisallowNull]T value) =>
         set.Remove(value);
 
     /// <summary>

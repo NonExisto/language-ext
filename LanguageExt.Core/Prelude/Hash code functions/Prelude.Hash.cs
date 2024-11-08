@@ -67,14 +67,6 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int hash<EqA, A>(HashSet<EqA, A> xs) where EqA : Eq<A> =>
-        xs.GetHashCode();
-
-    /// <summary>
-    /// Calculate a hash-code for the collection provided
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int hash<A>(Lst<A> xs) =>
         xs.GetHashCode();
 

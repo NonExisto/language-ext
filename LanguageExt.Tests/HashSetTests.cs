@@ -158,7 +158,7 @@ public class HashSetTests
     [Fact]
     public void HashSetKeyTypeTests()
     {
-        var set = HashSet<EqStringOrdinalIgnoreCase, string>("one", "two", "three");
+        var set = new HashSet<string>(["one", "two", "three"], equalityComparer: StringComparer.OrdinalIgnoreCase);
 
         Assert.True(set.Contains("one"));
         Assert.True(set.Contains("ONE"));
@@ -173,7 +173,7 @@ public class HashSetTests
     [Fact]
     public void HashSetSetTest()
     {
-        var set  = HashSet<EqStringOrdinalIgnoreCase, string>("one", "two", "three");
+        var set  = HashSet(StringComparer.OrdinalIgnoreCase, "one", "two", "three");
         var set2 = set.SetItem("One");
         Assert.Equal(3, set2.Count);
         Assert.False(set2.ToSeq().Contains("one"));

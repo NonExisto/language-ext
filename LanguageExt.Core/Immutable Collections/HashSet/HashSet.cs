@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -25,52 +25,51 @@ public readonly struct HashSet<A> :
     Monoid<HashSet<A>>,
     K<HashSet, A>
 {
-    public static HashSet<A> Empty { get; } = new (TrieSet<EqDefault<A>, A>.Empty);
+    public static HashSet<A> Empty { get; } = new (TrieSet<A>.Empty());
 
-    readonly TrieSet<EqDefault<A>, A>? value;
-    internal TrieSet<EqDefault<A>, A> Value => value ?? TrieSet<EqDefault<A>, A>.Empty;
+    readonly TrieSet<A>? _value;
+    internal TrieSet<A> Value => _value ?? TrieSet<A>.Empty();
 
-    internal HashSet(TrieSet<EqDefault<A>, A> value)
+    internal HashSet([DisallowNull]IEqualityComparer<A> equalityComparer)
     {
-        this.value = value;
+        _value = TrieSet<A>.Empty(equalityComparer);
     }
 
-    HashSet<A> Wrap(TrieSet<EqDefault<A>, A> value) =>
+    internal HashSet(TrieSet<A> value)
+    {
+        _value = value;
+    }
+
+    HashSet<A> Wrap(TrieSet<A> value) =>
         new (value);
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
     /// <param name="items"></param>
-    public HashSet(ReadOnlySpan<A> items) =>
-        value = new TrieSet<EqDefault<A>, A>(items);
+    public HashSet(ReadOnlySpan<A> items, bool tryAdd = true, IEqualityComparer<A>? equalityComparer = null) =>
+        _value = new TrieSet<A>(items, tryAdd, equalityComparer);
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    /// <param name="items"></param>
-    public HashSet(ReadOnlySpan<A> items, bool tryAdd) =>
-        value = new TrieSet<EqDefault<A>, A>(items, tryAdd);
-
-    /// <summary>
-    /// Ctor that takes an initial (distinct) set of items
-    /// </summary>
+    /// <remarks>Used for deserialization purposes</remarks>
     public HashSet(IEnumerable<A> items) =>
-        value = new TrieSet<EqDefault<A>, A>(items);
+        _value = new TrieSet<A>(items);
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    public HashSet(IEnumerable<A> items, bool tryAdd) =>
-        value = new TrieSet<EqDefault<A>, A>(items, tryAdd);
+    public HashSet(IEnumerable<A> items, bool tryAdd, IEqualityComparer<A>? equalityComparer = null) =>
+        _value = new TrieSet<A>(items, tryAdd, equalityComparer);
 
     /// <summary>
     /// Item at index lens
     /// </summary>
     [Pure]
     public static Lens<HashSet<A>, bool> item(A key) => Lens<HashSet<A>, bool>.New(
-        Get: la => la.Contains(key),
-        Set: a => la => a ? la.AddOrUpdate(key) : la.Remove(key)
+        Get: la => la.Contains(key!),
+        Set: a => la => a ? la.AddOrUpdate(key!) : la.Remove(key!)
     );
 
     /// <summary>
@@ -83,7 +82,7 @@ public readonly struct HashSet<A> :
                    {
                        foreach (var item in lb)
                        {
-                           la = la.Find(item).Match(Some: x => la.AddOrUpdate(lens.Set(x, item)), None: () => la);
+                           la = la.Find(item!).Match(Some: x => la.AddOrUpdate(lens.Set(x, item)!), None: () => la);
                        }
                        return la;
                    });
@@ -94,8 +93,8 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key</param>
     /// <returns>Optional value</returns>
     [Pure]
-    public A this[A key] =>
-        Value[key];
+    public A this[[DisallowNull]A key] =>
+        Value[key!];
 
     /// <summary>
     /// Is the set empty
@@ -104,7 +103,7 @@ public readonly struct HashSet<A> :
     public bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.IsEmpty ?? true;
+        get => _value?.IsEmpty ?? true;
     }
 
     /// <summary>
@@ -114,7 +113,7 @@ public readonly struct HashSet<A> :
     public int Count
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
+        get => _value?.Count ?? 0;
     }
 
     /// <summary>
@@ -124,7 +123,7 @@ public readonly struct HashSet<A> :
     public int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
+        get => _value?.Count ?? 0;
     }
         
     /// <summary>
@@ -151,7 +150,7 @@ public readonly struct HashSet<A> :
     [Pure]
     public HashSet<R> Map<R>(Func<A, R> mapper)
     {
-        static IEnumerable<R> Yield(TrieSet<EqDefault<A>, A> map, Func<A, R> f)
+        static IEnumerable<R> Yield(TrieSet<A> map, Func<A, R> f)
         {
             foreach (var item in map)
             {
@@ -199,7 +198,7 @@ public readonly struct HashSet<A> :
     [Pure]
     public HashSet<A> Filter(Func<A, bool> pred)
     {
-        static IEnumerable<A> Yield(TrieSet<EqDefault<A>, A> map, Func<A, bool> f)
+        static IEnumerable<A> Yield(TrieSet<A> map, Func<A, bool> f)
         {
             foreach (var item in map)
             {
@@ -243,7 +242,7 @@ public readonly struct HashSet<A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item added</returns>
     [Pure]
-    public HashSet<A> Add(A key) =>
+    public HashSet<A> Add([DisallowNull]A key) =>
         Wrap(Value.Add(key));
 
     /// <summary>
@@ -253,7 +252,7 @@ public readonly struct HashSet<A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public HashSet<A> TryAdd(A key) =>
+    public HashSet<A> TryAdd([DisallowNull]A key) =>
         Wrap(Value.TryAdd(key));
 
     /// <summary>
@@ -263,7 +262,7 @@ public readonly struct HashSet<A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public HashSet<A> AddOrUpdate(A key) =>
+    public HashSet<A> AddOrUpdate([DisallowNull]A key) =>
         Wrap(Value.AddOrUpdate(key));
 
     /// <summary>
@@ -307,7 +306,7 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key</param>
     /// <returns>New map with the item removed</returns>
     [Pure]
-    public HashSet<A> Remove(A key) =>
+    public HashSet<A> Remove([DisallowNull]A key) =>
         Wrap(Value.Remove(key));
 
     /// <summary>
@@ -316,7 +315,7 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
-    public Option<A> Find(A key) =>
+    public Option<A> Find([DisallowNull]A key) =>
         Value.Find(key);
 
     /// <summary>
@@ -325,7 +324,7 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
-    public Seq<A> FindSeq(A key) =>
+    public Seq<A> FindSeq([DisallowNull]A key) =>
         Find(key).ToSeq();
 
     /// <summary>
@@ -335,7 +334,7 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
-    public R Find<R>(A key, Func<A, R> Some, Func<R> None) =>
+    public R Find<R>([DisallowNull]A key, Func<A, R> Some, Func<R> None) =>
         Find(key).Match(Some, None);
 
     /// <summary>
@@ -346,7 +345,7 @@ public readonly struct HashSet<A> :
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if the key is null</exception>
     /// <returns>New HSet with the item added</returns>
     [Pure]
-    public HashSet<A> SetItem(A key) =>
+    public HashSet<A> SetItem([DisallowNull]A key) =>
         Wrap(Value.SetItem(key));
 
     /// <summary>
@@ -359,7 +358,7 @@ public readonly struct HashSet<A> :
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if the key is null</exception>
     /// <returns>New HSet with the item added</returns>
     [Pure]
-    public HashSet<A> TrySetItem(A key) =>
+    public HashSet<A> TrySetItem([DisallowNull]A key) =>
         Wrap(Value.TrySetItem(key));
 
     /// <summary>
@@ -368,7 +367,7 @@ public readonly struct HashSet<A> :
     /// <param name="key">Key to check</param>
     /// <returns>True if an item with the key supplied is in the set</returns>
     [Pure]
-    public bool Contains(A key) =>
+    public bool Contains([DisallowNull]A key) =>
         Value.ContainsKey(key);
 
     /// <summary>
@@ -635,6 +634,10 @@ public readonly struct HashSet<A> :
     [Pure]
     public override int GetHashCode() =>
         Value.GetHashCode();
+
+    [Pure]
+    public bool HasSameEqualityComparer(IEqualityComparer<A> equalityComparer) => 
+        Value.HasSameEqualityComparer(equalityComparer);
 
     [Pure]
     public HashSet<B> Bind<B>(Func<A, HashSet<B>> f)
