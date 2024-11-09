@@ -64,9 +64,7 @@ public partial class HashSet
     /// <returns>HSet</returns>
     [Pure]
     public static HashSet<T> createRange<T>(ReadOnlySpan<T> range, IEqualityComparer<T> equalityComparer) =>
-        range.IsEmpty 
-            ? HashSet<T>.Empty 
-            : new (range, equalityComparer: equalityComparer);
+       new (range, equalityComparer: equalityComparer);
 
     [Pure]
     public static HashSet<T> createRange<T>(ReadOnlySpan<T> range) =>
@@ -80,8 +78,8 @@ public partial class HashSet
     /// <typeparam name="T">Element type</typeparam>
     /// <returns>Empty HSet</returns>
     [Pure]
-    public static HashSet<T> empty<T>() =>
-        HashSet<T>.Empty;
+    public static HashSet<T> empty<T>(IEqualityComparer<T>? equalityComparer = null) =>
+        equalityComparer is null ? HashSet<T>.Empty : new HashSet<T>(equalityComparer);
 
     /// <summary>
     /// Add an item to the set

@@ -41,45 +41,57 @@ public readonly struct TrackingHashMap<K, V> :
     IEquatable<TrackingHashMap<K, V>>,
     Monoid<TrackingHashMap<K, V>>
 {
-    public static TrackingHashMap<K, V> Empty { get; } = new(TrieMap<EqDefault<K>, K, V>.Empty);
+    public static TrackingHashMap<K, V> Empty { get; } = new(TrieMap<K, V>.Empty());
 
-    readonly TrieMap<EqDefault<K>, K, V> value;
-    readonly TrieMap<EqDefault<K>, K, Change<V>> changes;
+    readonly TrieMap<K, V>? value;
+    readonly TrieMap<K, Change<V>>? changes;
+    readonly IEqualityComparer<V>? equalityComparer;
 
-    internal TrieMap<EqDefault<K>, K, V> Value => 
-        value ?? TrieMap<EqDefault<K>, K, V>.Empty;
+    internal TrieMap<K, V> Value => 
+        value ?? TrieMap<K, V>.Empty();
 
-    internal TrieMap<EqDefault<K>, K, Change<V>> ChangesInternal => 
-        changes ?? TrieMap<EqDefault<K>, K, Change<V>>.Empty;
+    internal TrieMap<K, Change<V>> ChangesInternal => 
+        changes ?? TrieMap<K, Change<V>>.Empty();
+
+    internal IEqualityComparer<V> ValueEqualityComparer => 
+        equalityComparer ?? getRegisteredEqualityComparerOrDefault<V>();
 
     public HashMap<K, Change<V>> Changes => 
         new (ChangesInternal);
 
-    internal TrackingHashMap(TrieMap<EqDefault<K>, K, V> value, TrieMap<EqDefault<K>, K, Change<V>> changes)
+    internal TrackingHashMap(IEqualityComparer<K> equalityComparer)
+    {
+        value = TrieMap<K, V>.Empty(equalityComparer);
+        changes = TrieMap<K, Change<V>>.Empty(equalityComparer);
+        this.equalityComparer = getRegisteredEqualityComparerOrDefault<V>();
+    }
+
+    internal TrackingHashMap(TrieMap<K, V> value, TrieMap<K, Change<V>> changes, IEqualityComparer<V>? equalityComparer)
     {
         this.value = value;
         this.changes = changes;
+        this.equalityComparer = equalityComparer ?? getRegisteredEqualityComparerOrDefault<V>();
     }
 
     public TrackingHashMap(IEnumerable<(K Key, V Value)> items) 
-        : this(items, true)
+        : this(items, true, null)
     { }
 
-    public TrackingHashMap(IEnumerable<(K Key, V Value)> items, bool tryAdd)
-    {
-        value = new TrieMap<EqDefault<K>, K, V>(items, tryAdd);
-        changes = TrieMap<EqDefault<K>, K, Change<V>>.Empty;
-    }
+    public TrackingHashMap(IEnumerable<(K Key, V Value)> items, bool tryAdd, IEqualityComparer<V>? valueEqualityComparer, IEqualityComparer<K>? equalityComparer = null)
+        :this(new TrieMap<K, V>(items, tryAdd, equalityComparer), TrieMap<K, Change<V>>.Empty(equalityComparer), valueEqualityComparer)
+    { }
 
     public TrackingHashMap(ReadOnlySpan<(K Key, V Value)> items) 
-        : this(items, true)
+        : this(items, true, null, null)
     { }
 
-    public TrackingHashMap(ReadOnlySpan<(K Key, V Value)> items, bool tryAdd)
-    {
-        value = new TrieMap<EqDefault<K>, K, V>(items, tryAdd);
-        changes = TrieMap<EqDefault<K>, K, Change<V>>.Empty;
-    }
+    public TrackingHashMap(ReadOnlySpan<(K Key, V Value)> items, IEqualityComparer<V>? valueEqualityComparer, IEqualityComparer<K>? equalityComparer = null) 
+        : this(items, true, valueEqualityComparer, equalityComparer)
+    { }
+
+    public TrackingHashMap(ReadOnlySpan<(K Key, V Value)> items, bool tryAdd, IEqualityComparer<V>? valueEqualityComparer, IEqualityComparer<K>? equalityComparer = null)
+        : this(new TrieMap<K, V>(items, tryAdd, equalityComparer), TrieMap<K, Change<V>>.Empty(equalityComparer), valueEqualityComparer)
+    { }
 
     /// <summary>
     /// Creates a 'zero change' snapshot.  *The data does not change*!   
@@ -91,7 +103,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>Map with changes zeroed</returns>
     [Pure]
     public TrackingHashMap<K, V> Snapshot() =>
-        new (Value, TrieMap<EqDefault<K>, K, Change<V>>.Empty);
+        new (Value, Changes.Value.Clear(), equalityComparer);
 
     /// <summary>
     /// Item at index lens
@@ -111,11 +123,11 @@ public readonly struct TrackingHashMap<K, V> :
         Set: a => la => a.Match(Some: x => la.AddOrUpdate(key, x), None: () => la.Remove(key))
     );
 
-    TrackingHashMap<K, V> Wrap((TrieMap<EqDefault<K>, K, V> Map, TrieMap<EqDefault<K>, K, Change<V>> Changes) pair) =>
-        new (pair.Map, ChangesInternal.Merge(pair.Changes));
+    TrackingHashMap<K, V> Wrap((TrieMap<K, V> Map, TrieMap<K, Change<V>> Changes) pair) =>
+        new (pair.Map, ChangesInternal.Merge(pair.Changes), equalityComparer);
 
-    TrackingHashMap<K, V> Wrap(K key, (TrieMap<EqDefault<K>, K, V> Map, Change<V> Change) pair) =>
-        new (pair.Map, ChangesInternal.AddOrUpdate(key, Some: ex => ex.Combine(pair.Change), pair.Change));
+    TrackingHashMap<K, V> Wrap(K key, (TrieMap<K, V> Map, Change<V> Change) pair) =>
+        new (pair.Map, ChangesInternal.AddOrUpdate(key, Some: ex => ex.Combine(pair.Change), pair.Change), equalityComparer);
 
     /// <summary>
     /// 'this' accessor
@@ -185,7 +197,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the item added</returns>
     [Pure]
     public TrackingHashMap<K, V> Add(K key, V value) =>
-        Wrap(key, Value.AddWithLog(key, value));
+        Wrap(key, Value.AddWithLog(key, value, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a new item to the map.
@@ -198,7 +210,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the item added</returns>
     [Pure]
     public TrackingHashMap<K, V> TryAdd(K key, V value) =>
-        Wrap(key, Value.TryAddWithLog(key, value));
+        Wrap(key, Value.TryAddWithLog(key, value, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a new item to the map.
@@ -211,7 +223,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the item added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdate(K key, V value) =>
-        Wrap(key, Value.AddOrUpdateWithLog(key, value));
+        Wrap(key, Value.AddOrUpdateWithLog(key, value, ValueEqualityComparer));
 
     /// <summary>
     /// Retrieve a value from the map by key, map it to a new value,
@@ -223,7 +235,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the mapped value</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdate(K key, Func<V, V> Some, Func<V> None) =>
-        Wrap(key, Value.AddOrUpdateWithLog(key, Some, None));
+        Wrap(key, Value.AddOrUpdateWithLog(key, Some, None, ValueEqualityComparer));
 
     /// <summary>
     /// Retrieve a value from the map by key, map it to a new value,
@@ -235,7 +247,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the mapped value</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdate(K key, Func<V, V> Some, V None) =>
-        Wrap(key, Value.AddOrUpdateWithLog(key, Some, None));
+        Wrap(key, Value.AddOrUpdateWithLog(key, Some, None, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.
@@ -247,7 +259,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddRange(IEnumerable<Tuple<K, V>> range) =>
-        Wrap(Value.AddRangeWithLog(range));
+        Wrap(Value.AddRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.
@@ -259,7 +271,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddRange(IEnumerable<(K Key, V Value)> range) =>
-        Wrap(Value.AddRangeWithLog(range));
+        Wrap(Value.AddRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -271,7 +283,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> TryAddRange(IEnumerable<Tuple<K, V>> range) =>
-        Wrap(Value.TryAddRangeWithLog(range));
+        Wrap(Value.TryAddRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -283,7 +295,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> TryAddRange(IEnumerable<(K Key, V Value)> range) =>
-        Wrap(Value.TryAddRangeWithLog(range));
+        Wrap(Value.TryAddRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -295,7 +307,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> TryAddRange(IEnumerable<KeyValuePair<K, V>> range) =>
-        Wrap(Value.TryAddRangeWithLog(range));
+        Wrap(Value.TryAddRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -307,7 +319,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdateRange(IEnumerable<Tuple<K, V>> range) =>
-        Wrap(Value.AddOrUpdateRangeWithLog(range));
+        Wrap(Value.AddOrUpdateRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -319,7 +331,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdateRange(IEnumerable<(K Key, V Value)> range) =>
-        Wrap(Value.AddOrUpdateRangeWithLog(range));
+        Wrap(Value.AddOrUpdateRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically adds a range of items to the map.  If any of the keys exist already
@@ -331,7 +343,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddOrUpdateRange(IEnumerable<KeyValuePair<K, V>> range) =>
-        Wrap(Value.AddOrUpdateRangeWithLog(range));
+        Wrap(Value.AddOrUpdateRangeWithLog(range, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically removes an item from the map
@@ -381,7 +393,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     public (TrackingHashMap<K, V> Map, V Value) FindOrAdd(K key, Func<V> None)
     {
-        var (x, y, cs) = Value.FindOrAddWithLog(key, None);
+        var (x, y, cs) = Value.FindOrAddWithLog(key, None, ValueEqualityComparer);
         return (Wrap(key, (x, cs)), y);
     }
 
@@ -395,7 +407,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     public (TrackingHashMap<K, V>, V Value) FindOrAdd(K key, V value)
     {
-        var (x, y, cs) = Value.FindOrAddWithLog(key, value);
+        var (x, y, cs) = Value.FindOrAddWithLog(key, value, ValueEqualityComparer);
         return (Wrap(key, (x, cs)), y);
     }
 
@@ -409,7 +421,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     public (TrackingHashMap<K, V> Map, Option<V> Value) FindOrMaybeAdd(K key, Func<Option<V>> None)
     {
-        var (x, y, cs) = Value.FindOrMaybeAddWithLog(key, None);
+        var (x, y, cs) = Value.FindOrMaybeAddWithLog(key, None, ValueEqualityComparer);
         return (Wrap(key, (x, cs)), y);
     }
 
@@ -423,7 +435,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     public (TrackingHashMap<K, V> Map, Option<V> Value) FindOrMaybeAdd(K key, Option<V> None)
     {
-        var (x, y, cs) = Value.FindOrMaybeAddWithLog(key, None);
+        var (x, y, cs) = Value.FindOrMaybeAddWithLog(key, None, ValueEqualityComparer);
         return (Wrap(key, (x, cs)), y);
     }
 
@@ -437,7 +449,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the item added</returns>
     [Pure]
     public TrackingHashMap<K, V> SetItem(K key, V value) =>
-        Wrap(key, Value.SetItemWithLog(key, value));
+        Wrap(key, Value.SetItemWithLog(key, value, ValueEqualityComparer));
 
     /// <summary>
     /// Retrieve a value from the map by key, map it to a new value,
@@ -449,7 +461,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the mapped value</returns>
     [Pure]
     public TrackingHashMap<K, V> SetItem(K key, Func<V, V> Some) =>
-        Wrap(key, Value.SetItemWithLog(key, Some));
+        Wrap(key, Value.SetItemWithLog(key, Some, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically updates an existing item, unless it doesn't exist, in which case 
@@ -462,7 +474,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the item added</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItem(K key, V value) =>
-        Wrap(key, Value.TrySetItemWithLog(key, value));
+        Wrap(key, Value.TrySetItemWithLog(key, value, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets an item by first retrieving it, applying a map, and then putting it back.
@@ -475,7 +487,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the item set</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItem(K key, Func<V, V> Some) =>
-        Wrap(key, Value.TrySetItemWithLog(key, Some));
+        Wrap(key, Value.TrySetItemWithLog(key, Some, ValueEqualityComparer));
 
     /// <summary>
     /// Checks for existence of a key in the map
@@ -493,7 +505,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool Contains(K key, V value) =>
-        Value.Contains(key, value);
+        Value.Contains(key, value, ValueEqualityComparer);
 
     /// <summary>
     /// Checks for existence of a value in the map
@@ -502,7 +514,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
     public bool Contains(V value) =>
-        Value.Contains(value);
+        Value.Contains(value, ValueEqualityComparer);
 
     /// <summary>
     /// Checks for existence of a value in the map
@@ -510,8 +522,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// <param name="value">Value to check</param>
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
-    public bool Contains<EqV>(V value) where EqV : Eq<V> =>
-        Value.Contains<EqV>(value);
+    public bool Contains(V value, IEqualityComparer<V> equalityComparer) =>
+        Value.Contains(value, equalityComparer);
 
     /// <summary>
     /// Checks for existence of a key in the map
@@ -519,8 +531,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// <param name="key">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
-    public bool Contains<EqV>(K key, V value) where EqV : Eq<V> =>
-        Value.Contains<EqV>(key, value);
+    public bool Contains(K key, V value, IEqualityComparer<V> equalityComparer) =>
+        Value.Contains(key, value, equalityComparer);
 
     /// <summary>
     /// Clears all items from the map 
@@ -539,7 +551,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New Map with the items added</returns>
     [Pure]
     public TrackingHashMap<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> pairs) =>
-        Wrap(Value.AddRangeWithLog(pairs));
+        Wrap(Value.AddRangeWithLog(pairs, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the KeyValuePairs provided
@@ -549,7 +561,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> SetItems(IEnumerable<KeyValuePair<K, V>> items) =>
-        Wrap(Value.SetItemsWithLog(items));
+        Wrap(Value.SetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
@@ -559,7 +571,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> SetItems(IEnumerable<Tuple<K, V>> items) =>
-        Wrap(Value.SetItemsWithLog(items));
+        Wrap(Value.SetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
@@ -569,7 +581,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> SetItems(IEnumerable<(K Key, V Value)> items) =>
-        Wrap(Value.SetItemsWithLog(items));
+        Wrap(Value.SetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the KeyValuePairs provided.  If any of the 
@@ -579,7 +591,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItems(IEnumerable<KeyValuePair<K, V>> items) =>
-        Wrap(Value.TrySetItemsWithLog(items));
+        Wrap(Value.TrySetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided  If any of the 
@@ -589,7 +601,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItems(IEnumerable<Tuple<K, V>> items) =>
-        Wrap(Value.TrySetItemsWithLog(items));
+        Wrap(Value.TrySetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided  If any of the 
@@ -599,7 +611,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItems(IEnumerable<(K Key, V Value)> items) =>
-        Wrap(Value.TrySetItemsWithLog(items));
+        Wrap(Value.TrySetItemsWithLog(items, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically sets a series of items using the keys provided to find the items
@@ -611,7 +623,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// <returns>New map with the items set</returns>
     [Pure]
     public TrackingHashMap<K, V> TrySetItems(IEnumerable<K> keys, Func<V, V> Some) =>
-        Wrap(Value.TrySetItemsWithLog(keys, Some));
+        Wrap(Value.TrySetItemsWithLog(keys, Some, ValueEqualityComparer));
 
     /// <summary>
     /// Atomically removes a set of keys from the map
@@ -684,7 +696,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// </summary>
     [Pure]
     public HashMap<K, V> ToHashMap() =>
-        new (value);
+        new (Value);
 
     /// <summary>
     /// Format the collection as `[(key: value), (key: value), (key: value), ...]`
@@ -742,7 +754,7 @@ public readonly struct TrackingHashMap<K, V> :
 
     [Pure]
     public TrackingHashMap<K, V> Combine(TrackingHashMap<K, V> rhs) =>
-        Wrap(Value.AppendWithLog(rhs.Value));
+        Wrap(Value.AppendWithLog(rhs.Value, ValueEqualityComparer));
 
     [Pure]
     public static TrackingHashMap<K, V> operator -(TrackingHashMap<K, V> lhs, TrackingHashMap<K, V> rhs) =>
@@ -844,7 +856,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> Intersect(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge) =>
-        Wrap(Value.IntersectWithLog(new TrieMap<EqDefault<K>, K, V>(rhs), Merge));
+        Wrap(Value.IntersectWithLog(new TrieMap<K, V>(rhs), Merge, ValueEqualityComparer));
 
     /// <summary>
     /// Returns the elements that are in both this and other
@@ -852,7 +864,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> Intersect(HashMap<K, V> rhs, WhenMatched<K, V, V, V> Merge) =>
-        Wrap(Value.IntersectWithLog(rhs.Value, Merge));
+        Wrap(Value.IntersectWithLog(rhs.Value, Merge, ValueEqualityComparer));
 
     /// <summary>
     /// Returns the elements that are in both this and other
@@ -860,7 +872,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> Intersect(TrackingHashMap<K, V> rhs, WhenMatched<K, V, V, V> Merge) =>
-        Wrap(Value.IntersectWithLog(rhs.Value, Merge));
+        Wrap(Value.IntersectWithLog(rhs.Value, Merge, ValueEqualityComparer));
 
     /// <summary>
     /// Returns True if other overlaps this set
@@ -928,7 +940,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> Union(IEnumerable<(K Key, V Value)> other, WhenMatched<K, V, V, V> Merge) =>
-        Wrap(Value.UnionWithLog(other, static (_, v) => v, static (_, v) => v, Merge));
+        Wrap(Value.UnionWithLog(other, static (_, v) => v, static (_, v) => v, Merge, ValueEqualityComparer, v => v));
 
     /// <summary>
     /// Union two maps.  
@@ -944,7 +956,7 @@ public readonly struct TrackingHashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> Union<W>(IEnumerable<(K Key, W Value)> other, WhenMissing<K, W, V> MapRight, WhenMatched<K, V, W, V> Merge) =>
-        Wrap(Value.UnionWithLog(other, static (_, v) => v, MapRight, Merge));
+        Wrap(Value.UnionWithLog(other, static (_, v) => v, MapRight, Merge, ValueEqualityComparer, v => v));
         
     /// <summary>
     /// Equality of keys and values with `EqDefault<V>` used for values
@@ -958,21 +970,21 @@ public readonly struct TrackingHashMap<K, V> :
     /// </summary>
     [Pure]
     public bool Equals(TrackingHashMap<K, V> other) =>
-        Value.Equals<EqDefault<V>>(other.Value);
+        Value.Equals(other.Value);
 
     /// <summary>
     /// Equality of keys and values with `EqV` used for values
     /// </summary>
     [Pure]
-    public bool Equals<EqV>(TrackingHashMap<K, V> other) where EqV : Eq<V> =>
-        Value.Equals<EqV>(other.Value);
+    public bool Equals(TrackingHashMap<K, V> other, IEqualityComparer<V> equalityComparer) =>
+        Value.Equals(other.Value, equalityComparer);
 
     /// <summary>
     /// Equality of keys only
     /// </summary>
     [Pure]
     public bool EqualsKeys(TrackingHashMap<K, V> other) =>
-        Value.Equals<EqTrue<V>>(other.Value);
+        Value.Equals(other.Value, EqTrue<V>.Comparer);
 
     [Pure]
     public override int GetHashCode() =>

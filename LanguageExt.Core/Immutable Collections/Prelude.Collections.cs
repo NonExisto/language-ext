@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 using LSeq = LanguageExt.Seq;
+using System.Runtime.CompilerServices;
 
 namespace LanguageExt;
 
@@ -284,7 +285,7 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     public static HashMap<K, V> HashMap<K, V>((K, V) head, params (K, V)[] tail) =>
-        LanguageExt.HashMap.create(head, tail);
+        LanguageExt.HashMap.create((IEqualityComparer<K>?)null, head, tail);
 
     /// <summary>
     /// Create an immutable hash-map
@@ -306,29 +307,29 @@ public static partial class Prelude
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static HashMap<EqK, K, V> HashMap<EqK, K, V>() where EqK : Eq<K> =>
-        LanguageExt.HashMap.empty<EqK, K, V>();
+    public static HashMap<K, V> HashMap<EqK, K, V>(IEqualityComparer<K> equalityComparer) where EqK : Eq<K> =>
+        LanguageExt.HashMap.create<K, V>(equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static HashMap<EqK, K, V> HashMap<EqK, K, V>((K, V) head, params (K, V)[] tail) where EqK : Eq<K> =>
-        LanguageExt.HashMap.create<EqK, K, V>(head, tail);
+    public static HashMap<K, V> HashMap<K, V>(IEqualityComparer<K> equalityComparer, (K, V) head, params (K, V)[] tail) =>
+        LanguageExt.HashMap.create<K, V>(equalityComparer, head, tail);
 
     /// <summary>
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static HashMap<EqK, K, V> toHashMap<EqK, K, V>(IEnumerable<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.HashMap.createRange<EqK, K, V>(items);
+    public static HashMap<K, V> toHashMap<K, V>(IEnumerable<(K, V)> items, IEqualityComparer<K> equalityComparer) =>
+        LanguageExt.HashMap.createRange<K, V>(items, equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static HashMap<EqK, K, V> toHashMap<EqK, K, V>(ReadOnlySpan<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.HashMap.createRange<EqK, K, V>(items);
+    public static HashMap<K, V> toHashMap<K, V>(ReadOnlySpan<(K, V)> items, IEqualityComparer<K> equalityComparer)  =>
+        LanguageExt.HashMap.createRange<K, V>(items, equalityComparer);
 
 
         
@@ -369,32 +370,29 @@ public static partial class Prelude
     /// Create an immutable tracking hash-map
     /// </summary>
     [Pure]
-    public static TrackingHashMap<EqK, K, V> TrackingHashMap<EqK, K, V>() where EqK : Eq<K> =>
-        LanguageExt.TrackingHashMap.empty<EqK, K, V>();
+    public static TrackingHashMap<K, V> TrackingHashMap<K, V>(IEqualityComparer<K> equalityComparer) =>
+        new LanguageExt.TrackingHashMap<K, V>(equalityComparer);
 
     /// <summary>
     /// Create an immutable tracking hash-map
     /// </summary>
     [Pure]
-    public static TrackingHashMap<EqK, K, V> TrackingHashMap<EqK, K, V>((K, V) head, params (K, V)[] tail) where EqK : Eq<K> =>
-        LanguageExt.TrackingHashMap.create<EqK, K, V>(head, tail);
+    public static TrackingHashMap<K, V> TrackingHashMap<EqK, K, V>(IEqualityComparer<K> equalityComparer, (K, V) head, params (K, V)[] tail) where EqK : Eq<K> =>
+        TrackingHashMap<K, V>(equalityComparer).AddRange(head.Cons(tail));
 
     /// <summary>
     /// Create an immutable tracking hash-map
     /// </summary>
     [Pure]
-    public static TrackingHashMap<EqK, K, V> toTrackingHashMap<EqK, K, V>(IEnumerable<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.TrackingHashMap.createRange<EqK, K, V>(items);
+    public static TrackingHashMap<K, V> toTrackingHashMap<EqK, K, V>(IEnumerable<(K, V)> items, IEqualityComparer<K> equalityComparer) =>
+        TrackingHashMap<K, V>(equalityComparer).AddRange(items);
 
     /// <summary>
     /// Create an immutable tracking hash-map
     /// </summary>
     [Pure]
-    public static TrackingHashMap<EqK, K, V> toTrackingHashMap<EqK, K, V>(ReadOnlySpan<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.TrackingHashMap.createRange<EqK, K, V>(items);
-
-        
-        
+    public static TrackingHashMap<K, V> toTrackingHashMap<EqK, K, V>(ReadOnlySpan<(K, V)> items, IEqualityComparer<K> equalityComparer) where EqK : Eq<K> =>
+        new LanguageExt.TrackingHashMap<K, V>(items, null, equalityComparer);
 
 
     /// <summary>
@@ -409,7 +407,14 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     public static AtomHashMap<K, V> AtomHashMap<K, V>((K, V) head, params (K, V)[] tail) =>
-        LanguageExt.HashMap.create(head, tail).ToAtom();
+        LanguageExt.HashMap.create(null, head, tail).ToAtom();
+
+    /// <summary>
+    /// Create an immutable hash-map
+    /// </summary>
+    [Pure]
+    public static AtomHashMap<K, V> AtomHashMap<K, V>(IEqualityComparer<K> equalityComparer, (K, V) head, params (K, V)[] tail) =>
+        LanguageExt.HashMap.create(equalityComparer, head, tail).ToAtom();
 
     /// <summary>
     /// Create an immutable hash-map
@@ -437,36 +442,22 @@ public static partial class Prelude
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static AtomHashMap<EqK, K, V> AtomHashMap<EqK, K, V>() where EqK : Eq<K> =>
-        LanguageExt.AtomHashMap<EqK, K, V>.Empty;
+    public static AtomHashMap<K, V> AtomHashMap<K, V>(IEqualityComparer<K>? equalityComparer = null) =>
+        new LanguageExt.AtomHashMap<K, V>(equalityComparer);
 
     /// <summary>
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static AtomHashMap<EqK, K, V> AtomHashMap<EqK, K, V>((K, V) head, params (K, V)[] tail) where EqK : Eq<K> =>
-        LanguageExt.HashMap.create<EqK, K, V>(head, tail).ToAtom();
+    public static AtomHashMap<K, V> toAtomHashMap<K, V>(IEnumerable<(K, V)> items, IEqualityComparer<K> equalityComparer) =>
+        LanguageExt.HashMap.createRange(items, equalityComparer).ToAtom();
 
     /// <summary>
     /// Create an immutable hash-map
     /// </summary>
     [Pure]
-    public static AtomHashMap<EqK, K, V> AtomHashMap<EqK, K, V>(HashMap<EqK, K, V> items) where EqK : Eq<K> =>
-        new (items);
-
-    /// <summary>
-    /// Create an immutable hash-map
-    /// </summary>
-    [Pure]
-    public static AtomHashMap<EqK, K, V> toAtomHashMap<EqK, K, V>(IEnumerable<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.HashMap.createRange<EqK, K, V>(items).ToAtom();
-
-    /// <summary>
-    /// Create an immutable hash-map
-    /// </summary>
-    [Pure]
-    public static AtomHashMap<EqK, K, V> toAtomHashMap<EqK, K, V>(ReadOnlySpan<(K, V)> items) where EqK : Eq<K> =>
-        LanguageExt.HashMap.createRange<EqK, K, V>(items).ToAtom();
+    public static AtomHashMap<K, V> toAtomHashMap<EqK, K, V>(ReadOnlySpan<(K, V)> items, IEqualityComparer<K> equalityComparer) =>
+        LanguageExt.HashMap.createRange(items, equalityComparer).ToAtom();
 
     /// <summary>
     /// Create an immutable list
@@ -1318,4 +1309,9 @@ public static partial class Prelude
 
     public static IEqualityComparer<T> getRegisteredEqualityComparerOrDefault<T>() => 
 			EqualityComparer as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetHashCodeOrDefault<T>(this IEqualityComparer<T> equalityComparer, T value) => 
+        value is null ? 0 : equalityComparer.GetHashCode(value);
 }

@@ -17,16 +17,16 @@ namespace LanguageExt;
 public static class STM
 {
     static long refIdNext;
-    static readonly AtomHashMap<EqLong, long, RefState> state;
+    static readonly AtomHashMap<long, RefState> state;
     static readonly AsyncLocal<Transaction?> transaction;
 
     static STM()
     {
-        state       = AtomHashMap<EqLong, long, RefState>();
+        state       = AtomHashMap<long, RefState>(Traits.Eq.Comparer<EqLong, long>());
         transaction = new AsyncLocal<Transaction?>();
     }
 
-    static void OnChange(TrieMap<EqLong, long, Change<RefState>> patch) 
+    static void OnChange(TrieMap<long, Change<RefState>> patch) 
     {
         foreach (var change in patch)
         {
@@ -45,7 +45,7 @@ public static class STM
         var id = Interlocked.Increment(ref refIdNext);
         var r = new Ref<A>(id);
         var v = new RefState<A>(0, value, validator, r);
-        state.Add(id, v);
+        state.Add(id, v, null);
         return r;
     }
         
@@ -308,7 +308,7 @@ public static class STM
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static void ValidateReads(Transaction t, TrieMap<EqLong, long, RefState> s)
+    static void ValidateReads(Transaction t, TrieMap<long, RefState> s)
     {
         var tlocal = t;
         var slocal = tlocal.state;
@@ -323,7 +323,7 @@ public static class STM
         }
     }
 
-    static TrieMap<EqLong, long, RefState> CommitWrites(Transaction t, TrieMap<EqLong, long, RefState> s)
+    static TrieMap<long, RefState> CommitWrites(Transaction t, TrieMap<long, RefState> s)
     {
         // Check if something else wrote to what we were writing
         var tlocal = t;
@@ -351,7 +351,7 @@ public static class STM
         return s;
     }
 
-    static (TrieMap<EqLong, long, RefState>, R) CommitCommutes<R>(Transaction t, TrieMap<EqLong, long, RefState> s, long returnRefId, R result)
+    static (TrieMap<long, RefState>, R) CommitCommutes<R>(Transaction t, TrieMap<long, RefState> s, long returnRefId, R result)
     {
         // Run the commutative operations
         foreach (var commute in t.commutes)
@@ -512,17 +512,17 @@ public static class STM
     {
         static long transactionIdNext;
         public readonly long transactionId;
-        public TrieMap<EqLong, long, RefState> state;
-        public TrieMap<EqLong, long, Change<RefState>> changes;
+        public TrieMap<long, RefState> state;
+        public TrieMap<long, Change<RefState>> changes;
         public readonly System.Collections.Generic.HashSet<long> reads = new();
         public readonly System.Collections.Generic.HashSet<long> writes = new();
         public readonly System.Collections.Generic.List<(long Id, Func<object, object> Fun)> commutes = new();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Transaction(TrieMap<EqLong, long, RefState> state)
+        public Transaction(TrieMap<long, RefState> state)
         {
             this.state    = state;
-            changes       = TrieMap<EqLong, long, Change<RefState>>.EmptyForMutating;
+            changes       = TrieMap<long, Change<RefState>>.Empty(Traits.Eq.Comparer<EqLong, long>());
             transactionId = Interlocked.Increment(ref transactionIdNext);
         }
 

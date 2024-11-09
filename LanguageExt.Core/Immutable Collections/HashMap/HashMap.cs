@@ -30,16 +30,21 @@ public readonly struct HashMap<K, V> :
     K<HashMap<K>, V>
 {
     [Pure] 
-    public static HashMap<K, V> Empty { get; } = new(TrieMap<EqDefault<K>, K, V>.Empty);
+    public static HashMap<K, V> Empty { get; } = new(TrieMap<K, V>.Empty());
 
-    readonly TrieMap<EqDefault<K>, K, V>? value;
+    readonly TrieMap<K, V>? _value;
 
-    internal TrieMap<EqDefault<K>, K, V> Value => 
-        value ?? TrieMap<EqDefault<K>, K, V>.Empty;
+    internal TrieMap<K, V> Value => 
+        _value ?? TrieMap<K, V>.Empty();
+
+    internal HashMap(IEqualityComparer<K>? equalityComparer)
+    {
+        _value = TrieMap<K, V>.Empty(equalityComparer);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal HashMap(TrieMap<EqDefault<K>, K, V> value) =>
-        this.value = value;
+    internal HashMap(TrieMap<K, V> value) =>
+        _value = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public HashMap(IEnumerable<(K Key, V Value)> items) 
@@ -47,8 +52,8 @@ public readonly struct HashMap<K, V> :
     { }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public HashMap(IEnumerable<(K Key, V Value)> items, bool tryAdd) =>
-        value = new TrieMap<EqDefault<K>, K, V>(items, tryAdd);
+    public HashMap(IEnumerable<(K Key, V Value)> items, bool tryAdd, IEqualityComparer<K>? equalityComparer = null) =>
+        _value = new TrieMap<K, V>(items, tryAdd, equalityComparer);
 
     /// <summary>
     /// Item at index lens
@@ -56,8 +61,8 @@ public readonly struct HashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<HashMap<K, V>, V> item(K key) => Lens<HashMap<K, V>, V>.New(
-        Get: la => la[key],
-        Set: a => la => la.AddOrUpdate(key, a)
+        Get: la => la[key!],
+        Set: a => la => la.AddOrUpdate(key!, a)
     );
 
     /// <summary>
@@ -67,7 +72,7 @@ public readonly struct HashMap<K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<HashMap<K, V>, Option<V>> itemOrNone(K key) => Lens<HashMap<K, V>, Option<V>>.New(
         Get: la => la.Find(key),
-        Set: a => la => a.Match(Some: x => la.AddOrUpdate(key, x), None: () => la.Remove(key))
+        Set: a => la => a.Match(Some: x => la.AddOrUpdate(key!, x), None: () => la.Remove(key))
     );
 
     /// <summary>
@@ -81,17 +86,17 @@ public readonly struct HashMap<K, V> :
                    {
                        foreach (var item in lb)
                        {
-                           la = la.AddOrUpdate(item.Key, lens.Set(item.Value, la[item.Key]));
+                           la = la.AddOrUpdate(item.Key!, lens.Set(item.Value, la[item.Key!]));
                        }
                        return la;
                    });
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static HashMap<K, V> Wrap(TrieMap<EqDefault<K>, K, V> value) =>
+    static HashMap<K, V> Wrap(TrieMap<K, V> value) =>
         new (value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static HashMap<K, U> Wrap<U>(TrieMap<EqDefault<K>, K, U> value) =>
+    static HashMap<K, U> Wrap<U>(TrieMap<K, U> value) =>
         new (value);
 
     /// <summary>
@@ -103,7 +108,7 @@ public readonly struct HashMap<K, V> :
     public V this[K key]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => Value[key];
+        get => Value[key!];
     }
     
     /// <summary>
@@ -113,7 +118,7 @@ public readonly struct HashMap<K, V> :
     public bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.IsEmpty ?? true;
+        get => _value?.IsEmpty ?? true;
     }
 
     /// <summary>
@@ -123,7 +128,7 @@ public readonly struct HashMap<K, V> :
     public int Count
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
+        get => _value?.Count ?? 0;
     }
 
     /// <summary>
@@ -498,8 +503,8 @@ public readonly struct HashMap<K, V> :
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Contains<EqV>(V value) where EqV : Eq<V> =>
-        Value.Contains<EqV>(value);
+    public bool Contains(V value, IEqualityComparer<V> equalityComparer)  =>
+        Value.Contains(value, equalityComparer);
 
     /// <summary>
     /// Checks for existence of a key and value in the map
@@ -509,8 +514,17 @@ public readonly struct HashMap<K, V> :
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Contains<EqV>(K key, V value) where EqV : Eq<V> =>
-        Value.Contains<EqV>(key, value);
+    public bool Contains(K key, V value, IEqualityComparer<V> equalityComparer)  =>
+        Value.Contains(key, value, equalityComparer);
+
+    /// <summary>
+    /// Clears all items from the set
+    /// </summary>
+    /// <remarks>Functionally equivalent to calling HSet.empty as the original structure is untouched</remarks>
+    /// <returns>Empty HSet</returns>
+    [Pure]
+    public HashMap<K, V> Clear() =>
+        new(Value.Clear());
 
     /// <summary>
     /// Atomically adds a range of items to the map
@@ -620,7 +634,7 @@ public readonly struct HashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Contains((K Key, V Value) pair) =>
-        Value.Contains(pair.Key, pair.Value);
+        Value.Contains(pair.Key!, pair.Value);
 
     /// <summary>
     /// Enumerable of map keys
@@ -674,7 +688,7 @@ public readonly struct HashMap<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrackingHashMap<K, V> ToTrackingHashMap() =>
-        new (value);
+        new (Value);
 
     /// <summary>
     /// Format the collection as `[(key: value), (key: value), (key: value), ...]`
@@ -996,29 +1010,22 @@ public readonly struct HashMap<K, V> :
     public override bool Equals(object? obj) =>
         obj is HashMap<K, V> hm && Equals(hm);
 
-    /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+  
+  /// <summary>
+    /// Equality of keys and values with default `IEqualityComparer<V>` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(HashMap<K, V> other) =>
-        Value.Equals<EqDefault<V>>(other.Value);
+        Value.Equals(other.Value);
 
     /// <summary>
-    /// Equality of keys and values with `EqV` used for values
+    /// Equality of keys and values with `IEqualityComparer<V>` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals<EqV>(HashMap<K, V> other) where EqV : Eq<V> =>
-        Value.Equals<EqV>(other.Value);
-
-    /// <summary>
-    /// Equality of keys only
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool EqualsKeys(HashMap<K, V> other) =>
-        Value.Equals<EqTrue<V>>(other.Value);
+    public bool Equals(HashMap<K, V> other, IEqualityComparer<V> equalityComparer) =>
+        Value.Equals(other.Value, equalityComparer);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1188,6 +1195,10 @@ public readonly struct HashMap<K, V> :
             return false;
         }
     }
+
+    [Pure]
+    public bool HasSameEqualityComparer(IEqualityComparer<K> equalityComparer) => 
+        Value.HasSameEqualityComparer(equalityComparer);
     
     /// <summary>
     /// Get a IReadOnlyDictionary for this map.  No mapping is required, so this is very fast.

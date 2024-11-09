@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using LanguageExt.ClassInstances;
 
 namespace LanguageExt;
 
@@ -21,15 +20,15 @@ public static partial class HashMap
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HashMap<K, V> clear<K, V>(HashMap<K, V> map) =>
-        HashMap<K, V>.Empty;
+        map.Clear();
 
     /// <summary>
     /// Creates a new empty HashMap 
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> empty<K, V>() =>
-        HashMap<K, V>.Empty;
+    public static HashMap<K, V> empty<K, V>(IEqualityComparer<K>? equalityComparer = null) =>
+        new HashMap<K, V>(equalityComparer);
 
     /// <summary>
     /// Create a singleton collection
@@ -56,47 +55,47 @@ public static partial class HashMap
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> create<K, V>() =>
-        HashMap<K, V>.Empty;
+    public static HashMap<K, V> create<K, V>(IEqualityComparer<K>? equalityComparer = null) =>
+        new HashMap<K, V>(equalityComparer);
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> create<K, V>(Tuple<K, V> head, params Tuple<K, V>[] tail) =>
-        createRange(head.Cons(tail));
+    public static HashMap<K, V> create<K, V>(IEqualityComparer<K>? equalityComparer, Tuple<K, V> head, params Tuple<K, V>[] tail) =>
+        createRange(head.Cons(tail), equalityComparer);
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> create<K, V>((K, V) head, params (K, V)[] tail) =>
-        createRange(head.Cons(tail));
+    public static HashMap<K, V> create<K, V>(IEqualityComparer<K>? equalityComparer, (K, V) head, params (K, V)[] tail) =>
+        createRange(head.Cons(tail), equalityComparer);
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
-    public static HashMap<K, V> create<K, V>(KeyValuePair<K, V> head, params KeyValuePair<K, V>[] tail) =>
-        createRange(head.Cons(tail));
-
-    /// <summary>
-    /// Creates a new Map seeded with the keyValues provided
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> createRange<K, V>(IEnumerable<Tuple<K, V>> keyValues) =>
-        createRange(keyValues.Select(static kv => (kv.Item1, kv.Item2)));
+    public static HashMap<K, V> create<K, V>(IEqualityComparer<K>? equalityComparer, KeyValuePair<K, V> head, params KeyValuePair<K, V>[] tail) =>
+        createRange(head.Cons(tail), equalityComparer);
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> createRange<K, V>(IEnumerable<(K, V)> keyValues) =>
-        new (new TrieMap<EqDefault<K>, K, V>(keyValues));
+    public static HashMap<K, V> createRange<K, V>(IEnumerable<Tuple<K, V>> keyValues, IEqualityComparer<K>? equalityComparer = null) =>
+        createRange(keyValues.Select(static kv => (kv.Item1, kv.Item2)), equalityComparer);
+
+    /// <summary>
+    /// Creates a new Map seeded with the keyValues provided
+    /// </summary>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HashMap<K, V> createRange<K, V>(IEnumerable<(K, V)> keyValues, IEqualityComparer<K>? equalityComparer = null) =>
+        new (new TrieMap<K, V>(keyValues, equalityComparer: equalityComparer));
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
@@ -106,15 +105,23 @@ public static partial class HashMap
     public static HashMap<K, V> createRange<K, V>(ReadOnlySpan<(K, V)> keyValues) =>
         keyValues.IsEmpty
             ? HashMap<K, V>.Empty
-            : new(new TrieMap<EqDefault<K>, K, V>(keyValues));
+            : new(new TrieMap<K, V>(keyValues));
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashMap<K, V> createRange<K, V>(IEnumerable<KeyValuePair<K, V>> keyValues) =>
-        createRange(keyValues.Select(static kv => (kv.Key, kv.Value)));
+    public static HashMap<K, V> createRange<K, V>(ReadOnlySpan<(K, V)> keyValues, IEqualityComparer<K>? equalityComparer) =>
+        new(new TrieMap<K, V>(keyValues, equalityComparer: equalityComparer));
+
+    /// <summary>
+    /// Creates a new Map seeded with the keyValues provided
+    /// </summary>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HashMap<K, V> createRange<K, V>(IEnumerable<KeyValuePair<K, V>> keyValues, IEqualityComparer<K>? equalityComparer) =>
+        createRange(keyValues.Select(static kv => (kv.Key, kv.Value)), equalityComparer);
 
     /// <summary>
     /// Atomically adds a new item to the map

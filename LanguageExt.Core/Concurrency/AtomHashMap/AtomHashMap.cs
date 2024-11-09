@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -26,19 +27,25 @@ public class AtomHashMap<K, V> :
     IEquatable<AtomHashMap<K, V>>,
     IReadOnlyDictionary<K, V>
 {
-    volatile TrieMap<EqDefault<K>, K, V> Items;
+    private const string Reason = "Value equality comparer is required for change tracking";
+    internal volatile TrieMap<K, V> Items;
     public event AtomHashMapChangeEvent<K, V>? Change;
 
     /// <summary>
     /// Creates a new atom-hashmap
     /// </summary>
-    public static AtomHashMap<K, V> Empty => new(TrieMap<EqDefault<K>, K, V>.Empty);
-        
+    public static AtomHashMap<K, V> Empty => new(TrieMap<K, V>.Empty());
+
+    internal AtomHashMap(IEqualityComparer<K>? equalityComparer)
+    {
+        Items = TrieMap<K, V>.Empty(equalityComparer);
+    }
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="items">Trie map</param>
-    AtomHashMap(TrieMap<EqDefault<K>, K, V> items) =>
+    AtomHashMap(TrieMap<K, V> items) =>
         Items = items;
         
     /// <summary>
@@ -123,14 +130,39 @@ public class AtomHashMap<K, V> :
     }
 
     /// <summary>
+    /// Internal version of `Swap` that doesn't do any change tracking
+    /// </remarks>
+    internal Unit SwapInternal(Func<TrieMap<K, V>, TrieMap<K, V>> swap)
+    {
+        SpinWait sw = default;
+        while (true)
+        {
+            var oitems = Items;
+            var nitems = swap(oitems);
+            if(ReferenceEquals(oitems, nitems))
+            {
+                // no change
+                return default;
+            }
+            if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
+            {
+                return default;
+            }
+
+            sw.SpinOnce();
+        }
+    }
+
+    /// <summary>
     /// Atomically swap a key in the hash-map, if it exists.  If it doesn't exist, nothing changes.
     /// Allows for multiple operations on the hash-map value in an entirely transactional and atomic way.
     /// </summary>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <param name="swap">Swap function, maps the current state of a value in the AtomHashMap to a new value</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit SwapKey(K key, Func<V, V> swap)
+    public Unit SwapKey(K key, Func<V, V> swap, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -142,7 +174,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null 
                                        ? (oitems.SetItem(key, nvalue), Change<V>.None) 
-                                       : oitems.SetItemWithLog(key, nvalue);
+                                       : oitems.SetItemWithLog(key, nvalue, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -171,10 +203,11 @@ public class AtomHashMap<K, V> :
     /// Allows for multiple operations on the hash-map value in an entirely transactional and atomic way.
     /// </summary>
     /// <param name="swap">Swap function, maps the current state of a value in the AtomHashMap to a new value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit SwapKey(K key, Func<Option<V>, Option<V>> swap)
+    public Unit SwapKey(K key, Func<Option<V>, Option<V>> swap, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -194,9 +227,9 @@ public class AtomHashMap<K, V> :
                                          }
                                        : (ovalue.IsSome, nvalue.IsSome) switch
                                          {
-                                             (true, true)   => oitems.SetItemWithLog(key, (V)nvalue),
+                                             (true, true)   => oitems.SetItemWithLog(key, (V)nvalue, equalityComparer.require(Reason)),
                                              (true, false)  => oitems.RemoveWithLog(key),
-                                             (false, true)  => oitems.AddWithLog(key, (V)nvalue),
+                                             (false, true)  => oitems.AddWithLog(key, (V)nvalue, equalityComparer.require(Reason)),
                                              (false, false) => (oitems, Change<V>.None)
                                          };
                 
@@ -333,9 +366,10 @@ public class AtomHashMap<K, V> :
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the key already exists</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
-    public Unit Add(K key, V value)
+    public Unit Add(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -344,7 +378,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.Add(key, value), null)
-                                       : oitems.AddWithLog(key, value);
+                                       : oitems.AddWithLog(key, value, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -362,8 +396,9 @@ public class AtomHashMap<K, V> :
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
-    public Unit TryAdd(K key, V value)
+    public Unit TryAdd(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -372,7 +407,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.TryAdd(key, value), null)
-                                       : oitems.TryAddWithLog(key, value);
+                                       : oitems.TryAddWithLog(key, value, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -394,8 +429,9 @@ public class AtomHashMap<K, V> :
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
-    public Unit AddOrUpdate(K key, V value)
+    public Unit AddOrUpdate(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -404,7 +440,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.AddOrUpdate(key, value), null)
-                                       : oitems.AddOrUpdateWithLog(key, value);
+                                       : oitems.AddOrUpdateWithLog(key, value, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -420,12 +456,13 @@ public class AtomHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit AddOrUpdate(K key, Func<V, V> Some, Func<V> None)
+    public Unit AddOrUpdate(K key, Func<V, V> Some, Func<V> None, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -434,7 +471,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.AddOrUpdate(key, Some, None), null)
-                                       : oitems.AddOrUpdateWithLog(key, Some, None);
+                                       : oitems.AddOrUpdateWithLog(key, Some, None, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -450,12 +487,13 @@ public class AtomHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit AddOrUpdate(K key, Func<V, V> Some, V None)
+    public Unit AddOrUpdate(K key, Func<V, V> Some, V None, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -464,7 +502,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.AddOrUpdate(key, Some, None), null)
-                                       : oitems.AddOrUpdateWithLog(key, Some, None);
+                                       : oitems.AddOrUpdateWithLog(key, Some, None, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -480,9 +518,10 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="range">Range of tuples to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
-    public Unit AddRange(IEnumerable<(K Key, V Value)> range)
+    public Unit AddRange(IEnumerable<(K Key, V Value)> range, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      srange = toSeq(range);
@@ -493,7 +532,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.AddRange(srange), null)
-                                        : oitems.AddRangeWithLog(srange);
+                                        : oitems.AddRangeWithLog(srange, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -510,8 +549,9 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="range">Range of tuples to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
-    public Unit TryAddRange(IEnumerable<(K Key, V Value)> range)
+    public Unit TryAddRange(IEnumerable<(K Key, V Value)> range, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      srange = toSeq(range);
@@ -522,7 +562,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TryAddRange(srange), null)
-                                        : oitems.TryAddRangeWithLog(srange);
+                                        : oitems.TryAddRangeWithLog(srange, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -543,8 +583,9 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="range">Range of KeyValuePairs to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
-    public Unit TryAddRange(IEnumerable<KeyValuePair<K, V>> range)
+    public Unit TryAddRange(IEnumerable<KeyValuePair<K, V>> range, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      srange = toSeq(range);
@@ -555,7 +596,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TryAddRange(srange), null)
-                                        : oitems.TryAddRangeWithLog(srange);
+                                        : oitems.TryAddRangeWithLog(srange, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -576,9 +617,10 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="range">Range of tuples to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
-    public Unit AddOrUpdateRange(IEnumerable<(K Key, V Value)> range)
+    public Unit AddOrUpdateRange(IEnumerable<(K Key, V Value)> range, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      srange = toSeq(range);
@@ -589,7 +631,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.AddOrUpdateRange(srange), null)
-                                        : oitems.AddOrUpdateRangeWithLog(srange);
+                                        : oitems.AddOrUpdateRangeWithLog(srange, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -606,8 +648,9 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="range">Range of KeyValuePairs to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
-    public Unit AddOrUpdateRange(IEnumerable<KeyValuePair<K, V>> range)
+    public Unit AddOrUpdateRange(IEnumerable<KeyValuePair<K, V>> range, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      srange = toSeq(range);
@@ -618,7 +661,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.AddOrUpdateRange(srange), null)
-                                        : oitems.AddOrUpdateRangeWithLog(srange);
+                                        : oitems.AddOrUpdateRangeWithLog(srange, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -692,17 +735,18 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to find</param>
     /// <param name="None">Delegate to get the value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>Added value</returns>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public V FindOrAdd(K key, Func<V> None)
+    public V FindOrAdd(K key, Func<V> None, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
         {
             var oitems = Items;
-            var (nitems, value, change) = Items.FindOrAddWithLog(key, None);
+            var (nitems, value, change) = Items.FindOrAddWithLog(key, None, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return value;
@@ -723,14 +767,15 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to find</param>
     /// <param name="value">Delegate to get the value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>Added value</returns>
-    public V FindOrAdd(K key, V value)
+    public V FindOrAdd(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
         {
             var oitems = Items;
-            var (nitems, nvalue, change) = Items.FindOrAddWithLog(key, value);
+            var (nitems, nvalue, change) = Items.FindOrAddWithLog(key, value, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return nvalue;
@@ -751,17 +796,18 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to find</param>
     /// <param name="None">Delegate to get the value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>Added value</returns>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Option<V> FindOrMaybeAdd(K key, Func<Option<V>> None)
+    public Option<V> FindOrMaybeAdd(K key, Func<Option<V>> None, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
         {
             var oitems = Items;
-            var (nitems, nvalue, change) = Items.FindOrMaybeAddWithLog(key, None);
+            var (nitems, nvalue, change) = Items.FindOrMaybeAddWithLog(key, None, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return nvalue;
@@ -782,14 +828,15 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to find</param>
     /// <param name="None">Delegate to get the value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>Added value</returns>
-    public Option<V> FindOrMaybeAdd(K key, Option<V> None)
+    public Option<V> FindOrMaybeAdd(K key, Option<V> None, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
         {
             var oitems = Items;
-            var (nitems, nvalue, change) = Items.FindOrMaybeAddWithLog(key, None);
+            var (nitems, nvalue, change) = Items.FindOrMaybeAddWithLog(key, None, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return nvalue;
@@ -811,7 +858,8 @@ public class AtomHashMap<K, V> :
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
-    public Unit SetItem(K key, V value)
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    public Unit SetItem(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -820,7 +868,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.SetItem(key, value), null)
-                                       : oitems.SetItemWithLog(key, value);
+                                       : oitems.SetItemWithLog(key, value, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -836,12 +884,13 @@ public class AtomHashMap<K, V> :
     /// put it back.
     /// </summary>
     /// <param name="key">Key to set</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the item isn't found</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit SetItem(K key, Func<V, V> Some)
+    public Unit SetItem(K key, Func<V, V> Some, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -850,7 +899,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var(nitems, change) = onChange == null
                                       ? (oitems.SetItem(key, Some), null)
-                                      : oitems.SetItemWithLog(key, Some);
+                                      : oitems.SetItemWithLog(key, Some, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChange(oitems, nitems, key, change);
@@ -868,8 +917,9 @@ public class AtomHashMap<K, V> :
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the value is null</exception>
-    public Unit TrySetItem(K key, V value)
+    public Unit TrySetItem(K key, V value, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -878,7 +928,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.TrySetItem(key, value), null)
-                                       : oitems.TrySetItemWithLog(key, value);
+                                       : oitems.TrySetItemWithLog(key, value, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -899,12 +949,13 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to set</param>
     /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit TrySetItem(K key, Func<V, V> Some)
+    public Unit TrySetItem(K key, Func<V, V> Some, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -913,7 +964,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, change) = onChange == null
                                        ? (oitems.TrySetItem(key, Some), null)
-                                       : oitems.TrySetItemWithLog(key, Some);
+                                       : oitems.TrySetItemWithLog(key, Some, equalityComparer.require(Reason));
             if(ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -961,8 +1012,8 @@ public class AtomHashMap<K, V> :
     /// <param name="value">Value to check</param>
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
-    public bool Contains<EqV>(V value) where EqV : Eq<V> =>
-        Items.Contains<EqV>(value);
+    public bool Contains(V value, IEqualityComparer<V> equalityComparer) =>
+        Items.Contains(value, equalityComparer);
 
     /// <summary>
     /// Checks for existence of a key in the map
@@ -970,8 +1021,8 @@ public class AtomHashMap<K, V> :
     /// <param name="key">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
-    public bool Contains<EqV>(K key, V value) where EqV : Eq<V> =>
-        Items.Contains<EqV>(key, value);
+    public bool Contains(K key, V value, IEqualityComparer<V> equalityComparer) =>
+        Items.Contains(key, value, equalityComparer);
 
     /// <summary>
     /// Clears all items from the map 
@@ -1000,8 +1051,9 @@ public class AtomHashMap<K, V> :
     /// Atomically adds a range of items to the map
     /// </summary>
     /// <param name="pairs">Range of KeyValuePairs to add</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
-    public Unit AddRange(IEnumerable<KeyValuePair<K, V>> pairs)
+    public Unit AddRange(IEnumerable<KeyValuePair<K, V>> pairs, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      spairs = toSeq(pairs);
@@ -1012,7 +1064,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.AddRange(spairs), null)
-                                        : oitems.AddRangeWithLog(spairs);
+                                        : oitems.AddRangeWithLog(spairs, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1027,8 +1079,9 @@ public class AtomHashMap<K, V> :
     /// Atomically sets a series of items using the KeyValuePairs provided
     /// </summary>
     /// <param name="items">Items to set</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
-    public Unit SetItems(IEnumerable<KeyValuePair<K, V>> items)
+    public Unit SetItems(IEnumerable<KeyValuePair<K, V>> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      sitems = toSeq(items);
@@ -1039,7 +1092,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SetItems(sitems), null)
-                                        : oitems.SetItemsWithLog(sitems);
+                                        : oitems.SetItemsWithLog(sitems, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1054,8 +1107,9 @@ public class AtomHashMap<K, V> :
     /// Atomically sets a series of items using the Tuples provided.
     /// </summary>
     /// <param name="items">Items to set</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
-    public Unit SetItems(IEnumerable<(K Key, V Value)> items)
+    public Unit SetItems(IEnumerable<(K Key, V Value)> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      sitems = toSeq(items);
@@ -1066,7 +1120,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.SetItems(sitems), null)
-                                        : oitems.SetItemsWithLog(sitems);
+                                        : oitems.SetItemsWithLog(sitems, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1082,7 +1136,8 @@ public class AtomHashMap<K, V> :
     /// items don't exist then they're silently ignored.
     /// </summary>
     /// <param name="items">Items to set</param>
-    public Unit TrySetItems(IEnumerable<KeyValuePair<K, V>> items)
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    public Unit TrySetItems(IEnumerable<KeyValuePair<K, V>> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      sitems = toSeq(items);
@@ -1093,7 +1148,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(sitems), null)
-                                        : oitems.TrySetItemsWithLog(sitems);
+                                        : oitems.TrySetItemsWithLog(sitems, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1113,7 +1168,8 @@ public class AtomHashMap<K, V> :
     /// items don't exist then they're silently ignored.
     /// </summary>
     /// <param name="items">Items to set</param>
-    public Unit TrySetItems(IEnumerable<(K Key, V Value)> items)
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    public Unit TrySetItems(IEnumerable<(K Key, V Value)> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
         var      sitems = toSeq(items);
@@ -1124,7 +1180,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(sitems), null)
-                                        : oitems.TrySetItemsWithLog(sitems);
+                                        : oitems.TrySetItemsWithLog(sitems, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1146,10 +1202,11 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="keys">Keys of items to set</param>
     /// <param name="Some">Function map the existing item to a new one</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
     /// behaviours as possible to avoid repeated attempts</remarks>
-    public Unit TrySetItems(IEnumerable<K> keys, Func<V, V> Some)
+    public Unit TrySetItems(IEnumerable<K> keys, Func<V, V> Some, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw    = default;
         var      skeys = toSeq(keys);
@@ -1160,7 +1217,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.TrySetItems(skeys, Some), null)
-                                        : oitems.TrySetItemsWithLog(skeys, Some);
+                                        : oitems.TrySetItemsWithLog(skeys, Some, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1340,7 +1397,13 @@ public class AtomHashMap<K, V> :
     public static bool operator !=(HashMap<K, V> lhs, AtomHashMap<K, V> rhs) =>
         !(lhs == rhs);
 
-    public Unit Append(AtomHashMap<K, V> rhs)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="rhs"></param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    /// <returns></returns>
+    public Unit Append(AtomHashMap<K, V> rhs, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         if (rhs.IsEmpty) return default;
         SpinWait sw = default;
@@ -1350,7 +1413,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Append(rhs.Items), null)
-                                        : oitems.AppendWithLog(rhs.Items);
+                                        : oitems.AppendWithLog(rhs.Items, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1361,7 +1424,13 @@ public class AtomHashMap<K, V> :
         }
     } 
 
-    public Unit Append(HashMap<K, V> rhs)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="rhs"></param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    /// <returns></returns>
+    public Unit Append(HashMap<K, V> rhs, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         if (rhs.IsEmpty) return default;
         SpinWait sw = default;
@@ -1371,7 +1440,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Append(rhs.Value), null)
-                                        : oitems.AppendWithLog(rhs.Value);
+                                        : oitems.AppendWithLog(rhs.Value, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1526,7 +1595,7 @@ public class AtomHashMap<K, V> :
     public Unit Intersect(IEnumerable<(K Key, V Value)> rhs)
     {
         SpinWait sw   = default;
-        var      srhs = new TrieMap<EqDefault<K>, K, V>(rhs);            
+        var      srhs = new TrieMap<K, V>(rhs);            
         while (true)
         {
             var oitems   = Items;
@@ -1547,17 +1616,18 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Returns the elements that are in both this and other
     /// </summary>
-    public Unit Intersect(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge)
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    public Unit Intersect(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw   = default;
-        var      srhs = new TrieMap<EqDefault<K>, K, V>(rhs);            
+        var      srhs = new TrieMap<K, V>(rhs);            
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(srhs, Merge), null)
-                                        : oitems.IntersectWithLog(srhs, Merge);
+                                        : oitems.IntersectWithLog(srhs, Merge, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1571,7 +1641,8 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Returns the elements that are in both this and other
     /// </summary>
-    public Unit Intersect(HashMap<K, V> rhs, WhenMatched<K, V, V, V> Merge)
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
+    public Unit Intersect(HashMap<K, V> rhs, WhenMatched<K, V, V, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw = default;
         while (true)
@@ -1580,7 +1651,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Intersect(rhs.Value, Merge), null)
-                                        : oitems.IntersectWithLog(rhs.Value, Merge);
+                                        : oitems.IntersectWithLog(rhs.Value, Merge, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1709,8 +1780,9 @@ public class AtomHashMap<K, V> :
     /// the results
     /// </summary>
     /// <param name="other">Other set to union with</param>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>A set which contains all items from both sets</returns>
-    public Unit Union(IEnumerable<(K, V)> rhs)
+    public Unit Union(IEnumerable<(K, V)> rhs, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw   = default;
         var      srhs = toSeq(rhs);
@@ -1721,7 +1793,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs), null)
-                                        : oitems.UnionWithLog(srhs);
+                                        : oitems.UnionWithLog(srhs, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1735,11 +1807,12 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Union two maps.  
     /// </summary>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>
     /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
     /// sensible value.
     /// </remarks>
-    public Unit Union(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge)
+    public Unit Union(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw   = default;
         var      srhs = toSeq(rhs);
@@ -1750,7 +1823,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs, Merge), null)
-                                        : oitems.UnionWithLog(srhs, Merge);
+                                        : oitems.UnionWithLog(srhs, Merge, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1764,6 +1837,7 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Union two maps.  
     /// </summary>
+    /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>
     /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
     /// sensible value.
@@ -1772,7 +1846,7 @@ public class AtomHashMap<K, V> :
     /// The `WhenMissing` function is called when there is a key in the right-hand side, but not the left-hand-side.
     /// This allows the `V2` value-type to be mapped to the target `V` value-type. 
     /// </remarks>
-    public Unit Union<W>(IEnumerable<(K Key, W Value)> rhs, WhenMissing<K, W, V> MapRight, WhenMatched<K, V, W, V> Merge)
+    public Unit Union<W>(IEnumerable<(K Key, W Value)> rhs, WhenMissing<K, W, V> MapRight, WhenMatched<K, V, W, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw   = default;
         var      srhs = toSeq(rhs);
@@ -1783,7 +1857,7 @@ public class AtomHashMap<K, V> :
             var onChange = Change;
             var (nitems, changes) = onChange == null
                                         ? (oitems.Union(srhs, MapRight, Merge), null)
-                                        : oitems.UnionWithLog(srhs, MapRight, Merge);
+                                        : oitems.UnionWithLog(srhs, MapRight, Merge, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1820,14 +1894,14 @@ public class AtomHashMap<K, V> :
     /// </summary>
     [Pure]
     public bool EqualsKeys(AtomHashMap<K, V> other) =>
-        Items.Equals<EqTrue<V>>(other.Items);
+        Items.Equals(other.Items, EqTrue<V>.Comparer);
 
     /// <summary>
     /// Equality of keys only
     /// </summary>
     [Pure]
-    public bool EqualsKeys(HashMap<K, V> other) =>
-        Items.Equals<EqTrue<V>>(other.Value);
+    public bool Equals(HashMap<K, V> other, IEqualityComparer<V> equalityComparer) =>
+        Items.Equals(other.Value, equalityComparer);
 
     [Pure]
     public override int GetHashCode() =>
@@ -2026,7 +2100,7 @@ public class AtomHashMap<K, V> :
         Values.Fold(state, folder);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void AnnounceChange(TrieMap<EqDefault<K>, K, V> prev, TrieMap<EqDefault<K>, K, V> current, K key, Change<V>? change)
+    void AnnounceChange(TrieMap<K, V> prev, TrieMap<K, V> current, K key, Change<V>? change)
     {
         if (change?.HasChanged ?? false)
         {
@@ -2035,7 +2109,7 @@ public class AtomHashMap<K, V> :
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void AnnounceChanges(TrieMap<EqDefault<K>, K, V> prev, TrieMap<EqDefault<K>, K, V> current, TrieMap<EqDefault<K>, K, Change<V>>? changes)
+    void AnnounceChanges(TrieMap<K, V> prev, TrieMap<K, V> current, TrieMap<K, Change<V>>? changes)
     {
         if (changes is not null)
         {

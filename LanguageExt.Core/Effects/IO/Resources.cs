@@ -47,21 +47,21 @@ public class Resources : IDisposable
     {
         var obj = (object?)value;
         if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceDisposable<A>(value));
+        return resources.TryAdd(obj, new TrackedResourceDisposable<A>(value), null);
     }
 
     public Unit AcquireAsync<A>(A value) where A : IAsyncDisposable
     {
         var obj = (object?)value;
         if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceAsyncDisposable<A>(value));
+        return resources.TryAdd(obj, new TrackedResourceAsyncDisposable<A>(value), null);
     }
 
     public Unit Acquire<A>(A value, Func<A, IO<Unit>> release) 
     {
         var obj = (object?)value;
         if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceWithFree<A>(value, release));
+        return resources.TryAdd(obj, new TrackedResourceWithFree<A>(value, release), null);
     }
 
     public IO<Unit> Release<A>(A value)

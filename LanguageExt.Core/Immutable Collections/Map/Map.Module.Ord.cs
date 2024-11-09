@@ -685,15 +685,15 @@ public static partial class Map
     /// Convert any IDictionary into an immutable Map K V
     /// </summary>
     [Pure]
-    public static HashMap<OrdK, K, V> toHashMap<OrdK, K, V>(IDictionary<K, V> dict) where OrdK : Ord<K> =>
-        Prelude.toHashMap<OrdK, K, V>(dict.AsIterable().Map(kv => (kv.Key, kv.Value)));
+    public static HashMap<K, V> toHashMap<OrdK, K, V>(IDictionary<K, V> dict) where OrdK : Ord<K> =>
+        Prelude.toHashMap(dict.AsIterable().Map(kv => (kv.Key, kv.Value)), Traits.Eq.Comparer<OrdK, K>());
 
     /// <summary>
     /// Convert any IDictionary into an immutable Map K V
     /// </summary>
     [Pure]
-    public static HashMap<OrdK, K, V> ToHashMap<OrdK, K, V>(this IDictionary<K, V> dict) where OrdK : Ord<K> =>
-        Prelude.toHashMap<OrdK, K, V>(dict.AsIterable().Map(kv => (kv.Key, kv.Value)));
+    public static HashMap<K, V> ToHashMap<OrdK, K, V>(this IDictionary<K, V> dict) where OrdK : Ord<K> =>
+        Prelude.toHashMap(dict.AsIterable().Map(kv => (kv.Key, kv.Value)), Traits.Eq.Comparer<OrdK, K>());
 
     /// <summary>
     /// Union two maps.  The merge function is called keys are

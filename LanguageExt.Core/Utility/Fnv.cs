@@ -63,7 +63,7 @@ namespace LanguageExt
 
             foreach (A item in items)
             {
-                hash = Next(equalityComparer.GetHashCode(item), hash);
+                hash = Next(equalityComparer.GetHashCode(item!), hash);
             }
             return hash;
 
@@ -118,7 +118,26 @@ namespace LanguageExt
 
             foreach (A item in items)
             {
-                hash = Next(equalityComparer.GetHashCode(item), hash);
+                hash = Next(equalityComparer.GetHashCode(item!), hash);
+            }
+            return hash;
+
+        }
+
+        /// <summary>
+        /// Calculate the hash code for an enumerable
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Hash<T, V>([DisallowNull]IEqualityComparer<T> equalityComparer, IEnumerable<(T key, V value)>? items, int offsetBasis = OffsetBasis)
+        {
+            int hash = offsetBasis;
+            if (items == null) return hash;
+
+            var valueComparer = Prelude.getRegisteredEqualityComparerOrDefault<V>();
+
+            foreach (var item in items)
+            {
+                hash = Next(Next(equalityComparer.GetHashCode(item.key!), valueComparer.GetHashCode(item.value!)), hash);
             }
             return hash;
 

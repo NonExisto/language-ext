@@ -204,7 +204,7 @@ public class HashMapTests
     [Fact]
     public void HashMapSetTest()
     {
-        var map  = HashMap<EqStringOrdinalIgnoreCase, string, int>(("one", 1), ("two",2), ("three", 3));
+        var map  = HashMap<string, int>(StringComparer.OrdinalIgnoreCase, ("one", 1), ("two",2), ("three", 3));
         var map2 = map.SetItem("One", -1);
         Assert.Equal(3, map2.Count);
         Assert.Equal(-1, map2["one"]);

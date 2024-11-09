@@ -36,7 +36,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     where EqK       : Eq<K>
     where ConflictV : Conflict<V>
 {
-    internal volatile TrieMap<EqK, K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>> Items;
+    internal volatile TrieMap<K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>> Items;
 
     /// <summary>
     /// Empty version map
@@ -44,7 +44,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     public static VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> Empty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new (TrieMap<EqK, K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>>.Empty);
+        get => new (TrieMap<K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>>.Empty());
     }
         
     /// <summary>
@@ -52,7 +52,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     /// </summary>
     /// <param name="items">Trie map</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    VersionHashMap(TrieMap<EqK, K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>> items) =>
+    VersionHashMap(TrieMap<K, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>> items) =>
         Items = items;
 
     /// <summary>
