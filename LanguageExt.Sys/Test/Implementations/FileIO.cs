@@ -13,7 +13,7 @@ namespace LanguageExt.Sys.Test.Implementations;
 public record FileIO(string root) : Sys.Traits.FileIO
 {
     string FixPath(string path) =>
-        Path.Combine(root, path.Replace(":", "_drive"));
+        Path.IsPathRooted(path) ? path : Path.Combine(root, path.Replace(":", "_drive"));
     
     /// <summary>
     /// Copy file from one place to another

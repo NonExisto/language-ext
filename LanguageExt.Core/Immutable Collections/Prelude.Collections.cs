@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 using LSeq = LanguageExt.Seq;
 using System.Runtime.CompilerServices;
+using LanguageExt.ClassInstances;
 
 namespace LanguageExt;
 
@@ -669,8 +670,8 @@ public static partial class Prelude
     /// Create an immutable set
     /// </summary>
     [Pure]
-    public static Set<T> Set<OrdT, T>(IComparer<T> comparer) =>
-        new Set<T>(comparer);
+    public static Set<T> Set<T>(IComparer<T> comparer) =>
+        new(comparer);
 
     /// <summary>
     /// Create an immutable set
@@ -1310,7 +1311,7 @@ public static partial class Prelude
 	}
 
     public static IEqualityComparer<T> getRegisteredEqualityComparerOrDefault<T>() => 
-			EqualityComparer as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
+			EqualityComparer as IEqualityComparer<T> ?? Traits.Eq.Comparer<EqDefault<T>,T>();
 
     public static IDisposable withOrderComparer<T>(IComparer<T> comparer)
 	{
@@ -1319,7 +1320,7 @@ public static partial class Prelude
 	}
 
     public static IComparer<T> getRegisteredOrderComparerOrDefault<T>() => 
-		OrderComparer as IComparer<T> ?? Comparer<T>.Default;
+		OrderComparer as IComparer<T> ?? OrdComparer<OrdDefault<T>, T>.Default;
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

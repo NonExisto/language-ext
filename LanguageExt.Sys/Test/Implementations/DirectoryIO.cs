@@ -6,7 +6,7 @@ namespace LanguageExt.Sys.Test.Implementations;
 public record DirectoryIO(string root) : Traits.DirectoryIO
 {
     string FixPath(string path) =>
-        Path.Combine(root, path.Replace(":", "_drive"));
+        Path.IsPathRooted(path) ? path : Path.Combine(root, path.Replace(":", "_drive"));
     
     public IO<DirectoryInfo> Create(string path) =>
         Live.Implementations.DirectoryIO.Default.Create(FixPath(path));
