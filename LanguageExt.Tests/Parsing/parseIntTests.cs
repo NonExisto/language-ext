@@ -2,7 +2,7 @@
 {
     public class parseIntTests : AbstractParseTSignedPrecisionIntervalTests<int>
     {
-        protected override Option<int> ParseT(string value) => Prelude.parseInt(value);
+        protected override Option<int> ParseT(string? value) => Prelude.parseInt(value);
 
         protected override int MinValue => int.MinValue;
         protected override int MaxValue => int.MaxValue;

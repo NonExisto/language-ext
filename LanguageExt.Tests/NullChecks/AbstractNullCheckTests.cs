@@ -12,7 +12,7 @@ namespace LanguageExt.Tests.NullChecks
         [Fact]
         public void NullCheck_NullObject_AsExpectedWhenNull()
         {
-            object value = null;
+            object? value = null;
             var actual = NullCheck(value);
             Assert.Equal(ExpectedWhenNull, actual);
         }
@@ -28,7 +28,7 @@ namespace LanguageExt.Tests.NullChecks
         [Fact]
         public void NullCheck_NullString_AsExpectedWhenNull()
         {
-            string value = null;
+            string? value = null;
             var actual = NullCheck(value);
             Assert.Equal(ExpectedWhenNull, actual);
         }
@@ -44,7 +44,7 @@ namespace LanguageExt.Tests.NullChecks
         [Fact]
         public void NullCheck_NullCustomClass_AsExpectedWhenNull()
         {
-            FooClass value = null;
+            FooClass? value = null;
             var actual = NullCheck(value);
             Assert.Equal(ExpectedWhenNull, actual);
         }
@@ -84,7 +84,7 @@ namespace LanguageExt.Tests.NullChecks
         [Fact]
         public void NullCheck_DefaultCustomEnum_AsExpectedWhenNull()
         {
-            FooEnum value = default(FooEnum);
+            FooEnum value = default;
             var actual = NullCheck(value);
             Assert.Equal(ExpectedWhenNotNull, actual);
         }

@@ -4,7 +4,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseFloatTests : AbstractParseTTests<float>
     {
-        protected override Option<float> ParseT(string value) => Prelude.parseFloat(value);
+        protected override Option<float> ParseT(string? value) => Prelude.parseFloat(value);
 
         [Theory]
         [InlineData(0.5)]

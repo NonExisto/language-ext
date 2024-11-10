@@ -5,7 +5,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseGuidTests : AbstractParseTTests<Guid>
     {
-        protected override Option<Guid> ParseT(string value) => Prelude.parseGuid(value);
+        protected override Option<Guid> ParseT(string? value) => Prelude.parseGuid(value);
 
         [Fact]
         public void ParseGuid_ValidStringFixedGuid_SomeOfSameFixedGuid()

@@ -6,7 +6,7 @@ namespace LanguageExt.Tests.Parsing;
 
 public class parseDateTimeOffsetTests : AbstractParseTTests<DateTimeOffset>
 {
-    protected override Option<DateTimeOffset> ParseT(string value) => Prelude.parseDateTimeOffset(value);
+    protected override Option<DateTimeOffset> ParseT(string? value) => Prelude.parseDateTimeOffset(value);
 
     [Fact]
     public void parseDateTimeOffset_ValidStringFromNewMillennium_SomeUtc() =>

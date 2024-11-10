@@ -12,7 +12,7 @@ namespace LanguageExt.Tests.DefaultValueChecks
         [Fact]
         public void DefaultValueCheck_DefaultValueObject_AsExpectedWhenDefaultValue()
         {
-            object value = null;
+            object? value = null;
             var actual = DefaultValueCheck(value);
             Assert.Equal(ExpectedWhenDefaultValue, actual);
         }
@@ -28,7 +28,7 @@ namespace LanguageExt.Tests.DefaultValueChecks
         [Fact]
         public void DefaultValueCheck_DefaultValueString_AsExpectedWhenDefaultValue()
         {
-            string value = null;
+            string? value = null;
             var actual = DefaultValueCheck(value);
             Assert.Equal(ExpectedWhenDefaultValue, actual);
         }

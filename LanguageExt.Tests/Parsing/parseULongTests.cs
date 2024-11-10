@@ -2,7 +2,7 @@
 {
     public class parseULongTests : AbstractParseTUnsignedPrecisionIntervalTests<ulong>
     {
-        protected override Option<ulong> ParseT(string value) => Prelude.parseULong(value);
+        protected override Option<ulong> ParseT(string? value) => Prelude.parseULong(value);
 
         protected override ulong MinValue => ulong.MinValue;
         protected override ulong MaxValue => ulong.MaxValue;

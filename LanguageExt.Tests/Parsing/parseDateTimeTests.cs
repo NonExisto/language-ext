@@ -5,7 +5,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseDateTimeTests : AbstractParseTTests<DateTime>
     {
-        protected override Option<DateTime> ParseT(string value) => Prelude.parseDateTime(value);
+        protected override Option<DateTime> ParseT(string? value) => Prelude.parseDateTime(value);
 
         [Fact]
         public void parseDateTime_ValidStringFromNewMillennium_SomeNewMillennium() =>

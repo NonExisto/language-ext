@@ -2,7 +2,7 @@
 {
     public class parseSByteTests : AbstractParseTSignedPrecisionIntervalTests<sbyte>
     {
-        protected override Option<sbyte> ParseT(string value) => Prelude.parseSByte(value);
+        protected override Option<sbyte> ParseT(string? value) => Prelude.parseSByte(value);
 
         protected override sbyte MinValue => sbyte.MinValue;
         protected override sbyte MaxValue => sbyte.MaxValue;

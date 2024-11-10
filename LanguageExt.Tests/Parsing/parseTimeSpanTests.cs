@@ -5,7 +5,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseTimeSpanTests : AbstractParseTTests<TimeSpan>
     {
-        protected override Option<TimeSpan> ParseT(string value) => Prelude.parseTimeSpan(value);
+        protected override Option<TimeSpan> ParseT(string? value) => Prelude.parseTimeSpan(value);
 
         [Fact]
         public void parseTimeSpan_valid() =>

@@ -4,7 +4,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseEnumTests : AbstractParseTTests<FooBarEnum>
     {
-        protected override Option<FooBarEnum> ParseT(string value) => Prelude.parseEnum<FooBarEnum>(value);
+        protected override Option<FooBarEnum> ParseT(string? value) => Prelude.parseEnum<FooBarEnum>(value);
 
         [Fact]
         public void parseEnum_ValidStringFromFoo_SomeFoo() =>

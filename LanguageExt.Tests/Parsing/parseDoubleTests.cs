@@ -4,7 +4,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseDoubleTests : AbstractParseTTests<double>
     {
-        protected override Option<double> ParseT(string value) => Prelude.parseDouble(value);
+        protected override Option<double> ParseT(string? value) => Prelude.parseDouble(value);
 
         [Theory]
         [InlineData(0.5)]

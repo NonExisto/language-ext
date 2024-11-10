@@ -1,11 +1,10 @@
 ﻿using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Parsing
 {
     public abstract class AbstractParseTTests<T> where T : struct
     {
-        protected abstract Option<T> ParseT(string value);
+        protected abstract Option<T> ParseT(string? value);
 
         [Fact]
         public void ParseT_NullString_None()
@@ -25,7 +24,7 @@ namespace LanguageExt.Tests.Parsing
 
         [Fact]
         public void ParseT_ValidStringFromDefaultValue_SomeDefaultValue() =>
-            ParseT_ValidStringFromGiven_SomeAsGiven(default(T));
+            ParseT_ValidStringFromGiven_SomeAsGiven(default);
 
         protected void ParseT_ValidStringFromGiven_SomeAsGiven(T expected) =>
             ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString());
