@@ -99,14 +99,6 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int hash<OrdA, A>(Set<OrdA, A> xs) where OrdA : Ord<A> =>
-        xs.GetHashCode();
-
-    /// <summary>
-    /// Calculate a hash-code for the collection provided
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int hash<A>(Stck<A> xs) =>
         xs.GetHashCode();
 }

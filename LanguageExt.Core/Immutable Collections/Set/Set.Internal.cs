@@ -16,39 +16,96 @@ namespace LanguageExt;
 /// </summary>
 /// <typeparam name="A">List item type</typeparam>
 [Serializable]
-internal sealed class SetInternal<OrdA, A> :
+internal sealed class SetInternal<A> :
     IEnumerable<A>,
-    IEquatable<SetInternal<OrdA, A>>
-    where OrdA : Ord<A>
+    IEquatable<SetInternal<A>>
 {
-    public static readonly SetInternal<OrdA, A> Empty = new ();
+    public static SetInternal<A> Empty => new (null);
     readonly SetItem<A> set;
+    private readonly IComparer<A> _comparer;
     int hashCode;
 
     /// <summary>
     /// Default ctor
     /// </summary>
-    internal SetInternal() => set = SetItem<A>.Empty;
+    internal SetInternal(IComparer<A>? comparer)
+    {
+        set = SetItem<A>.Empty;
+        _comparer = comparer ?? getRegisteredOrderComparerOrDefault<A>();
+    }
 
     /// <summary>
     /// Ctor that takes a root element
     /// </summary>
     /// <param name="root"></param>
-    internal SetInternal(SetItem<A> root)
+    internal SetInternal(SetItem<A> root, IComparer<A>? comparer)
     {
         set = root;
+        _comparer = comparer ?? getRegisteredOrderComparerOrDefault<A>();
     }
 
     /// <summary>
     /// Ctor from an enumerable 
     /// </summary>
-    public SetInternal(IEnumerable<A> items) : this(items, SetModuleM.AddOpt.TryAdd)
+    public SetInternal(IEnumerable<A> items, IComparer<A>? comparer) :
+        this(items, SetModule.AddOpt.TryAdd, comparer)
     {
     }
+   
+
+    /// <summary>
+    /// Ctor that takes an initial (distinct) set of items
+    /// </summary>
+    /// <param name="items"></param>
+    internal SetInternal(IEnumerable<A> items, SetModule.AddOpt option, IComparer<A>? comparer)
+    {
+        set = SetItem<A>.Empty;
+        _comparer = comparer ?? getRegisteredOrderComparerOrDefault<A>();
+        var addMethod = Translate(option);
+
+        foreach (var item in items)
+        {
+            set = addMethod(set, item, _comparer);
+        }
+    }
+
+    /// <summary>
+    /// Ctor that takes an initial (distinct) set of items
+    /// </summary>
+    /// <param name="items"></param>
+    internal SetInternal(ReadOnlySpan<A> items, SetModule.AddOpt option, IComparer<A>? comparer)
+    {
+        set = SetItem<A>.Empty;
+        _comparer = comparer ?? getRegisteredOrderComparerOrDefault<A>();
+
+        var addMethod = Translate(option);
+
+        foreach (var item in items)
+        {
+            set = addMethod(set, item, _comparer);
+        }
+    }
+
+    private static Func<SetItem<A>, A, IComparer<A>, SetItem<A>> Translate(SetModule.AddOpt option){
+        Func<SetItem<A>, A, IComparer<A>, SetItem<A>> addMethod = option switch
+        {
+            SetModule.AddOpt.ThrowOnDuplicate => SetModule.Add,
+            SetModule.AddOpt.TryUpdate => SetModule.AddOrUpdate,
+            SetModule.AddOpt.TryAdd => SetModule.TryAdd,
+            _ => throw new NotSupportedException() 
+        };
+        return addMethod;
+    }
+
+    private SetInternal<A> Wrap(SetItem<A> root) => new(root, _comparer);
+
+    [Pure]
+    public bool HasSameComparer(IComparer<A> comparer) => 
+        ReferenceEquals(_comparer, comparer);
 
     public override int GetHashCode() =>
         hashCode == 0
-            ? hashCode = FNV32.Hash<OrdA, A>(AsIterable())
+            ? hashCode = FNV32.Hash(EqualityComparer<A>.Default, AsIterable())
             : hashCode;
 
     public Iterable<A> AsIterable()
@@ -78,34 +135,6 @@ internal sealed class SetInternal<OrdA, A> :
     }
 
     /// <summary>
-    /// Ctor that takes an initial (distinct) set of items
-    /// </summary>
-    /// <param name="items"></param>
-    internal SetInternal(IEnumerable<A> items, SetModuleM.AddOpt option)
-    {
-        set = SetItem<A>.Empty;
-
-        foreach (var item in items)
-        {
-            set = SetModuleM.Add<OrdA, A>(set, item, option);
-        }
-    }
-
-    /// <summary>
-    /// Ctor that takes an initial (distinct) set of items
-    /// </summary>
-    /// <param name="items"></param>
-    internal SetInternal(ReadOnlySpan<A> items, SetModuleM.AddOpt option)
-    {
-        set = SetItem<A>.Empty;
-
-        foreach (var item in items)
-        {
-            set = SetModuleM.Add<OrdA, A>(set, item, option);
-        }
-    }
-
-    /// <summary>
     /// Number of items in the set
     /// </summary>
     [Pure]
@@ -130,8 +159,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item added</returns>
     [Pure]
-    public SetInternal<OrdA, A> Add(A value) =>
-        new (SetModule.Add<OrdA, A>(set,value));
+    public SetInternal<A> Add(A value) =>
+        new (SetModule.Add(set,value, _comparer), _comparer);
 
     /// <summary>
     /// Attempt to add an item to the set.  If an item already
@@ -140,7 +169,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public SetInternal<OrdA, A> TryAdd(A value) =>
+    public SetInternal<A> TryAdd(A value) =>
         Contains(value)
             ? this
             : Add(value);
@@ -152,15 +181,15 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="value">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
-    public SetInternal<OrdA, A> AddOrUpdate(A value) =>
-        new (SetModule.AddOrUpdate<OrdA, A>(set, value));
+    public SetInternal<A> AddOrUpdate(A value) =>
+        Wrap(SetModule.AddOrUpdate(set, value, _comparer));
 
     [Pure]
-    public SetInternal<OrdA, A> AddRange(IEnumerable<A> xs)
+    public SetInternal<A> AddRange(IEnumerable<A> xs)
     {
         if(Count == 0)
         {
-            return new SetInternal<OrdA, A>(xs, SetModuleM.AddOpt.ThrowOnDuplicate);
+            return new SetInternal<A>(xs, SetModule.AddOpt.ThrowOnDuplicate, _comparer);
         }
 
         var set = this;
@@ -172,11 +201,11 @@ internal sealed class SetInternal<OrdA, A> :
     }
 
     [Pure]
-    public SetInternal<OrdA, A> TryAddRange(IEnumerable<A> xs)
+    public SetInternal<A> TryAddRange(IEnumerable<A> xs)
     {
         if (Count == 0)
         {
-            return new SetInternal<OrdA, A>(xs, SetModuleM.AddOpt.TryAdd);
+            return new SetInternal<A>(xs, SetModule.AddOpt.TryAdd, _comparer);
         }
 
         var set = this;
@@ -188,11 +217,11 @@ internal sealed class SetInternal<OrdA, A> :
     }
 
     [Pure]
-    public SetInternal<OrdA, A> AddOrUpdateRange(IEnumerable<A> xs)
+    public SetInternal<A> AddOrUpdateRange(IEnumerable<A> xs)
     {
         if (Count == 0)
         {
-            return new SetInternal<OrdA, A>(xs, SetModuleM.AddOpt.TryUpdate);
+            return new SetInternal<A>(xs, SetModule.AddOpt.TryUpdate, _comparer);
         }
 
         var set = this;
@@ -210,7 +239,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <returns>Some(T) if found, None otherwise</returns>
     [Pure]
     public Option<A> Find(A value) =>
-        SetModule.TryFind<OrdA, A>(set, value);
+        SetModule.TryFind(set, value, _comparer);
 
     /// <summary>
     /// Retrieve the value from predecessor item to specified key
@@ -218,7 +247,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindPredecessor(A key) => SetModule.TryFindPredecessor<OrdA, A>(set, key);
+    public Option<A> FindPredecessor(A key) => SetModule.TryFindPredecessor<A>(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from exact key, or if not found, the predecessor item 
@@ -226,7 +255,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindOrPredecessor(A key) => SetModule.TryFindOrPredecessor<OrdA, A>(set, key);
+    public Option<A> FindOrPredecessor(A key) => SetModule.TryFindOrPredecessor<A>(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from next item to specified key
@@ -234,7 +263,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindSuccessor(A key) => SetModule.TryFindSuccessor<OrdA, A>(set, key);
+    public Option<A> FindSuccessor(A key) => SetModule.TryFindSuccessor<A>(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from exact key, or if not found, the next item 
@@ -242,7 +271,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindOrSuccessor(A key) => SetModule.TryFindOrSuccessor<OrdA, A>(set, key);
+    public Option<A> FindOrSuccessor(A key) => SetModule.TryFindOrSuccessor<A>(set, key, _comparer);
 
     /// <summary>
     /// Retrieve a range of values 
@@ -256,9 +285,9 @@ internal sealed class SetInternal<OrdA, A> :
     {
         ArgumentNullException.ThrowIfNull(keyFrom);
         ArgumentNullException.ThrowIfNull(keyTo);
-        return OrdA.Compare(keyFrom, keyTo) > 0
-                   ? SetModule.FindRange<OrdA, A>(set, keyTo, keyFrom).AsIterable()
-                   : SetModule.FindRange<OrdA, A>(set, keyFrom, keyTo).AsIterable();
+        return _comparer.Compare(keyFrom, keyTo) > 0
+                   ? SetModule.FindRange(set, keyTo, keyFrom, _comparer).AsIterable()
+                   : SetModule.FindRange(set, keyFrom, keyTo, _comparer).AsIterable();
     }
 
 
@@ -266,17 +295,17 @@ internal sealed class SetInternal<OrdA, A> :
     /// Returns the elements that are in both this and other
     /// </summary>
     [Pure]
-    public SetInternal<OrdA, A> Intersect(IEnumerable<A> other)
+    public SetInternal<A> Intersect(IEnumerable<A> other)
     {
         var root = SetItem<A>.Empty;
         foreach (var item in other)
         {
             if (Contains(item))
             {
-                root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+                root = SetModule.TryAdd<A>(root, item, _comparer);
             }
         }
-        return new SetInternal<OrdA, A>(root);
+        return Wrap(root);
     }
 
     /// <summary>
@@ -284,17 +313,17 @@ internal sealed class SetInternal<OrdA, A> :
     /// other will be returned.
     /// </summary>
     [Pure]
-    public SetInternal<OrdA, A> Except(SetInternal<OrdA, A> rhs)
+    public SetInternal<A> Except(SetInternal<A> rhs)
     {
         var root = SetItem<A>.Empty;
         foreach (var item in this)
         {
             if (!rhs.Contains(item))
             {
-                root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+                root = SetModule.TryAdd<A>(root, item, _comparer);
             }
         }
-        return new SetInternal<OrdA, A>(root);
+        return Wrap(root);
     }
 
     /// <summary>
@@ -302,15 +331,15 @@ internal sealed class SetInternal<OrdA, A> :
     /// other will be returned.
     /// </summary>
     [Pure]
-    public SetInternal<OrdA, A> Except(IEnumerable<A> other) =>
-        Except(new SetInternal<OrdA, A>(other));
+    public SetInternal<A> Except(IEnumerable<A> other) =>
+        Except(new SetInternal<A>(other, _comparer));
 
     /// <summary>
     /// Only items that are in one set or the other will be returned.
     /// If an item is in both, it is dropped.
     /// </summary>
     [Pure]
-    public SetInternal<OrdA, A> SymmetricExcept(SetInternal<OrdA, A> rhs)
+    public SetInternal<A> SymmetricExcept(SetInternal<A> rhs)
     {
         var root = SetItem<A>.Empty;
 
@@ -318,7 +347,7 @@ internal sealed class SetInternal<OrdA, A> :
         {
             if (!rhs.Contains(item))
             {
-                root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+                root = SetModule.TryAdd<A>(root, item, _comparer);
             }
         }
 
@@ -326,11 +355,11 @@ internal sealed class SetInternal<OrdA, A> :
         {
             if (!Contains(item))
             {
-                root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+                root = SetModule.TryAdd<A>(root, item, _comparer);
             }
         }
 
-        return new SetInternal<OrdA, A>(root);
+        return Wrap(root);
     }
 
     /// <summary>
@@ -338,8 +367,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// If an item is in both, it is dropped.
     /// </summary>
     [Pure]
-    public SetInternal<OrdA, A> SymmetricExcept(IEnumerable<A> other) =>
-        SymmetricExcept(new SetInternal<OrdA, A>(other));
+    public SetInternal<A> SymmetricExcept(IEnumerable<A> other) =>
+        SymmetricExcept(new SetInternal<A>(other, _comparer));
 
     /// <summary>
     /// Finds the union of two sets and produces a new set with 
@@ -348,21 +377,21 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="other">Other set to union with</param>
     /// <returns>A set which contains all items from both sets</returns>
     [Pure]
-    public SetInternal<OrdA, A> Union(IEnumerable<A> other)
+    public SetInternal<A> Union(IEnumerable<A> other)
     {
         var root = SetItem<A>.Empty;
 
         foreach(var item in this)
         {
-            root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+            root = SetModule.TryAdd(root, item, _comparer);
         }
 
         foreach (var item in other)
         {
-            root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+            root = SetModule.TryAdd(root, item, _comparer);
         }
 
-        return new SetInternal<OrdA, A>(root);
+        return Wrap(root);
     }
 
     /// <summary>
@@ -379,8 +408,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="value">Value to check</param>
     /// <returns>New set with item removed</returns>
     [Pure]
-    public SetInternal<OrdA, A> Remove(A value) =>
-        new (SetModule.Remove<OrdA, A>(set, value));
+    public SetInternal<A> Remove(A value) =>
+        Wrap(SetModule.Remove(set, value, _comparer));
 
     /// <summary>
     /// Applies a function 'folder' to each element of the collection, threading an accumulator 
@@ -420,8 +449,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
-    public SetInternal<OrdB, B> Map<OrdB, B>(Func<A, B> f) where OrdB : Ord<B> =>
-        new (SetModule.Map(set, f));
+    public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B> comparer)  =>
+        new (SetModule.Map(set, f), comparer);
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
@@ -431,8 +460,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
-    public SetInternal<OrdA, A> Map(Func<A, A> f) =>
-        new (SetModule.Map(set, f));
+    public SetInternal<A> Map(Func<A, A> f) =>
+        Wrap(SetModule.Map(set, f));
 
     /// <summary>
     /// Filters items from the set using the predicate.  If the predicate
@@ -442,8 +471,8 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="pred">Predicate</param>
     /// <returns>Filtered enumerable</returns>
     [Pure]
-    public SetInternal<OrdA, A> Filter(Func<A, bool> pred) =>
-        new (AsIterable().Filter(pred), SetModuleM.AddOpt.TryAdd);
+    public SetInternal<A> Filter(Func<A, bool> pred) =>
+        new (AsIterable().Filter(pred), SetModule.AddOpt.TryAdd, _comparer);
 
     /// <summary>
     /// Check the existence of an item in the set using a 
@@ -463,7 +492,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <returns>True if the item 'value' is in the Set 'set'</returns>
     [Pure]
     public bool Contains(A value) =>
-        SetModule.Contains<OrdA, A>(set, value);
+        SetModule.Contains(set, value, _comparer);
 
     /// <summary>
     /// Returns true if both sets contain the same elements
@@ -473,7 +502,7 @@ internal sealed class SetInternal<OrdA, A> :
     [Pure]
     public bool SetEquals(IEnumerable<A> other)
     {
-        var rhs = new SetInternal<OrdA, A>(other);
+        var rhs = new SetInternal<A>(other, _comparer);
         if (rhs.Count != Count) return false;
         foreach (var item in rhs)
         {
@@ -566,7 +595,7 @@ internal sealed class SetInternal<OrdA, A> :
             return true;
         }
 
-        var otherSet = new SetInternal<OrdA, A>(other);
+        var otherSet = new SetInternal<A>(other, _comparer);
         int matches  = 0;
         foreach (A item in otherSet)
         {
@@ -659,7 +688,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="rhs">Right hand side set</param>
     /// <returns>Unioned set</returns>
     [Pure]
-    public static SetInternal<OrdA, A> operator +(SetInternal<OrdA, A> lhs, SetInternal<OrdA, A> rhs) =>
+    public static SetInternal<A> operator +(SetInternal<A> lhs, SetInternal<A> rhs) =>
         lhs.Append(rhs);
 
     /// <summary>
@@ -668,7 +697,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="rhs">Right hand side set</param>
     /// <returns>Unioned set</returns>
     [Pure]
-    public SetInternal<OrdA, A> Append(SetInternal<OrdA, A> rhs) =>
+    public SetInternal<A> Append(SetInternal<A> rhs) =>
         Union(rhs.AsIterable());
 
     /// <summary>
@@ -678,7 +707,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="rhs">Right hand side set</param>
     /// <returns>Subtracted set</returns>
     [Pure]
-    public static SetInternal<OrdA, A> operator -(SetInternal<OrdA, A> lhs, SetInternal<OrdA, A> rhs) =>
+    public static SetInternal<A> operator -(SetInternal<A> lhs, SetInternal<A> rhs) =>
         lhs.Subtract(rhs);
 
     /// <summary>
@@ -687,7 +716,7 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="rhs">Right hand side set</param>
     /// <returns>Subtracted set</returns>
     [Pure]
-    public SetInternal<OrdA, A> Subtract(SetInternal<OrdA, A> rhs)
+    public SetInternal<A> Subtract(SetInternal<A> rhs)
     {
         if (Count     == 0) return Empty;
         if (rhs.Count == 0) return this;
@@ -708,10 +737,10 @@ internal sealed class SetInternal<OrdA, A> :
             {
                 if (!rhs.Contains(item))
                 {
-                    root = SetModuleM.Add<OrdA, A>(root, item, SetModuleM.AddOpt.TryAdd);
+                    root = SetModule.TryAdd<A>(root, item, _comparer);
                 }
             }
-            return new SetInternal<OrdA, A>(root);
+            return new SetInternal<A>(root, _comparer);
         }
     }
 
@@ -721,11 +750,11 @@ internal sealed class SetInternal<OrdA, A> :
     /// <param name="other">Other set to test</param>
     /// <returns>True if sets are equal</returns>
     [Pure]
-    public bool Equals(SetInternal<OrdA, A>? other) =>
+    public bool Equals(SetInternal<A>? other) =>
         other is not null && SetEquals(other.AsIterable());
 
     [Pure]
-    public int CompareTo(SetInternal<OrdA, A> other)
+    public int CompareTo(SetInternal<A> other)
     {
         var cmp = Count.CompareTo(other.Count);
         if (cmp != 0) return cmp;
@@ -733,14 +762,14 @@ internal sealed class SetInternal<OrdA, A> :
         using var iterB = other.GetEnumerator();
         while (iterA.MoveNext() && iterB.MoveNext())
         {
-            cmp = OrdA.Compare(iterA.Current, iterB.Current);
+            cmp = _comparer.Compare(iterA.Current, iterB.Current);
             if (cmp != 0) return cmp;
         }
         return 0;
     }
 
     [Pure]
-    public int CompareTo<OrdAlt>(SetInternal<OrdA, A> other) where OrdAlt : Ord<A>
+    public int CompareTo<OrdAlt>(SetInternal<A> other) where OrdAlt : Ord<A>
     {
         var cmp = Count.CompareTo(other.Count);
         if (cmp != 0) return cmp;
@@ -757,7 +786,7 @@ internal sealed class SetInternal<OrdA, A> :
     IEnumerator IEnumerable.GetEnumerator() =>
         new SetModule.SetEnumerator<A>(set, false, 0);
 
-    public override bool Equals(object? obj) => Equals(obj as SetInternal<OrdA, A>);
+    public override bool Equals(object? obj) => Equals(obj as SetInternal<A>);
 }
 
 [Serializable]
@@ -797,7 +826,7 @@ internal sealed class SetItem<K>
     }
 }
 
-internal static class SetModuleM
+internal static class SetModule
 {
     public enum AddOpt
     {
@@ -806,106 +835,6 @@ internal static class SetModuleM
         TryUpdate
     }
 
-    public static SetItem<K> Add<OrdK, K>(SetItem<K> node, K key, AddOpt option)
-        where OrdK : Ord<K>
-    {
-        if (node.IsEmpty)
-        {
-            return new SetItem<K>(1, 1, key, SetItem<K>.Empty, SetItem<K>.Empty);
-        }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
-        {
-            node.Left = Add<OrdK, K>(node.Left, key, option);
-            return Balance(node);
-        }
-        else if (cmp > 0)
-        {
-            node.Right = Add<OrdK, K>(node.Right, key, option);
-            return Balance(node);
-        }
-        else if (option == AddOpt.TryAdd)
-        {
-            // Already exists, but we don't care
-            return node;
-        }
-        else if (option == AddOpt.TryUpdate)
-        {
-            // Already exists, and we want to update the content
-            node.Key = key;
-            return node;
-        }
-        else
-        {
-            throw new ArgumentException("An element with the same key already exists in the Map");
-        }
-    }
-
-    public static SetItem<K> Balance<K>(SetItem<K> node)
-    {
-        node.Height = (byte)(1 + Math.Max(node.Left.Height, node.Right.Height));
-        node.Count = 1 + node.Left.Count + node.Right.Count;
-
-        return node.BalanceFactor >= 2
-                   ? node.Right.BalanceFactor < 0
-                         ? DblRotLeft(node)
-                         : RotLeft(node)
-                   : node.BalanceFactor <= -2
-                       ? node.Left.BalanceFactor > 0
-                             ? DblRotRight(node)
-                             : RotRight(node)
-                       : node;
-    }
-
-    public static SetItem<K> DblRotRight<K>(SetItem<K> node)
-    {
-        node.Left = RotLeft(node.Left);
-        return RotRight(node);
-    }
-
-    public static SetItem<K> DblRotLeft<K>(SetItem<K> node)
-    {
-        node.Right = RotRight(node.Right);
-        return RotLeft(node);
-    }
-
-    public static SetItem<K> RotRight<K>(SetItem<K> node)
-    {
-        if (node.IsEmpty || node.Left.IsEmpty) return node;
-
-        var y  = node;
-        var x  = y.Left;
-        var t2 = x.Right;
-        x.Right = y;
-        y.Left = t2;
-        y.Height = (byte)(1 + Math.Max(y.Left.Height, y.Right.Height));
-        x.Height = (byte)(1 + Math.Max(x.Left.Height, x.Right.Height));
-        y.Count = 1 + y.Left.Count + y.Right.Count;
-        x.Count = 1 + x.Left.Count + x.Right.Count;
-
-        return x;
-    }
-
-    public static SetItem<K> RotLeft<K>(SetItem<K> node)
-    {
-        if (node.IsEmpty || node.Right.IsEmpty) return node;
-
-        var x  = node;
-        var y  = x.Right;
-        var t2 = y.Left;
-        y.Left = x;
-        x.Right = t2;
-        x.Height = (byte)(1 + Math.Max(x.Left.Height, x.Right.Height));
-        y.Height = (byte)(1 + Math.Max(y.Left.Height, y.Right.Height));
-        x.Count = 1 + x.Left.Count + x.Right.Count;
-        y.Count = 1 + y.Left.Count + y.Right.Count;
-
-        return y;
-    }
-}
-
-internal static class SetModule
-{
     [Pure]
     public static S Fold<S, K>(SetItem<K> node, S state, Func<S, K, S> folder)
     {
@@ -941,69 +870,51 @@ internal static class SetModule
         !node.IsEmpty && (pred(node.Key) || Exists(node.Left, pred) || Exists(node.Right, pred));
 
     [Pure]
-    public static SetItem<K> Add<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static SetItem<K> Add<K>(SetItem<K> node, K key, IComparer<K> comparer) 
     {
         if (node.IsEmpty)
         {
             return new SetItem<K>(1, 1, key, SetItem<K>.Empty, SetItem<K>.Empty);
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Balance(Make(node.Key, Add<OrdK, K>(node.Left, key), node.Right));
-        }
-        else if (cmp > 0)
-        {
-            return Balance(Make(node.Key, node.Left, Add<OrdK, K>(node.Right, key)));
-        }
-        else
-        {
-            throw new ArgumentException("An element with the same key already exists in the set");
-        }
+            < 0 => Balance(Make(node.Key, Add(node.Left, key, comparer), node.Right)),
+            > 0 => Balance(Make(node.Key, node.Left, Add(node.Right, key, comparer))),
+            _ => throw new ArgumentException("An element with the same key already exists in the set")
+        };
     }
 
     [Pure]
-    public static SetItem<K> TryAdd<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static SetItem<K> TryAdd<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             return new SetItem<K>(1, 1, key, SetItem<K>.Empty, SetItem<K>.Empty);
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Balance(Make(node.Key, TryAdd<OrdK, K>(node.Left, key), node.Right));
-        }
-        else if (cmp > 0)
-        {
-            return Balance(Make(node.Key, node.Left, TryAdd<OrdK, K>(node.Right, key)));
-        }
-        else
-        {
-            return node;
-        }
+            < 0 => Balance(Make(node.Key, TryAdd(node.Left, key, comparer), node.Right)),
+            > 0 => Balance(Make(node.Key, node.Left, TryAdd(node.Right, key, comparer))),
+            _ => node
+        };
     }
 
     [Pure]
-    public static SetItem<K> AddOrUpdate<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static SetItem<K> AddOrUpdate<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             return new SetItem<K>(1, 1, key, SetItem<K>.Empty, SetItem<K>.Empty);
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Balance(Make(node.Key, TryAdd<OrdK, K>(node.Left, key), node.Right));
-        }
-        else if (cmp > 0)
-        {
-            return Balance(Make(node.Key, node.Left, TryAdd<OrdK, K>(node.Right, key)));
-        }
-        else
-        {
-            return new SetItem<K>(node.Height, node.Count, key, node.Left, node.Right);
-        }
+            < 0 => Balance(Make(node.Key, TryAdd(node.Left, key, comparer), node.Right)),
+            > 0 => Balance(Make(node.Key, node.Left, TryAdd(node.Right, key, comparer))),
+            _ => new SetItem<K>(node.Height, node.Count, key, node.Left, node.Right)
+        };
     }
 
     [Pure]
@@ -1013,69 +924,51 @@ internal static class SetModule
             : Balance(Make(node.Key, node.Left, AddTreeToRight(node.Right, toAdd)));
 
     [Pure]
-    public static SetItem<K> Remove<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static SetItem<K> Remove<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             return node;
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Balance(Make(node.Key, Remove<OrdK, K>(node.Left, key), node.Right));
-        }
-        else if (cmp > 0)
-        {
-            return Balance(Make(node.Key, node.Left, Remove<OrdK, K>(node.Right, key)));
-        }
-        else
-        {
-            return Balance(AddTreeToRight(node.Left, node.Right));
-        }
+            < 0 => Balance(Make(node.Key, Remove(node.Left, key, comparer), node.Right)),
+            > 0 => Balance(Make(node.Key, node.Left, Remove(node.Right, key, comparer))),
+            _ => Balance(AddTreeToRight(node.Left, node.Right))
+        };
     }
 
     [Pure]
-    public static bool Contains<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static bool Contains<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             return false;
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Contains<OrdK, K>(node.Left, key);
-        }
-        else if (cmp > 0)
-        {
-            return Contains<OrdK, K>(node.Right, key);
-        }
-        else
-        {
-            return true;
-        }
+            < 0 => Contains(node.Left, key, comparer),
+            > 0 => Contains(node.Right, key, comparer),
+            _ => true
+        };
     }
 
     [Pure]
-    public static K Find<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static K Find<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             throw new ArgumentException("Key not found in set");
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return Find<OrdK, K>(node.Left, key);
-        }
-        else if (cmp > 0)
-        {
-            return Find<OrdK, K>(node.Right, key);
-        }
-        else
-        {
-            return node.Key;
-        }
+            < 0 => Find(node.Left, key, comparer),
+            > 0 => Find(node.Right, key, comparer),
+            _ => node.Key
+        };
     }
 
     /// <summary>
@@ -1083,34 +976,34 @@ internal static class SetModule
     /// that maintains a stack of nodes to retrace.
     /// </summary>
     [Pure]
-    public static IEnumerable<K> FindRange<OrdK, K>(SetItem<K> node, K a, K b) where OrdK : Ord<K>
+    public static IEnumerable<K> FindRange<K>(SetItem<K> node, K a, K b, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             yield break;
         }
-        if (OrdK.Compare(node.Key, a) < 0)
+        if (comparer.Compare(node.Key, a) < 0)
         {
-            foreach (var item in FindRange<OrdK, K>(node.Right, a, b))
+            foreach (var item in FindRange(node.Right, a, b, comparer))
             {
                 yield return item;
             }
         }
-        else if (OrdK.Compare(node.Key, b) > 0)
+        else if (comparer.Compare(node.Key, b) > 0)
         {
-            foreach (var item in FindRange<OrdK, K>(node.Left, a, b))
+            foreach (var item in FindRange(node.Left, a, b, comparer))
             {
                 yield return item;
             }
         }
         else
         {
-            foreach (var item in FindRange<OrdK, K>(node.Left, a, b))
+            foreach (var item in FindRange(node.Left, a, b, comparer))
             {
                 yield return item;
             }
             yield return node.Key;
-            foreach (var item in FindRange<OrdK, K>(node.Right, a, b))
+            foreach (var item in FindRange(node.Right, a, b, comparer))
             {
                 yield return item;
             }
@@ -1118,25 +1011,19 @@ internal static class SetModule
     }
 
     [Pure]
-    public static Option<K> TryFind<OrdK, K>(SetItem<K> node, K key) where OrdK : Ord<K>
+    public static Option<K> TryFind<K>(SetItem<K> node, K key, IComparer<K> comparer)
     {
         if (node.IsEmpty)
         {
             return None;
         }
-        var cmp = OrdK.Compare(key, node.Key);
-        if (cmp < 0)
+        var cmp = comparer.Compare(key, node.Key);
+        return cmp switch
         {
-            return TryFind<OrdK, K>(node.Left, key);
-        }
-        else if (cmp > 0)
-        {
-            return TryFind<OrdK, K>(node.Right, key);
-        }
-        else
-        {
-            return Some(node.Key);
-        }
+            < 0 => TryFind(node.Left, key, comparer),
+            > 0 => TryFind(node.Right, key, comparer),
+            _ => Some(node.Key)
+        };
     }
 
     [Pure]
@@ -1231,7 +1118,7 @@ internal static class SetModule
             ? node.Key
             : Min(node.Left);
 
-    internal static Option<A> TryFindPredecessor<OrdA, A>(SetItem<A> root, A key) where OrdA : Ord<A>
+    internal static Option<A> TryFindPredecessor<A>(SetItem<A> root, A key, IComparer<A> comparer)
     {
         Option<A> predecessor = None;
         var       current     = root;
@@ -1243,7 +1130,7 @@ internal static class SetModule
 
         do
         {
-            var cmp = OrdA.Compare(key, current.Key);
+            var cmp = comparer.Compare(key, current.Key);
             if (cmp < 0)
             {
                 current = current.Left;
@@ -1268,7 +1155,7 @@ internal static class SetModule
         return predecessor;
     }
 
-    internal static Option<A> TryFindOrPredecessor<OrdA, A>(SetItem<A> root, A key) where OrdA : Ord<A>
+    internal static Option<A> TryFindOrPredecessor<A>(SetItem<A> root, A key, IComparer<A> comparer)
     {
         Option<A> predecessor = None;
         var       current     = root;
@@ -1280,7 +1167,7 @@ internal static class SetModule
 
         do
         {
-            var cmp = OrdA.Compare(key, current.Key);
+            var cmp = comparer.Compare(key, current.Key);
             if (cmp < 0)
             {
                 current = current.Left;
@@ -1305,7 +1192,7 @@ internal static class SetModule
         return predecessor;
     }
 
-    internal static Option<A> TryFindSuccessor<OrdA, A>(SetItem<A> root, A key) where OrdA : Ord<A>
+    internal static Option<A> TryFindSuccessor<A>(SetItem<A> root, A key, IComparer<A> comparer)
     {
         Option<A> successor = None;
         var       current   = root;
@@ -1317,7 +1204,7 @@ internal static class SetModule
 
         do
         {
-            var cmp = OrdA.Compare(key, current.Key);
+            var cmp = comparer.Compare(key, current.Key);
             if (cmp < 0)
             {
                 successor = current.Key;
@@ -1342,7 +1229,7 @@ internal static class SetModule
         return successor;
     }
 
-    internal static Option<A> TryFindOrSuccessor<OrdA, A>(SetItem<A> root, A key) where OrdA : Ord<A>
+    internal static Option<A> TryFindOrSuccessor<A>(SetItem<A> root, A key, IComparer<A> comparer)
     {
         Option<A> successor = None;
         var       current   = root;
@@ -1354,7 +1241,7 @@ internal static class SetModule
 
         do
         {
-            var cmp = OrdA.Compare(key, current.Key);
+            var cmp = comparer.Compare(key, current.Key);
             if (cmp < 0)
             {
                 successor = current.Key;

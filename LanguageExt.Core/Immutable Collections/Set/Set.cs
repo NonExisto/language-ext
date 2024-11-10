@@ -31,60 +31,74 @@ public readonly struct Set<A> :
     Monoid<Set<A>>,
     K<Set, A>
 {
-    public static Set<A> Empty { get; } = new(SetInternal<OrdDefault<A>, A>.Empty);
+    public static Set<A> Empty { get; } = new(SetInternal<A>.Empty);
 
-    readonly SetInternal<OrdDefault<A>, A>? value;
+    readonly SetInternal<A>? value;
 
-    internal SetInternal<OrdDefault<A>, A> Value => value ?? Empty.Value;
+    internal SetInternal<A> Value => value ?? Empty.Value;
 
     /// <summary>
     /// Ctor from an enumerable 
     /// </summary>
-    public Set(IEnumerable<A> items) : this(items, true)
+    public Set(IComparer<A> comparer)
+    {
+        value = new SetInternal<A>(comparer);
+    }
+
+    /// <summary>
+    /// Ctor from an enumerable 
+    /// </summary>
+    public Set(IEnumerable<A> items) : this(items, true, null)
     {
     }
 
     /// <summary>
     /// Ctor from an enumerable 
     /// </summary>
-    public Set(ReadOnlySpan<A> items) : this(items, true)
+    public Set(ReadOnlySpan<A> items) : this(items, true, null)
     {
     }
 
     /// <summary>
     /// Default ctor
     /// </summary>
-    internal Set(SetInternal<OrdDefault<A>, A> set) =>
+    internal Set(SetInternal<A> set) =>
         value = set;
 
     /// <summary>
     /// Ctor that takes a root element
     /// </summary>
     /// <param name="root"></param>
-    internal Set(SetItem<A> root) =>
-        value = new SetInternal<OrdDefault<A>, A>(root);
+    internal Set(SetItem<A> root, IComparer<A>? comparer) =>
+        value = new SetInternal<A>(root, comparer);
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
     /// <param name="items"></param>
-    public Set(IEnumerable<A> items, bool tryAdd) =>
-        value = new SetInternal<OrdDefault<A>, A>(
+    public Set(IEnumerable<A> items, bool tryAdd, IComparer<A>? comparer) =>
+        value = new SetInternal<A>(
             items, 
             tryAdd
-                ? SetModuleM.AddOpt.TryAdd
-                : SetModuleM.AddOpt.ThrowOnDuplicate);
+                ? SetModule.AddOpt.TryAdd
+                : SetModule.AddOpt.ThrowOnDuplicate,
+            comparer);
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
     /// <param name="items"></param>
-    public Set(ReadOnlySpan<A> items, bool tryAdd) =>
-        value = new SetInternal<OrdDefault<A>, A>(
+    public Set(ReadOnlySpan<A> items, bool tryAdd, IComparer<A>? comparer) =>
+        value = new SetInternal<A>(
             items, 
             tryAdd
-                ? SetModuleM.AddOpt.TryAdd
-                : SetModuleM.AddOpt.ThrowOnDuplicate);
+                ? SetModule.AddOpt.TryAdd
+                : SetModule.AddOpt.ThrowOnDuplicate,
+            comparer);
+
+    [Pure]
+    public bool HasSameComparer(IComparer<A> comparer) => 
+        Value.HasSameComparer(comparer);
 
     /// <summary>
     /// Item at index lens
@@ -99,7 +113,7 @@ public readonly struct Set<A> :
     /// </summary>
     [Pure]
     public static Lens<Set<A>, Set<A>> map(Lens<A, A> lens) => Lens<Set<A>, Set<A>>.New(
-        Get: la => la.Map(lens.Get),
+        Get: la => la.Map(lens.Get, Comparer<A>.Default),
         Set: lb => la =>
                    {
                        foreach (var item in lb)
@@ -109,10 +123,10 @@ public readonly struct Set<A> :
                        return la;
                    });
 
-    static Set<A> Wrap(SetInternal<OrdDefault<A>, A> set) =>
+    static Set<A> Wrap(SetInternal<A> set) =>
         new (set);
 
-    static Set<B> Wrap<B>(SetInternal<OrdDefault<B>, B> set) =>
+    static Set<B> Wrap<B>(SetInternal<B> set) =>
         new (set);
 
     /// <summary>
@@ -384,8 +398,8 @@ public readonly struct Set<A> :
     /// <param name="mapper">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
-    public Set<B> Map<B>(Func<A, B> map) =>
-        Wrap(Value.Map<OrdDefault<B>, B>(map));
+    public Set<B> Map<B>(Func<A, B> map, IComparer<B> comparer) =>
+        Wrap(Value.Map(map, comparer));
     
     /// <summary>
     /// Map each element of a structure to an action, evaluate these actions from
@@ -696,7 +710,7 @@ public readonly struct Set<A> :
 
     [Pure]
     public Set<B> Select<B>(Func<A, B> f) =>
-        Map(f);
+        Map(f, Comparer<B>.Default);
 
     [Pure]
     public Set<A> Where(Func<A, bool> pred) =>
@@ -717,7 +731,7 @@ public readonly struct Set<A> :
                 }
             }
         }
-        return new Set<B>(Yield(), true);
+        return new Set<B>(Yield(), true, Comparer<B>.Default);
     }
 
     [Pure]
@@ -735,7 +749,7 @@ public readonly struct Set<A> :
                 }
             }
         }
-        return new Set<C>(Yield(), true);
+        return new Set<C>(Yield(), true, Comparer<C>.Default);
     }
 
     [Pure]

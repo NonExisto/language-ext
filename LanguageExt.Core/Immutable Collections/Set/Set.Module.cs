@@ -48,10 +48,32 @@ public sealed partial class Set
     /// <param name="range">Range of items</param>
     /// <returns>Set</returns>
     [Pure]
+    public static Set<T> createRange<T>(IEnumerable<T> range, IComparer<T> comparer) =>
+        new (range, true, comparer);
+
+    /// <summary>
+    /// Create a new set pre-populated with the items in range
+    /// </summary>
+    /// <typeparam name="T">Element type</typeparam>
+    /// <param name="range">Range of items</param>
+    /// <returns>Set</returns>
+    [Pure]
     public static Set<A> createRange<A>(ReadOnlySpan<A> range) =>
         range.IsEmpty
             ? Set<A>.Empty
             : new (range);
+
+/// <summary>
+    /// Create a new set pre-populated with the items in range
+    /// </summary>
+    /// <typeparam name="T">Element type</typeparam>
+    /// <param name="range">Range of items</param>
+    /// <returns>Set</returns>
+    [Pure]
+    public static Set<A> createRange<A>(ReadOnlySpan<A> range, IComparer<A> comparer) =>
+        range.IsEmpty
+            ? new(comparer)
+            : new (range, true, comparer);
 
     /// <summary>
     /// Create a new empty set
@@ -274,7 +296,7 @@ public sealed partial class Set
     /// <returns>Mapped enumerable</returns>
     [Pure]
     public static Set<R> map<T, R>(Set<T> set, Func<T, R> mapper) =>
-        set.Map(mapper);
+        set.Map(mapper, Comparer<R>.Default);
 
     /// <summary>
     /// Returns True if the value is in the set

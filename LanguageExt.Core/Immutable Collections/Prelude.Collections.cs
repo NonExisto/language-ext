@@ -669,31 +669,31 @@ public static partial class Prelude
     /// Create an immutable set
     /// </summary>
     [Pure]
-    public static Set<OrdT, T> Set<OrdT, T>() where OrdT : Ord<T> =>
-        LanguageExt.Set.create<OrdT, T>();
+    public static Set<T> Set<OrdT, T>(IComparer<T> comparer) =>
+        new Set<T>(comparer);
 
     /// <summary>
     /// Create an immutable set
     /// </summary>
     [Pure]
-    public static Set<OrdT, T> Set<OrdT, T>(T head, params T[] tail) where OrdT : Ord<T> =>
-        LanguageExt.Set.createRange<OrdT, T>(head.Cons(tail));
+    public static Set<T> Set<T>(IComparer<T> comparer, T head, params T[] tail) =>
+        LanguageExt.Set.createRange(head.Cons(tail), comparer);
 
     /// <summary>
     /// Create an immutable set
     /// </summary>
     [Pure]
-    public static Set<OrdT, T> toSet<OrdT, T>(IEnumerable<T> items) where OrdT : Ord<T> =>
-        items is Set<OrdT, T> s
+    public static Set<T> toSet<T>(IEnumerable<T> items, IComparer<T> comparer) =>
+        items is Set<T> s && s.HasSameComparer(comparer)
             ? s
-            : LanguageExt.Set.createRange<OrdT, T>(items);
+            : LanguageExt.Set.createRange(items, comparer);
 
     /// <summary>
     /// Create an immutable set
     /// </summary>
     [Pure]
-    public static Set<OrdT, T> toSet<OrdT, T>(ReadOnlySpan<T> items) where OrdT : Ord<T> =>
-        LanguageExt.Set.createRange<OrdT, T>(items);
+    public static Set<T> toSet<T>(ReadOnlySpan<T> items, IComparer<T> comparer) =>
+        LanguageExt.Set.createRange(items, comparer);
 
 
     /// <summary>

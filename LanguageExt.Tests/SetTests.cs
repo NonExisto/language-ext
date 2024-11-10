@@ -1,9 +1,5 @@
-﻿using L = LanguageExt;
-using static LanguageExt.Prelude;
-using static LanguageExt.Map;
-using Xunit;
+﻿using Xunit;
 using System;
-using System.Linq;
 using LanguageExt.ClassInstances;
 
 namespace LanguageExt.Tests
@@ -13,7 +9,7 @@ namespace LanguageExt.Tests
         [Fact]
         public void SetKeyTypeTests()
         {
-            var set = Set<OrdStringOrdinalIgnoreCase, string>("one", "two", "three");
+            var set = Set(StringComparer.OrdinalIgnoreCase, "one", "two", "three");
 
             Assert.True(set.Contains("one"));
             Assert.True(set.Contains("ONE"));
@@ -189,13 +185,16 @@ namespace LanguageExt.Tests
         [Fact]
         public void SetOrdSumTest()
         {
-            var m1 = Set<OrdStringOrdinalIgnoreCase, string>("one", "two");
-            var m2 = Set<OrdStringOrdinalIgnoreCase, string>("three");
+            using (withOrderComparer(StringComparer.OrdinalIgnoreCase))
+            {
+                var m1 = Set("one", "two");
+                var m2 = Set("three");
 
-            var sum = m1 + m2;
-            
-            Assert.Equal(sum, m1.AddRange(m2));
-            Assert.Equal(m2, sum.Clear() + m2);
+                var sum = m1 + m2;
+                
+                Assert.Equal(sum, m1.AddRange(m2));
+                Assert.Equal(m2, sum.Clear() + m2);
+            }
         }
 
         [Fact]
@@ -478,8 +477,7 @@ namespace LanguageExt.Tests
             { Assert.True(Set<int>().Case is not var (_, _) and not {} ); }
             { Assert.True(Set<int>(1).Case is not var (_, _) and 1); }
 
-            { Assert.True(Set<OrdInt, int>().Case is not var (_, _) and not {} ); }
-            { Assert.True(Set<OrdInt, int>(1).Case is not var (_, _) and 1); }
+           
         }
     }
 }
