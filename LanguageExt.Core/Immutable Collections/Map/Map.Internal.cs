@@ -1381,7 +1381,7 @@ internal sealed class MapInternal<K, V> :
     }
 
     [Pure]
-    public int CompareTo<OrdV>(MapInternal<K, V> other) where OrdV : Ord<V>
+    public int CompareTo(MapInternal<K, V> other, IComparer<V> comparer)
     {
         var cmp = Count.CompareTo(other.Count);
         if (cmp != 0) return cmp;
@@ -1391,7 +1391,7 @@ internal sealed class MapInternal<K, V> :
         {
             cmp = _comparer.Compare(iterA.Current.Key, iterB.Current.Key);
             if (cmp != 0) return cmp;
-            cmp = OrdV.Compare(iterA.Current.Value, iterB.Current.Value);
+            cmp = comparer.Compare(iterA.Current.Value, iterB.Current.Value);
             if (cmp != 0) return cmp;
         }
         return 0;

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Contracts;
-using LanguageExt.Traits;
-using static LanguageExt.Prelude;
 using LanguageExt.ClassInstances;
 using System.Runtime.CompilerServices;
 
@@ -409,7 +407,7 @@ internal sealed class LstInternal<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(LstInternal<A> other)
+    public int CompareTo(LstInternal<A> other, IComparer<A> comparer)
     {
         var cmp = Count.CompareTo(other.Count);
         if (cmp != 0) return cmp;
@@ -417,7 +415,7 @@ internal sealed class LstInternal<A> :
         using var iterB = other.GetEnumerator();
         while (iterA.MoveNext() && iterB.MoveNext())
         {
-            cmp = OrdDefault<A>.Compare(iterA.Current, iterB.Current);
+            cmp = comparer.Compare(iterA.Current, iterB.Current);
             if (cmp != 0) return cmp;
         }
         return 0;

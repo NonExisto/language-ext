@@ -1,4 +1,5 @@
-﻿using LanguageExt.Traits;
+﻿using System.Collections.Generic;
+using LanguageExt.Traits;
 
 namespace LanguageExt.ClassInstances;
 
@@ -15,4 +16,13 @@ public struct OrdTrue<A> : Ord<A>
 
     public static int GetHashCode(A x) =>
         OrdDefault<A>.GetHashCode(x);
+
+    internal static IComparer<A> Comparer => _.Default;
+
+    private sealed class _ : IComparer<A>
+    {
+        public static IComparer<A> Default => new _();
+
+        public int Compare(A? x, A? y) => 0;
+    }
 }

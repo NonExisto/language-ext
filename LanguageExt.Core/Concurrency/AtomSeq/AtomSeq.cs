@@ -1323,7 +1323,7 @@ public class AtomSeq<A> :
     /// </summary>
     [Pure]
     public int CompareTo(Seq<A> other) =>
-        CompareTo<OrdDefault<A>>(other);
+        CompareTo(other, Comparer<A>.Default);
 
     /// <summary>
     /// Compare to another sequence
@@ -1332,13 +1332,13 @@ public class AtomSeq<A> :
     public int CompareTo(AtomSeq<A>? other) =>
         other is null 
             ? 1
-            : CompareTo<OrdDefault<A>>(other);
+            : CompareTo(other, Comparer<A>.Default);
 
     /// <summary>
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo<OrdA>(Seq<A> rhs) where OrdA : Ord<A>
+    public int CompareTo(Seq<A> rhs, IComparer<A> comparer)
     {
         var lhs = items;
             
@@ -1351,7 +1351,7 @@ public class AtomSeq<A> :
         using var iterB = rhs.GetEnumerator();
         while (iterA.MoveNext() && iterB.MoveNext())
         {
-            cmp = OrdA.Compare(iterA.Current, iterB.Current);
+            cmp = comparer.Compare(iterA.Current, iterB.Current);
             if (cmp != 0) return cmp;
         }
 
@@ -1363,7 +1363,7 @@ public class AtomSeq<A> :
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo<OrdA>(AtomSeq<A> rhs) where OrdA : Ord<A>
+    public int CompareTo(AtomSeq<A> rhs, IComparer<A> comparer)
     {
         var lhs = items;
             
@@ -1376,7 +1376,7 @@ public class AtomSeq<A> :
         using var iterB = rhs.GetEnumerator();
         while (iterA.MoveNext() && iterB.MoveNext())
         {
-            cmp = OrdA.Compare(iterA.Current, iterB.Current);
+            cmp = comparer.Compare(iterA.Current, iterB.Current);
             if (cmp != 0) return cmp;
         }
 

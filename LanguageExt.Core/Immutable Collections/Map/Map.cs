@@ -1269,15 +1269,15 @@ public readonly struct Map<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Map<K, V> other) =>
-        Value.CompareTo<OrdDefault<V>>(other.Value);
+        Value.CompareTo(other.Value, Comparer<V>.Default);
 
     /// <summary>
     /// Compare keys and values (values use `OrdV` for ordering)
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo<OrdV>(Map<K, V> other) where OrdV : Ord<V> =>
-        Value.CompareTo<OrdV>(other.Value);
+    public int CompareTo(Map<K, V> other, IComparer<V> comparer) =>
+        Value.CompareTo(other.Value, comparer);
 
     /// <summary>
     /// Compare keys only
@@ -1285,7 +1285,7 @@ public readonly struct Map<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareKeysTo(Map<K, V> other) =>
-        Value.CompareTo<OrdTrue<V>>(other.Value);
+        Value.CompareTo(other.Value, OrdTrue<V>.Comparer);
 
     /// <summary>
     /// Implicit conversion from an untyped empty list

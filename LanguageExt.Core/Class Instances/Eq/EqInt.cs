@@ -31,7 +31,7 @@ public struct EqInt : Eq<int>
     public static int GetHashCode(int x) =>
         HashableInt.GetHashCode(x);
 
-    private class _ : IEqualityComparer<int>
+    private sealed class _ : IEqualityComparer<int>
     {
         public static readonly _ Default = new _();
         public bool Equals(int x, int y) => EqInt.Equals(x,y);

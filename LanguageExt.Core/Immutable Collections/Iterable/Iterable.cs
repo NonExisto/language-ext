@@ -422,14 +422,13 @@ public class Iterable<A> :
 
     [Pure]
     public int CompareTo(Iterable<A>? other) =>
-        CompareTo<OrdDefault<A>>(other);
+        CompareTo(other, new OrdComparer<OrdDefault<A>, A>());
 
     /// <summary>
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public virtual int CompareTo<OrdA>(Iterable<A>? rhs) 
-        where OrdA : Ord<A>
+    public virtual int CompareTo(Iterable<A>? rhs, IComparer<A> comparer) 
     {
         if (rhs is null) return 1;        
         using var iterA = GetEnumerator();
@@ -438,7 +437,7 @@ public class Iterable<A> :
         {
             if (iterB.MoveNext())
             {
-                var cmp = OrdA.Compare(iterA.Current, iterB.Current);
+                var cmp = comparer.Compare(iterA.Current, iterB.Current);
                 if (cmp != 0) return cmp;
             }
             else

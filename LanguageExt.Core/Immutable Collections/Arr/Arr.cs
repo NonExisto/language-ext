@@ -742,7 +742,12 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly int CompareTo(Arr<A> other)
+    public readonly int CompareTo(Arr<A> other) => 
+        CompareTo(other, new OrdComparer<OrdDefault<A>, A>());
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly int CompareTo(Arr<A> other, IComparer<A> comparer)
     {
         if (Count < other.Count) return -1;
         if (Count > other.Count) return 1;
@@ -751,7 +756,7 @@ public struct Arr<A> :
         var ib = other.GetEnumerator();
         while (ia.MoveNext() && ib.MoveNext())
         {
-            var cmp = OrdDefault<A>.Compare(ia.Current, ib.Current);
+            var cmp = comparer.Compare(ia.Current, ib.Current);
             if (cmp != 0) return cmp;
         }
         return 0;

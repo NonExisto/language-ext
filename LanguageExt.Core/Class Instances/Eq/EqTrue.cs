@@ -20,7 +20,7 @@ public struct EqTrue<A> : Eq<A>
     public static int GetHashCode(A x) =>
         EqDefault<A>.GetHashCode(x);
 
-    private class _ : IEqualityComparer<A>
+    private sealed class _ : IEqualityComparer<A>
     {
         public static IEqualityComparer<A> Default => new _();
         public bool Equals(A? x, A? y) => true;
