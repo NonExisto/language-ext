@@ -14,6 +14,7 @@ using static LanguageExt.Parsec.Token;
 using static LanguageExt.UnitsOfMeasure;
 using LanguageExt.ClassInstances;
 using Char = System.Char;
+using System.Globalization;
 
 namespace LanguageExt.Tests
 {
@@ -688,6 +689,8 @@ namespace LanguageExt.Tests
                 ReservedNames: Empty,
                 ReservedOpNames: List("+", "-", "*", "/")
             );
+
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             var lexer = makeTokenParser(definition);
             var input = "3.14159";

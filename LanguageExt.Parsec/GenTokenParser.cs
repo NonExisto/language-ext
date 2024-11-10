@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using static LanguageExt.Prelude;
-using static LanguageExt.Parsec.ParserResult;
-using static LanguageExt.Parsec.Internal;
 using static LanguageExt.Parsec.Prim;
-using static LanguageExt.Parsec.Char;
 
 namespace LanguageExt.Parsec
 {
