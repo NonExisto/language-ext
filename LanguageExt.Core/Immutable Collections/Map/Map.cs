@@ -37,12 +37,12 @@ public readonly struct Map<K, V> :
     K<Map<K>, V>
 {
     public static Map<K, V> Empty { get; } =
-        new(MapInternal<OrdDefault<K>, K, V>.Empty);
+        new(MapInternal<K, V>.Empty);
 
-    readonly MapInternal<OrdDefault<K>, K, V>? value;
+    readonly MapInternal<K, V>? value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Map<K, V> Wrap(MapInternal<OrdDefault<K>, K, V> map) =>
+    internal static Map<K, V> Wrap(MapInternal<K, V> map) =>
         new (map);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -50,36 +50,40 @@ public readonly struct Map<K, V> :
     { }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Map(IEnumerable<(K Key, V Value)> items, bool tryAdd) =>
-        value = new MapInternal<OrdDefault<K>, K, V>(
+    public Map(IEnumerable<(K Key, V Value)> items, bool tryAdd, IComparer<K>? comparer = null) =>
+        value = new MapInternal<K, V>(
             items, tryAdd
-                       ? MapModuleM.AddOpt.TryAdd
-                       : MapModuleM.AddOpt.ThrowOnDuplicate);
+                       ? MapModule.AddOpt.TryAdd
+                       : MapModule.AddOpt.ThrowOnDuplicate, comparer);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Map(ReadOnlySpan<(K Key, V Value)> items) : this(items, true)
     { }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Map(ReadOnlySpan<(K Key, V Value)> items, bool tryAdd) =>
-        value = new MapInternal<OrdDefault<K>, K, V>(
+    public Map(ReadOnlySpan<(K Key, V Value)> items, bool tryAdd, IComparer<K>? comparer = null) =>
+        value = new MapInternal<K, V>(
             items,
             tryAdd
-                ? MapModuleM.AddOpt.TryAdd
-                : MapModuleM.AddOpt.ThrowOnDuplicate);
+                ? MapModule.AddOpt.TryAdd
+                : MapModule.AddOpt.ThrowOnDuplicate, comparer);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Map(MapInternal<OrdDefault<K>, K, V> value) =>
+    internal Map(MapInternal<K, V> value) =>
         this.value = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Map(MapItem<K, V> root, bool rev) =>
-        value = new MapInternal<OrdDefault<K>, K, V>(root, rev);
+    internal Map(MapItem<K, V> root, bool rev, IComparer<K>? comparer = null) =>
+        value = new MapInternal<K, V>(root, rev, comparer);
 
-    internal MapInternal<OrdDefault<K>, K, V> Value
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal Map(IComparer<K> comparer) =>
+        value = new MapInternal<K, V>(comparer);
+
+    internal MapInternal<K, V> Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value ?? MapInternal<OrdDefault<K>, K, V>.Empty;
+        get => value ?? MapInternal<K, V>.Empty;
     }
         
     /// <summary>
@@ -809,7 +813,7 @@ public readonly struct Map<K, V> :
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Map<K, V> SetRoot(MapItem<K, V> root) =>
-        new (new MapInternal<OrdDefault<K>, K, V>(root, Value.Rev));
+        new (Value.SetRoot(root));
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -870,23 +874,23 @@ public readonly struct Map<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Map<K, V> other) =>
-        Value.Equals<EqDefault<V>>(other.Value);
+        Value.Equals(other.Value, EqualityComparer<K>.Default, EqualityComparer<V>.Default);
 
     /// <summary>
-    /// Equality of keys and values
+    /// Equality of keys and values with `EqDefault<V>` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals<EqV>(Map<K, V> y) where EqV : Eq<V> =>
-        Value.Equals<EqV>(y.Value);
+    public bool Equals(Map<K, V> other, IEqualityComparer<K> equalityComparer, IEqualityComparer<V> valueEqualityComparer) =>
+        Value.Equals(other.Value, equalityComparer, valueEqualityComparer);
 
     /// <summary>
     /// Equality of keys only
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool EqualsKeys(Map<K, V> y) =>
-        Value.Equals<EqTrue<V>>(y.Value);
+    public bool EqualsKeys(Map<K, V> y, IEqualityComparer<K> equalityComparer) =>
+        Value.Equals(y.Value, equalityComparer, EqTrue<V>.Comparer);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

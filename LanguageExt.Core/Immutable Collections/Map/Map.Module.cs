@@ -47,6 +47,8 @@ public static partial class Map
     public static Map<K, V> create<K, V>(Tuple<K, V> head, params Tuple<K, V>[] tail) =>
         empty<K, V>().AddRange(head.Cons(tail));
 
+    
+
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
@@ -60,6 +62,13 @@ public static partial class Map
     [Pure]
     public static Map<K, V> create<K, V>((K, V) head, params (K, V)[] tail) =>
         empty<K, V>().AddRange(head.Cons(tail));
+
+    /// <summary>
+    /// Creates a new Map seeded with the keyValues provided
+    /// </summary>
+    [Pure]
+    public static Map<K, V> create<K, V>(IComparer<K> comparer, (K, V) head, params (K, V)[] tail) =>
+        new Map<K,V>(comparer).AddRange(head.Cons(tail));
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided
@@ -79,10 +88,26 @@ public static partial class Map
     /// Creates a new Map seeded with the keyValues provided
     /// </summary>
     [Pure]
+    public static Map<K, V> createRange<K, V>(IEnumerable<(K, V)> keyValues, IComparer<K> comparer) =>
+        new (keyValues, true, comparer);
+
+    /// <summary>
+    /// Creates a new Map seeded with the keyValues provided
+    /// </summary>
+    [Pure]
     public static Map<K, V> createRange<K, V>(ReadOnlySpan<(K, V)> keyValues) =>
         keyValues.IsEmpty
             ? Map<K, V>.Empty
             : new (keyValues);
+
+    /// <summary>
+    /// Creates a new Map seeded with the keyValues provided
+    /// </summary>
+    [Pure]
+    public static Map<K, V> createRange<K, V>(ReadOnlySpan<(K, V)> keyValues, IComparer<K>? comparer) =>
+        keyValues.IsEmpty && comparer is not null
+            ? new (comparer)
+            : new (keyValues, true, comparer);
 
     /// <summary>
     /// Creates a new Map seeded with the keyValues provided

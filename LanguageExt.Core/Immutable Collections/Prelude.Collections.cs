@@ -247,29 +247,29 @@ public static partial class Prelude
     /// Create an immutable map
     /// </summary>
     [Pure]
-    public static Map<OrdK, K, V> Map<OrdK, K, V>() where OrdK : Ord<K> =>
-        LanguageExt.Map.empty<OrdK, K, V>();
+    public static Map<K, V> Map<K, V>(IComparer<K> comparer) =>
+        new LanguageExt.Map<K, V>(comparer);
 
     /// <summary>
     /// Create an immutable map
     /// </summary>
     [Pure]
-    public static Map<OrdK, K, V> Map<OrdK, K, V>((K, V) head, params (K, V)[] tail) where OrdK : Ord<K> =>
-        LanguageExt.Map.create<OrdK, K, V>(head, tail);
+    public static Map<K, V> Map<K, V>(IComparer<K> comparer, (K, V) head, params (K, V)[] tail) =>
+        LanguageExt.Map.create(comparer, head, tail);
 
     /// <summary>
     /// Create an immutable map
     /// </summary>
     [Pure]
-    public static Map<OrdK, K, V> toMap<OrdK, K, V>(IEnumerable<(K, V)> items) where OrdK : Ord<K> =>
-        LanguageExt.Map.createRange<OrdK, K, V>(items);
+    public static Map<K, V> toMap<K, V>(IEnumerable<(K, V)> items, IComparer<K> comparer) =>
+        LanguageExt.Map.createRange<K, V>(items, comparer);
 
     /// <summary>
     /// Create an immutable map
     /// </summary>
     [Pure]
-    public static Map<OrdK, K, V> toMap<OrdK, K, V>(ReadOnlySpan<(K, V)> items) where OrdK : Ord<K> =>
-        LanguageExt.Map.createRange<OrdK, K, V>(items);
+    public static Map<K, V> toMap<K, V>(ReadOnlySpan<(K, V)> items, IComparer<K> comparer) =>
+        LanguageExt.Map.createRange<K, V>(items, comparer);
 
 
 
@@ -1300,15 +1300,26 @@ public static partial class Prelude
 
     [ThreadStatic]
 	private static object? EqualityComparer;
+    [ThreadStatic]
+	private static object? OrderComparer;
 
-	public static Unit withEqualityComparer<T>(IEqualityComparer<T> equalityComparer)
+	public static IDisposable withEqualityComparer<T>(IEqualityComparer<T> equalityComparer)
 	{
 		EqualityComparer = equalityComparer;
-		return unit;
+		return new AnonymousDisposable(() => EqualityComparer = null);
 	}
 
     public static IEqualityComparer<T> getRegisteredEqualityComparerOrDefault<T>() => 
 			EqualityComparer as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
+
+    public static IDisposable withOrderComparer<T>(IComparer<T> comparer)
+	{
+		OrderComparer = comparer;
+		return new AnonymousDisposable(() => OrderComparer = null);
+	}
+
+    public static IComparer<T> getRegisteredOrderComparerOrDefault<T>() => 
+		OrderComparer as IComparer<T> ?? Comparer<T>.Default;
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

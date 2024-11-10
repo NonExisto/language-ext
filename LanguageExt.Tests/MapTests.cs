@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using LanguageExt.ClassInstances;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace LanguageExt.Tests;
 
@@ -61,21 +62,24 @@ public class MapTests
     [Fact]
     public void MapOrdSetTest()
     {
-        Map<OrdStringOrdinalIgnoreCase, string, int> m1 = [("one", 1), ("two",2), ("three", 3)];
-        var m2 = m1.SetItem("One", -1);
-            
-        Assert.Equal(3, m2.Count);
-        Assert.Equal(-1, m2["one"]);
-        Assert.DoesNotContain("one", m2.Keys); // make sure key got replaced, too
-        Assert.Contains("One", m2.Keys);       // make sure key got replaced, too
+        using(withOrderComparer(StringComparer.OrdinalIgnoreCase))
+        {
+            Map<string, int> m1 = [("one", 1), ("two",2), ("three", 3)];
+            var m2 = m1.SetItem("One", -1);
+                
+            Assert.Equal(3, m2.Count);
+            Assert.Equal(-1, m2["one"]);
+            Assert.DoesNotContain("one", m2.Keys); // make sure key got replaced, too
+            Assert.Contains("One", m2.Keys);       // make sure key got replaced, too
 
-        Assert.Throws<ArgumentException>(() => m1.SetItem("four", identity));
+            Assert.Throws<ArgumentException>(() => m1.SetItem("four", identity));
 
-        var m3 = m1.TrySetItem("four", 0).Add("five", 0).TrySetItem("Five", 5);
-        Assert.Equal(5, m3["fiVe"]);
-        Assert.DoesNotContain("four", m3.Keys);
-        Assert.DoesNotContain("five", m3.Keys);
-        Assert.Contains("Five", m3.Keys);
+            var m3 = m1.TrySetItem("four", 0).Add("five", 0).TrySetItem("Five", 5);
+            Assert.Equal(5, m3["fiVe"]);
+            Assert.DoesNotContain("four", m3.Keys);
+            Assert.DoesNotContain("five", m3.Keys);
+            Assert.Contains("Five", m3.Keys);
+        }
     }
 
     [Fact]
@@ -224,13 +228,16 @@ public class MapTests
     [Fact]
     public void MapOrdSumTest()
     {
-        var m1 = Map<OrdStringOrdinalIgnoreCase, string, int>(("one", 1), ("two",2));
-        var m2 = Map<OrdStringOrdinalIgnoreCase, string, int>(("three", 3));
+        using(withOrderComparer(StringComparer.OrdinalIgnoreCase))
+        {
+            var m1 = Map(("one", 1), ("two",2));
+            var m2 = Map(StringComparer.Ordinal, ("three", 3));
 
-        var sum = m1 + m2;
-            
-        Assert.Equal(sum, m1.AddRange(m2));
-        Assert.Equal(m2, sum.Clear() + m2);
+            var sum = m1 + m2;
+                
+            Assert.Equal(sum, m1.AddRange((IEnumerable<(string, int)>)m2));
+            Assert.Equal(m2, sum.Clear() + m2);
+        }
     }
 
 

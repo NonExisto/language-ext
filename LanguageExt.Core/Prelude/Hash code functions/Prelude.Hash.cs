@@ -75,14 +75,6 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int hash<OrdK, K, V>(Map<OrdK, K, V> xs) where OrdK : Ord<K> =>
-        xs.GetHashCode();
-
-    /// <summary>
-    /// Calculate a hash-code for the collection provided
-    /// </summary>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int hash<A>(Que<A> xs) =>
         xs.GetHashCode();
 

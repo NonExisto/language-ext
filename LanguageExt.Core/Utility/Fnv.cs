@@ -135,9 +135,9 @@ namespace LanguageExt
 
             var valueComparer = Prelude.getRegisteredEqualityComparerOrDefault<V>();
 
-            foreach (var item in items)
+            foreach (var (key, value) in items)
             {
-                hash = Next(Next(equalityComparer.GetHashCode(item.key!), valueComparer.GetHashCode(item.value!)), hash);
+                hash = Next(Next(equalityComparer.GetHashCode(key!), valueComparer.GetHashCode(value!)), hash);
             }
             return hash;
 
