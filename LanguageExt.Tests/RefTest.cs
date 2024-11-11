@@ -105,21 +105,21 @@ public class RefTest
     }
 
     [Fact]
-    static void DepositCommuteTest()
+    public void DepositCommuteTest()
     {
         var bank = Account.New(0);
 
         LogDeposit(bank, 100);
         LogDeposit(bank, 50);
 
-        Assert.True(bank.Value.Balance == 150);
+        Assert.Equal(150, bank.Value.Balance);
 
         var bank2 = Account.New(0);
 
         LogDeposit(bank2, 50);
         LogDeposit(bank2, 100);
 
-        Assert.True(bank2.Value.Balance == 150);
+        Assert.Equal(150, bank2.Value.Balance);
 
     }
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using static LanguageExt.Prelude;
+﻿using Xunit;
 using LanguageExt.ClassInstances;
 
 namespace LanguageExt.Tests
@@ -18,7 +12,7 @@ namespace LanguageExt.Tests
             var y = Some(20);
             var z = product<TInt, int>(x, y);
 
-            Assert.True(z == 200);
+            Assert.Equal(200, z);
         }
     }
 }

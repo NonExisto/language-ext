@@ -1,11 +1,10 @@
-﻿using static LanguageExt.Prelude;
-using static LanguageExt.List;
+﻿using static LanguageExt.List;
 using static LanguageExt.Stack;
 using Xunit;
 
 namespace LanguageExt.Tests
 {
-    
+
     public class StackTests
     {
         [Fact]
@@ -54,7 +53,7 @@ namespace LanguageExt.Tests
             test = map(trypop(test), (stack, value) => { Assert.True(value.IsSome); return stack; });
             test = map(trypop(test), (stack, value) => { Assert.True(value.IsSome); return stack; });
             peek(test,
-                Some: v => Assert.True(v == 1),
+                Some: v => Assert.Equal(1, v),
                 None: () => Assert.False(true)
             );
         }
@@ -65,10 +64,10 @@ namespace LanguageExt.Tests
             var stack = toStack(Range(1,100));
 
             Assert.True(exists(stack, v => v == 50));
-            Assert.True(length(stack) == 100);
-            Assert.True(length(takeWhile(stack, v => v != 10)) == 90);
-            Assert.True(length(take(stack, 10)) == 10);
-            Assert.True(head(take(stack, 1)) == 100);
+            Assert.Equal(100, length(stack));
+            Assert.Equal(90, length(takeWhile(stack, v => v != 10)));
+            Assert.Equal(10, length(take(stack, 10)));
+            Assert.Equal(100, head(take(stack, 1)));
         }
 
         [Fact]

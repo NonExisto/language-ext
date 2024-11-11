@@ -1,11 +1,10 @@
-﻿using static LanguageExt.Prelude;
-using static LanguageExt.List;
+﻿using static LanguageExt.List;
 using static LanguageExt.Queue;
 using Xunit;
 
 namespace LanguageExt.Tests
 {
-    
+
     public class QueueTests
     {
         [Fact]
@@ -66,10 +65,10 @@ namespace LanguageExt.Tests
             var queue = toQueue(Range(0,100));
 
             Assert.True(exists(queue, v => v == 50));
-            Assert.True(length(queue) == 100);
-            Assert.True(length(takeWhile(queue, v => v != 90)) == 90);
-            Assert.True(length(take(queue, 10)) == 10);
-            Assert.True(head(take(queue, 1)) == 0);
+            Assert.Equal(100, length(queue));
+            Assert.Equal(90, length(takeWhile(queue, v => v != 90)));
+            Assert.Equal(10, length(take(queue, 10)));
+            Assert.Equal(0, head(take(queue, 1)));
         }
 
         [Fact]

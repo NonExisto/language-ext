@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using LanguageExt.Common;
+﻿using Xunit;
 using LanguageExt.Parsec;
-using static LanguageExt.Prelude;
 using static LanguageExt.Parsec.PrimIO;
 using static LanguageExt.Parsec.ItemIO;
 using static LanguageExt.Parsec.IndentIO;
@@ -47,9 +40,9 @@ namespace LanguageExt.Tests
 
             var res = block.Parse(toks, t => new Pos(t.Ln - 1, t.Col - 1)).ToEither().IfLeft(() => default);
 
-            Assert.True(res.Item1.Count == 3);
-            Assert.True(res.Item2.Count == 1);
-            Assert.True(res.Item3.Count == 1);
+            Assert.Equal(3, res.Item1.Count);
+            Assert.Equal(1, res.Item2.Count);
+            Assert.Equal(1, res.Item3.Count);
         }
     }
 }

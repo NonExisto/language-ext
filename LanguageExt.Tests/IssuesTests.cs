@@ -1,11 +1,9 @@
 ﻿using Xunit;
 using System;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using LanguageExt.Common;
-using static LanguageExt.Prelude;
+using FluentAssertions;
 
 namespace LanguageExt.Tests
 {
@@ -59,7 +57,7 @@ namespace LanguageExt.Tests
         [Fact]
         public void Issue346()
         {
-            var list = 1.Cons().ToList();
+            1.Cons().ToList().Should().HaveCount(1);
         }
 
         [Fact]
@@ -189,7 +187,7 @@ namespace Issues
 
             var r = mc.Run();
 
-            Assert.True(r.Value == 300);
+            Assert.Equal(300, r.Value);
             Assert.True(r.Output == Seq("Hello", "World", "the result is 300"));
         }
 
@@ -208,7 +206,7 @@ namespace Issues
 
             var r = mc.Run();
 
-            Assert.True(r.Value == 300);
+            Assert.Equal(300, r.Value);
             Assert.True(r.Output == List("Hello", "World", "the result is 300"));
         }
 
@@ -227,7 +225,7 @@ namespace Issues
 
             var r = mc.Run();
 
-            Assert.True(r.Value == 300);
+            Assert.Equal(300, r.Value);
             Assert.True(r.Output == Seq("Hello", "World", "the result is 300"));
         }
     }

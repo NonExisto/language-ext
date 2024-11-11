@@ -1,7 +1,6 @@
 using System.Linq;
 using LanguageExt.ClassInstances;
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.OptionT.Collections;
 

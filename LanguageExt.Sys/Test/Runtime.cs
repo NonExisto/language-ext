@@ -43,9 +43,6 @@ public record Runtime(RuntimeEnv Env) :
     
     static K<Eff<Runtime>, A> local<A>(Func<Runtime, Runtime> f, K<Eff<Runtime>, A> ma) =>
         Readable.local(f, ma);
-    
-    static K<Eff<Runtime>, A> localEnv<A>(Func<RuntimeEnv, RuntimeEnv> f, K<Eff<Runtime>, A> ma) =>
-        local(e => e with { Env = f(e.Env) }, ma);
 
     static K<Eff<Runtime>, A> localActivity<A>(Func<ActivityEnv, ActivityEnv> f, K<Eff<Runtime>, A> ma) =>
         local(e => e with { Env = e.Env with { Activity = f(e.Env.Activity) } }, ma);

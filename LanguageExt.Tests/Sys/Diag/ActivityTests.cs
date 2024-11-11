@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using System;
-using System.Threading.Tasks;
 using LanguageExt.Sys.Diag;
 using LanguageExt.Sys.Test;
 using System.Diagnostics;

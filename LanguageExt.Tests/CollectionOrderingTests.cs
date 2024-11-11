@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
@@ -11,7 +10,7 @@ public class CollectionOrderingTests
         var x = Set(1, 2, 3, 4, 5);
         var y = Set(1, 2, 3, 4, 5);
 
-        Assert.True(x.CompareTo(y) == 0);
+        Assert.Equal(0, x.CompareTo(y));
         Assert.False(x             < y);
         Assert.True(x              <= y);
         Assert.False(x             > y);
@@ -81,7 +80,7 @@ public class CollectionOrderingTests
         var x = List(1, 2, 3, 4, 5);
         var y = List(1, 2, 3, 4, 5);
 
-        Assert.True(x.CompareTo(y) == 0);
+        Assert.Equal(0, x.CompareTo(y));
         Assert.False(x             < y);
         Assert.True(x              <= y);
         Assert.False(x             > y);
@@ -152,7 +151,7 @@ public class CollectionOrderingTests
         var x = Map((1, 'a'), (2, 'a'), (3, 'a'), (4, 'a'), (5, 'a'));
         var y = Map((1, 'a'), (2, 'a'), (3, 'a'), (4, 'a'), (5, 'a'));
 
-        Assert.True(x.CompareTo(y) == 0);
+        Assert.Equal(0, x.CompareTo(y));
         Assert.False(x             < y);
         Assert.True(x              <= y);
         Assert.False(x             > y);

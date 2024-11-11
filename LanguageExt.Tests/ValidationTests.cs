@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using LanguageExt.Common;
 using Xunit;
 
@@ -19,8 +18,8 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.True(errors.Count == 1);
-                      Assert.True(errors.Head  == "SOMETHING WENT WRONG");
+                      Assert.Equal(1, errors.Count);
+                      Assert.Equal("SOMETHING WENT WRONG", errors.Head);
                   });
     }
 
@@ -31,7 +30,7 @@ public class ValidationTests
                          .MapFail(xs => xs.Map(ToUpper));
 
         success.Match(
-            Succ: succ => Assert.True(succ == 42),
+            Succ: succ => Assert.Equal(42, succ),
             Fail: errors => Assert.Fail("should never get here"));
     }
 
@@ -46,8 +45,8 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.True(errors.Count == 1);
-                      Assert.True(errors.Head  == "SOMETHING WENT WRONG");
+                      Assert.Equal(1, errors.Count);
+                      Assert.Equal("SOMETHING WENT WRONG", errors.Head);
                   });
     }
 
@@ -59,7 +58,7 @@ public class ValidationTests
                   Fail: xs => xs.Map(ToUpper));
 
         success.Match(
-            Succ: succ => Assert.True(succ == 43),
+            Succ: succ => Assert.Equal(43, succ),
             Fail: err => Assert.Fail("should never get here"));
     }
 
@@ -72,10 +71,10 @@ public class ValidationTests
         res.Match(
             Succ: cc =>
                   {
-                      Assert.True(cc.CardHolder == "Paul");
-                      Assert.True(cc.Month      == 10);
-                      Assert.True(cc.Year       == 2020);
-                      Assert.True(cc.Number     == "1234567891012345");
+                      Assert.Equal("Paul", cc.CardHolder);
+                      Assert.Equal(10, cc.Month);
+                      Assert.Equal(2020, cc.Year);
+                      Assert.Equal("1234567891012345", cc.Number);
                   },
             Fail: err => Assert.Fail("should never get here"));
     }
@@ -90,9 +89,9 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.True(errors.Count             == 2);
-                      Assert.True(errors.Head.Message      == "only numbers are allowed");
-                      Assert.True(errors.Tail.Head.Message == "can not exceed 16 characters");
+                      Assert.Equal(2, errors.Count);
+                      Assert.Equal("only numbers are allowed", errors.Head.Message);
+                      Assert.Equal("can not exceed 16 characters", errors.Tail.Head.Message);
                   });
     }
 
@@ -106,9 +105,9 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.True(errors.Count                  == 3);
-                      Assert.True(errors.Head.Message           == "only numbers are allowed");
-                      Assert.True(errors.Tail.Head.Message      == "can not exceed 16 characters");
+                      Assert.Equal(3, errors.Count);
+                      Assert.Equal("only numbers are allowed", errors.Head.Message);
+                      Assert.Equal("can not exceed 16 characters", errors.Tail.Head.Message);
                       Assert.True(errors.Tail.Tail.Head.Message == "card has expired");
                   });
     }
@@ -135,7 +134,7 @@ public class ValidationTests
     /// Validates that the string passed contains only digits
     /// </summary>
     public static Validation<Error, string> DigitsOnly(string str) =>
-        str.AsIterable().ForAll(Char.IsDigit)
+        str.AsIterable().ForAll(char.IsDigit)
             ? Success<Error, string>(str)
             : Fail<Error, string>(Error.New($"only numbers are allowed"));
 

@@ -18,8 +18,8 @@ public class LinqTests
                    from y in x
                    select a + y).AsIterable();
 
-        Assert.True(res.Head().ValueUnsafe()        == "pre hello");
-        Assert.True(res.Tail().Head().ValueUnsafe() == "pre world");
+        Assert.Equal("pre hello", res.Head().ValueUnsafe());
+        Assert.Equal("pre world", res.Tail().Head().ValueUnsafe());
 
         opt = None;
 
@@ -55,9 +55,9 @@ public class LinqTests
 
         var res2 = res.ToList();
 
-        Assert.True(res2.Count() == 10);
-        Assert.True(res2[0]      == 10);
-        Assert.True(res2[9]      == 100);
+        Assert.Equal(10, res2.Count());
+        Assert.Equal(10, res2[0]);
+        Assert.Equal(100, res2[9]);
     }
 
     [Fact]
@@ -79,9 +79,9 @@ public class LinqTests
 
         var res2 = res.ToList();
 
-        Assert.True(res.Count() == 10);
-        Assert.True(res2[0]     == 10);
-        Assert.True(res2[9]     == 100);
+        Assert.Equal(10, res.Count());
+        Assert.Equal(10, res2[0]);
+        Assert.Equal(100, res2[9]);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class LinqTests
                   from r in Range(1, 10)
                   select v * r;
 
-        Assert.True(res.Count() == 0);
+        Assert.Empty(res);
     }
     
     [Fact]
@@ -101,7 +101,7 @@ public class LinqTests
                    where v < 3
                    select v;
 
-        Assert.True(res1.Count == 2);
+        Assert.Equal(2, res1.Count);
     }
 
     [Fact]
@@ -111,13 +111,13 @@ public class LinqTests
                    where v == 10
                    select v;
 
-        Assert.True(res1.IfNone(0) == 10);
+        Assert.Equal(10, res1.IfNone(0));
 
         var res2 = from v in GetOptionValue(false)
                    where v == 10
                    select v;
 
-        Assert.True(res2.IfNone(0) == 0);
+        Assert.Equal(0, res2.IfNone(0));
     }
 
     [Fact]

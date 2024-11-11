@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using static LanguageExt.List;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
@@ -15,10 +14,10 @@ public class ArrayTests
 
         var array = test.ToArray();
 
-        Assert.True(array[0] == 1);
-        Assert.True(array[1] == 2);
-        Assert.True(array[2] == 3);
-        Assert.True(array[3] == 4);
+        Assert.Equal(1, array[0]);
+        Assert.Equal(2, array[1]);
+        Assert.Equal(3, array[2]);
+        Assert.Equal(4, array[3]);
     }
 
     [Fact]
@@ -28,11 +27,11 @@ public class ArrayTests
 
         var array = test.ToArray();
 
-        Assert.True(array[0] == 1);
-        Assert.True(array[1] == 2);
-        Assert.True(array[2] == 3);
-        Assert.True(array[3] == 4);
-        Assert.True(array[4] == 5);
+        Assert.Equal(1, array[0]);
+        Assert.Equal(2, array[1]);
+        Assert.Equal(3, array[2]);
+        Assert.Equal(4, array[3]);
+        Assert.Equal(5, array[4]);
     }
 
     [Fact]
@@ -43,7 +42,7 @@ public class ArrayTests
                  .Filter(x => x > 20)
                  .Fold(0, (x, s) => s + x);
 
-        Assert.True(res == 120);
+        Assert.Equal(120, res);
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public class ArrayTests
                  .Filter(x => x > 20)
                  .Reduce((x, s) => s + x);
 
-        Assert.True(res == 120);
+        Assert.Equal(120, res);
     }
 
     [Fact]
@@ -63,8 +62,8 @@ public class ArrayTests
         var list = Array(1, 2, 3, 4, 5);
         var rev  = list.Reverse();
 
-        Assert.True(rev[0] == 5);
-        Assert.True(rev[4] == 1);
+        Assert.Equal(5, rev[0]);
+        Assert.Equal(1, rev[4]);
     }
 
     [Fact]

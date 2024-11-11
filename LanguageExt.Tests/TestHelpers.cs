@@ -1,6 +1,5 @@
 using System;
 using LanguageExt.Common;
-using LanguageExt.Effects;
 using LanguageExt.Sys.Test;
 using Xunit;
 

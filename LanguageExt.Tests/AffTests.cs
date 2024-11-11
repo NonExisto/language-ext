@@ -1,9 +1,7 @@
 using Xunit;
 using System;
-using LanguageExt;
 using LanguageExt.Common;
 using System.Threading.Tasks;
-using static LanguageExt.Prelude;
 
 namespace EffTests;
 
@@ -13,7 +11,7 @@ public class EffMapFailTests
     public void Eff_WithFailingTaskInEff_EndsWithMapFailValue()
     {
         // Arrange
-        var affWithException       = liftEff(async () => await FailingTask());
+        var affWithException       = liftEff(FailingTask);
         var affWithMappedFailState = affWithException.MapFail(error => Error.New(error.Message + "MapFail Eff"));
 
         // Act
@@ -71,7 +69,7 @@ public class EffMapFailTests
 
     static async Task<Unit> FailingTask()
     {
-        await Task.Delay(1);
+        await Task.Yield();
         throw new Exception("Error!");
     }
 }

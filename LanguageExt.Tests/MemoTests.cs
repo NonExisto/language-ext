@@ -68,8 +68,8 @@ public class MemoTests
     {
         var vals = List(1,2,3,4,5).Memo();
 
-        Assert.True(vals.Sum() == 15);
-        Assert.True(vals.Sum() == 15);
+        Assert.Equal(15, vals.Sum());
+        Assert.Equal(15, vals.Sum());
     }
 
     /*

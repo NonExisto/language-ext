@@ -189,7 +189,7 @@ public sealed class ScheduleTests
         var transformer = Schedule.maxCumulativeDelay(40 * sec);
         var results     = transformer.Apply(Schedule.linear(10 * sec)).Run().ToSeq();
         
-        Assert.True(results.Count == 3);
+        Assert.Equal(3, results.Count);
         Assert.True(results.Max().ValueUnsafe() == 30 * sec);
     }
 
@@ -379,7 +379,7 @@ public sealed class ScheduleTests
                            & Schedule.jitter(1 * ms, 10 * ms)).Run().ToSeq();
 
         var res = withJitter.ToArray();
-        Assert.True(res.Length == 5);
+        Assert.Equal(5, res.Length);
         Assert.True(res.Zip(noJitter)
                        .AsIterable()
                        .Filter(p => p.First > p.Second && p.First - p.Second <= 100)
@@ -398,7 +398,7 @@ public sealed class ScheduleTests
                            & Schedule.jitter(1.5)).Run().ToSeq();
         
         var res = withJitter.ToArray();
-        Assert.True(res.Length == 5);
+        Assert.Equal(5, res.Length);
         Assert.True(res.Zip(noJitter)
                        .AsIterable()
                        .Filter(p => p.First > p.Second && p.First - p.Second <= p.Second * 1.5)

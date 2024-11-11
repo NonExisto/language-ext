@@ -14,11 +14,11 @@ public class ListTests
 
         var array = test.ToArray();
 
-        Assert.True(array[0] == 1);
-        Assert.True(array[1] == 2);
-        Assert.True(array[2] == 3);
-        Assert.True(array[3] == 4);
-        Assert.True(array[4] == 5);
+        Assert.Equal(1, array[0]);
+        Assert.Equal(2, array[1]);
+        Assert.Equal(3, array[2]);
+        Assert.Equal(4, array[3]);
+        Assert.Equal(5, array[4]);
     }
 
     [Fact]
@@ -28,11 +28,11 @@ public class ListTests
 
         var array = test.ToArray();
 
-        Assert.True(array[0] == 1);
-        Assert.True(array[1] == 2);
-        Assert.True(array[2] == 3);
-        Assert.True(array[3] == 4);
-        Assert.True(array[4] == 5);
+        Assert.Equal(1, array[0]);
+        Assert.Equal(2, array[1]);
+        Assert.Equal(3, array[2]);
+        Assert.Equal(4, array[3]);
+        Assert.Equal(5, array[4]);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ListTests
         // Generates 120
         var output3 = fold(output2, 0, (x, s) => s + x);
 
-        Assert.True(output3 == 120);
+        Assert.Equal(120, output3);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ListTests
         // Generates 120
         var output3 = reduce(output2, (x, s) => s + x);
 
-        Assert.True(output3 == 120);
+        Assert.Equal(120, output3);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class ListTests
                  .Filter(x => x > 20)
                  .Fold(0, (x, s) => s + x);
 
-        Assert.True(res == 120);
+        Assert.Equal(120, res);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class ListTests
                  .Filter(x => x > 20)
                  .Reduce((x, s) => s + x);
 
-        Assert.True(res == 120);
+        Assert.Equal(120, res);
     }
 
     [Fact]
@@ -115,14 +115,14 @@ public class ListTests
     public void RangeTest4()
     {
         var r = Range('a', 'f');
-        Assert.True(String.Join("", r) == "abcdef");
+        Assert.Equal("abcdef", string.Join("", r));
     }
 
     [Fact]
     public void RangeTest5()
     {
         var r = Range('f', 'a');
-        Assert.True(String.Join("", r) == "fedcba");
+        Assert.Equal("fedcba", string.Join("", r));
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ListTests
 
         foreach (var item in r)
         {
-            Assert.True(item == "Hello");
+            Assert.Equal("Hello", item);
         }
     }
 
@@ -191,8 +191,8 @@ public class ListTests
         var list = List(1, 2, 3, 4, 5);
         var rev  = list.Rev();
 
-        Assert.True(rev[0] == 5);
-        Assert.True(rev[4] == 1);
+        Assert.Equal(5, rev[0]);
+        Assert.Equal(1, rev[4]);
     }
 
     [Fact]
@@ -333,20 +333,20 @@ public class ListTests
     [Fact]
     public void SetItemTest()
     {
-        Lst<int> lint = new Lst<int>();
+        Lst<int> lint = [];
         lint = lint.Insert(0, 0).Insert(1, 1).Insert(2, 2).Insert(3, 3);
 
-        Assert.True(lint[0] == 0);
-        Assert.True(lint[1] == 1);
-        Assert.True(lint[2] == 2);
-        Assert.True(lint[3] == 3);
+        Assert.Equal(0, lint[0]);
+        Assert.Equal(1, lint[1]);
+        Assert.Equal(2, lint[2]);
+        Assert.Equal(3, lint[3]);
 
         lint = lint.SetItem(2, 500);
 
-        Assert.True(lint[0] == 0);
-        Assert.True(lint[1] == 1);
-        Assert.True(lint[2] == 500);
-        Assert.True(lint[3] == 3);
+        Assert.Equal(0, lint[0]);
+        Assert.Equal(1, lint[1]);
+        Assert.Equal(500, lint[2]);
+        Assert.Equal(3, lint[3]);
     }
 
     [Fact]
@@ -359,26 +359,26 @@ public class ListTests
     [Fact]
     public void RemoveAtInsertTest()
     {
-        Lst<int> lint = new Lst<int>();
+        Lst<int> lint = [];
         lint = lint.Insert(0, 0).Insert(1, 1).Insert(2, 2).Insert(3, 3);
 
-        Assert.True(lint[0] == 0);
-        Assert.True(lint[1] == 1);
-        Assert.True(lint[2] == 2);
-        Assert.True(lint[3] == 3);
+        Assert.Equal(0, lint[0]);
+        Assert.Equal(1, lint[1]);
+        Assert.Equal(2, lint[2]);
+        Assert.Equal(3, lint[3]);
 
         lint = lint.RemoveAt(2);
 
-        Assert.True(lint[0] == 0);
-        Assert.True(lint[1] == 1);
-        Assert.True(lint[2] == 3);
+        Assert.Equal(0, lint[0]);
+        Assert.Equal(1, lint[1]);
+        Assert.Equal(3, lint[2]);
 
         lint = lint.Insert(2, 500);
 
-        Assert.True(lint[0] == 0);
-        Assert.True(lint[1] == 1);
-        Assert.True(lint[2] == 500);
-        Assert.True(lint[3] == 3);
+        Assert.Equal(0, lint[0]);
+        Assert.Equal(1, lint[1]);
+        Assert.Equal(500, lint[2]);
+        Assert.Equal(3, lint[3]);
     }
 
     [Fact]
@@ -416,7 +416,7 @@ public class ListTests
         for (int i = 0; i < 100; i++)
         {
             range = range.RemoveAt(i);
-            Assert.True(range.Count == 99);
+            Assert.Equal(99, range.Count);
             range = range.Insert(i, i * 2);
             Assert.True(range[i] == i * 2);
             for (var b = 0; b < i; b++)
@@ -434,20 +434,20 @@ public class ListTests
     public void EqualsTest()
     {
         Assert.False(List(1, 2, 3).Equals(List<int>()));
-        Assert.False(List<int>().Equals(List<int>(1, 2, 3)));
+        Assert.False(List<int>().Equals(List(1, 2, 3)));
         Assert.True(List<int>().Equals(List<int>()));
-        Assert.True(List<int>(1).Equals(List<int>(1)));
-        Assert.True(List<int>(1, 2).Equals(List<int>(1, 2)));
-        Assert.False(List<int>(1, 2).Equals(List<int>(1, 2, 3)));
-        Assert.False(List<int>(1, 2, 3).Equals(List<int>(1, 2)));
+        Assert.True(List(1).Equals(List(1)));
+        Assert.True(List(1, 2).Equals(List(1, 2)));
+        Assert.False(List(1, 2).Equals(List(1, 2, 3)));
+        Assert.False(List(1, 2, 3).Equals(List(1, 2)));
     }
 
     [Fact]
     public void ListShouldRemoveByReference()
     {
-        var o0 = new Object();
-        var o1 = new Object();
-        var o2 = new Object();
+        var o0 = new object();
+        var o1 = new object();
+        var o2 = new object();
         var l  = List(o0, o1);
         l = l.Remove(o2);
         Assert.Equal(2, l.Count);
@@ -460,9 +460,9 @@ public class ListTests
     [Fact]
     public void ListShouldRemoveByReferenceForReverseLists()
     {
-        var o0 = new Object();
-        var o1 = new Object();
-        var o2 = new Object();
+        var o0 = new object();
+        var o1 = new object();
+        var o2 = new object();
         var l  = List(o0, o1).Reverse();
         l = l.Remove(o2);
         Assert.Equal(2, l.Count);

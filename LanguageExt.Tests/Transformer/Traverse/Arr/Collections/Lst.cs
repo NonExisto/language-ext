@@ -1,6 +1,4 @@
 using Xunit;
-using LanguageExt.Traits;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.ArrT.Collections;
 

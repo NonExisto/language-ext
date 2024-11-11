@@ -13,7 +13,7 @@ public class ValidationIEnumerable
         var ma = Fail<Error, Iterable<int>>(Error.New("alt"));
         var mb = ma.Traverse(mx => mx).As();
 
-        IEnumerable<Validation<Error, int>> mc = new[] { Fail<Error, int>(Error.New("alt")) };
+        IEnumerable<Validation<Error, int>> mc = [Fail<Error, int>(Error.New("alt"))];
 
         Assert.True(mb.ToSeq() == mc.AsIterable().ToSeq());
     }

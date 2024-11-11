@@ -1,9 +1,7 @@
-﻿//using LanguageExt.Trans;
-using static LanguageExt.HashMap;
+﻿using static LanguageExt.HashMap;
 using Xunit;
 using System;
 using System.Linq;
-using LanguageExt.ClassInstances;
 
 namespace LanguageExt.Tests;
 
@@ -32,7 +30,7 @@ public class HashMapTests
             () => "failed"
         );
 
-        Assert.True(res == "world");
+        Assert.Equal("world", res);
     }
 
     [Fact]
@@ -46,13 +44,13 @@ public class HashMapTests
 
         match( 
             m1, 1, 
-            Some: v => Assert.True(v == "a"), 
+            Some: v => Assert.Equal("a", v), 
             None: () => Assert.False(true) 
         );
 
         match(
             find(m2, 1),
-            Some: v => Assert.True(v == "x"),
+            Some: v => Assert.Equal("x", v),
             None: () => Assert.False(true)
         );
     }
@@ -146,10 +144,10 @@ public class HashMapTests
         m.Find(4).IfNone(() => failwith<string>("Broken 4"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
-        Assert.True(m.Count == 5);
+        Assert.Equal(5, m.Count);
 
         m = remove(m,4);
-        Assert.True(m.Count == 4);
+        Assert.Equal(4, m.Count);
         Assert.True(m.Find(4).IsNone);
         m.Find(1).IfNone(() => failwith<string>("Broken 1"));
         m.Find(2).IfNone(() => failwith<string>("Broken 2"));
@@ -157,25 +155,25 @@ public class HashMapTests
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 1);
-        Assert.True(m.Count == 3);
+        Assert.Equal(3, m.Count);
         Assert.True(m.Find(1).IsNone);
         m.Find(2).IfNone(() => failwith<string>("Broken 2"));
         m.Find(3).IfNone(() => failwith<string>("Broken 3"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 2);
-        Assert.True(m.Count == 2);
+        Assert.Equal(2, m.Count);
         Assert.True(m.Find(2).IsNone);
         m.Find(3).IfNone(() => failwith<string>("Broken 3"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 3);
-        Assert.True(m.Count == 1);
+        Assert.Single(m);
         Assert.True(m.Find(3).IsNone);
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 5);
-        Assert.True(m.Count == 0);
+        Assert.Empty(m);
         Assert.True(m.Find(5).IsNone);
     }
 
@@ -204,7 +202,7 @@ public class HashMapTests
     [Fact]
     public void HashMapSetTest()
     {
-        var map  = HashMap<string, int>(StringComparer.OrdinalIgnoreCase, ("one", 1), ("two",2), ("three", 3));
+        var map  = HashMap(StringComparer.OrdinalIgnoreCase, ("one", 1), ("two",2), ("three", 3));
         var map2 = map.SetItem("One", -1);
         Assert.Equal(3, map2.Count);
         Assert.Equal(-1, map2["one"]);
@@ -218,14 +216,14 @@ public class HashMapTests
     public void EqualsTest()
     {
         Assert.True(HashMap<int, int>().Equals(HashMap<int, int>()));
-        Assert.False(HashMap<int, int>((1, 2)).Equals(HashMap<int, int>()));
-        Assert.False(HashMap<int, int>().Equals(HashMap<int, int>((1, 2))));
-        Assert.True(HashMap<int, int>((1, 2)).Equals(HashMap<int, int>((1, 2))));
-        Assert.False(HashMap<int, int>((1, 2), (3, 4)).Equals(HashMap<int, int>((1, 2))));
-        Assert.False(HashMap<int, int>((1, 2)).Equals(HashMap<int, int>((1, 2), (3, 4))));
-        Assert.True(HashMap<int, int>((1, 2), (3, 4)).Equals(HashMap<int, int>((1, 2), (3, 4))));
-        Assert.True(HashMap<int, int>((3, 4), (1, 2)).Equals(HashMap<int, int>((1, 2), (3, 4))));
-        Assert.True(HashMap<int, int>((3, 4), (1, 2)).Equals(HashMap<int, int>((3, 4), (1, 2))));
+        Assert.False(HashMap((1, 2)).Equals(HashMap<int, int>()));
+        Assert.False(HashMap<int, int>().Equals(HashMap((1, 2))));
+        Assert.True(HashMap((1, 2)).Equals(HashMap((1, 2))));
+        Assert.False(HashMap((1, 2), (3, 4)).Equals(HashMap((1, 2))));
+        Assert.False(HashMap((1, 2)).Equals(HashMap((1, 2), (3, 4))));
+        Assert.True(HashMap((1, 2), (3, 4)).Equals(HashMap((1, 2), (3, 4))));
+        Assert.True(HashMap((3, 4), (1, 2)).Equals(HashMap((1, 2), (3, 4))));
+        Assert.True(HashMap((3, 4), (1, 2)).Equals(HashMap((3, 4), (1, 2))));
     }
         
     [Fact]
@@ -262,7 +260,7 @@ public class HashMapTests
         foreach(var value in values)
         {
             items = items.Remove(value);
-            Assert.True(!items.Contains(value));
+            Assert.False(items.Contains(value));
         }
     }
 

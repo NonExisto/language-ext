@@ -1,11 +1,9 @@
 ﻿using Xunit;
 using System;
-using System.Collections.Generic;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests
 {
-    
+
     public class OptionTests
     {
         [Fact]
@@ -13,13 +11,13 @@ namespace LanguageExt.Tests
         {
             var optional = Some(123);
 
-            optional.Match(Some: i => Assert.True(i == 123),
+            optional.Match(Some: i => Assert.Equal(123, i),
                            None: () => Assert.Fail("Shouldn't get here"));
 
             int c = optional.Match(Some: i => i + 1,
                                    None: () => 0);
 
-            Assert.True(c == 124);
+            Assert.Equal(124, c);
         }
 
         [Fact]
@@ -27,13 +25,13 @@ namespace LanguageExt.Tests
         {
             var optional = Some(123);
 
-            match(optional, Some: i => Assert.True(i == 123),
+            match(optional, Some: i => Assert.Equal(123, i),
                             None: () => Assert.Fail("Shouldn't get here"));
 
             int c = match(optional, Some: i => i + 1,
                                     None: () => 0);
 
-            Assert.True(c == 124);
+            Assert.Equal(124, c);
         }
 
         [Fact]
@@ -47,7 +45,7 @@ namespace LanguageExt.Tests
             int c = optional.Match(Some: i => i + 1,
                                    None: () => 0);
 
-            Assert.True(c == 0);
+            Assert.Equal(0, c);
         }
 
         [Fact]
@@ -61,7 +59,7 @@ namespace LanguageExt.Tests
             int c = match(optional, Some: i => i + 1,
                                     None: () => 0);
 
-            Assert.True(c == 0);
+            Assert.Equal(0, c);
         }
 
         [Fact]
@@ -77,7 +75,7 @@ namespace LanguageExt.Tests
                        select x + y + z;
 
             match(expr,
-                Some: v => Assert.True(v == 12),
+                Some: v => Assert.Equal(12, v),
                 None: failwith("Shouldn't get here"));
         }
 
@@ -109,8 +107,8 @@ namespace LanguageExt.Tests
                         .Some(x => x + 10)
                         .None(() => 0);
 
-            Assert.True(res1 == 1010);
-            Assert.True(res2 == 0);
+            Assert.Equal(1010, res1);
+            Assert.Equal(0, res2);
         }
         [Fact]
         public void NullableTest()
@@ -119,7 +117,7 @@ namespace LanguageExt.Tests
                         .Some(v => v)
                         .None(() => 0);
 
-            Assert.True(res == 1000);
+            Assert.Equal(1000, res);
         }
 
         [Fact]

@@ -1,9 +1,4 @@
-using System;
-using LanguageExt;
-using LanguageExt.ClassInstances;
-using LanguageExt.Common;
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.HashSetT.Collections
 {
@@ -39,7 +34,7 @@ namespace LanguageExt.Tests.Transformer.Traverse.HashSetT.Collections
         [Fact]
         public void ArrOfEmptiesAndNonEmptiesIsEmpty()
         {
-            var ma = Array(HashSet<int>(), HashSet<int>(1, 2, 3));
+            var ma = Array(HashSet<int>(), HashSet(1, 2, 3));
 
             var mb = ma.Traverse(mx => mx).As();
 

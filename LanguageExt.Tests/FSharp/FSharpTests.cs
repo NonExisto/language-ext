@@ -26,7 +26,7 @@ public class FSharpTests
         var either = LanguageExt.FSharp.fs(result);
 
         match(either,
-              Right: r => Assert.True(r == 123),
+              Right: r => Assert.Equal(123, r),
               Left: _ => Assert.Fail("Shouldn't get here"));
     }
 
@@ -38,7 +38,7 @@ public class FSharpTests
         var result = LanguageExt.FSharp.fs(either);
 
         Assert.True(result.IsError);
-        Assert.True(result.ErrorValue == "Error");
+        Assert.Equal("Error", result.ErrorValue);
     }
 
     [Fact]
@@ -49,6 +49,6 @@ public class FSharpTests
         var result = LanguageExt.FSharp.fs(either);
 
         Assert.True(result.IsOk);
-        Assert.True(result.ResultValue == 123);
+        Assert.Equal(123, result.ResultValue);
     }
 }

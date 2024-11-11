@@ -1,6 +1,4 @@
 using Xunit;
-using static LanguageExt.Prelude;
-using LanguageExt.Traits;
 
 namespace LanguageExt.Tests.Transformer.Traverse.ArrT.Sync;
 

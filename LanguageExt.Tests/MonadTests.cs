@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using System;
 using static LanguageExt.List;
 
 namespace LanguageExt.Tests;
@@ -21,11 +20,11 @@ public class MonadTests
 
         var res = multWithLog.Run();
 
-        Assert.True(length(res.Output)           == 3);
-        Assert.True(res.Value                    == 15);
-        Assert.True(head(res.Output)             == "Got number: 3");
-        Assert.True(head(tail(res.Output))       == "Got number: 5");
-        Assert.True(head(tail(tail(res.Output))) == "Gonna multiply these two");
+        Assert.Equal(3, length(res.Output));
+        Assert.Equal(15, res.Value);
+        Assert.Equal("Got number: 3", head(res.Output));
+        Assert.Equal("Got number: 5", head(tail(res.Output)));
+        Assert.Equal("Gonna multiply these two", head(tail(tail(res.Output))));
     }
 
     static Writer<Seq<string>, int> writer(int value, Seq<string> output) => 
@@ -82,8 +81,8 @@ public class MonadTests
         var modifiedLen = calculateModifiedContentLen.Run(s);
         var len         = calculateContentLen.Run(s);
 
-        Assert.True(modifiedLen == 12);
-        Assert.True(len         == 5);
+        Assert.Equal(12, modifiedLen);
+        Assert.Equal(5, len);
     }
 
     [Fact]
@@ -96,8 +95,8 @@ public class MonadTests
 
         var r = comp.Run("hello");
 
-        Assert.True(r.Value == 12);
-        Assert.True(r.State == "hello, world");
+        Assert.Equal(12, r.Value);
+        Assert.Equal("hello, world", r.State);
     }
     // TODO: Restore when traits are complete
 

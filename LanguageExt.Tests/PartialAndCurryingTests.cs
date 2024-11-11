@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests
 {
@@ -9,7 +8,7 @@ namespace LanguageExt.Tests
         public void CurryTest()
         {
             var add = curry((int x, int y) => x + y);
-            Assert.True(add(10)(5) == 15);
+            Assert.Equal(15, add(10)(5));
         }
 
         [Fact]
@@ -17,7 +16,7 @@ namespace LanguageExt.Tests
         {
             var partial = curry((int x, int y) => x + y)(10);
 
-            Assert.True(partial(5) == 15);
+            Assert.Equal(15, partial(5));
         }
 
         [Fact]
@@ -25,7 +24,7 @@ namespace LanguageExt.Tests
         {
             var partial = par((int x, int y) => x + y, 10);
 
-            Assert.True(partial(5) == 15);
+            Assert.Equal(15, partial(5));
         }
 
         [Fact]
@@ -33,7 +32,7 @@ namespace LanguageExt.Tests
         {
             var partial = par((int x, int y, int c, int d) => x + y + c + d, 10, 10);
 
-            Assert.True(partial(5, 5) == 30);
+            Assert.Equal(30, partial(5, 5));
         }
 
         [Fact]
@@ -41,7 +40,7 @@ namespace LanguageExt.Tests
         {
             var partial = curry(par((int x, int y, int c, int d) => x + y + c + d, 10, 10));
 
-            Assert.True(partial(5)(5) == 30);
+            Assert.Equal(30, partial(5)(5));
         }
     }
 }

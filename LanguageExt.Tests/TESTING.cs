@@ -2,10 +2,7 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using LanguageExt.Common;
-using LanguageExt.Traits;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 

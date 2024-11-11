@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using System;
-using LanguageExt.ClassInstances;
 
 namespace LanguageExt.Tests
 {
@@ -130,10 +129,10 @@ namespace LanguageExt.Tests
             m.Find(4).IfNone(() => failwith<int>("Broken 4"));
             m.Find(5).IfNone(() => failwith<int>("Broken 5"));
 
-            Assert.True(m.Count == 5);
+            Assert.Equal(5, m.Count);
 
             m = m.Remove(4);
-            Assert.True(m.Count == 4);
+            Assert.Equal(4, m.Count);
             Assert.True(m.Find(4).IsNone);
             m.Find(1).IfNone(() => failwith<int>("Broken 1"));
             m.Find(2).IfNone(() => failwith<int>("Broken 2"));
@@ -141,25 +140,25 @@ namespace LanguageExt.Tests
             m.Find(5).IfNone(() => failwith<int>("Broken 5"));
 
             m = m.Remove(1);
-            Assert.True(m.Count == 3);
+            Assert.Equal(3, m.Count);
             Assert.True(m.Find(1).IsNone);
             m.Find(2).IfNone(() => failwith<int>("Broken 2"));
             m.Find(3).IfNone(() => failwith<int>("Broken 3"));
             m.Find(5).IfNone(() => failwith<int>("Broken 5"));
 
             m = m.Remove(2);
-            Assert.True(m.Count == 2);
+            Assert.Equal(2, m.Count);
             Assert.True(m.Find(2).IsNone);
             m.Find(3).IfNone(() => failwith<int>("Broken 3"));
             m.Find(5).IfNone(() => failwith<int>("Broken 5"));
 
             m = m.Remove(3);
-            Assert.True(m.Count == 1);
+            Assert.Single(m);
             Assert.True(m.Find(3).IsNone);
             m.Find(5).IfNone(() => failwith<int>("Broken 5"));
 
             m = m.Remove(5);
-            Assert.True(m.Count == 0);
+            Assert.Empty(m);
             Assert.True(m.Find(5).IsNone);
         }
 
@@ -260,20 +259,20 @@ namespace LanguageExt.Tests
 
             var x = m.Slice(1, 2);
 
-            Assert.True(x.Count == 2);
+            Assert.Equal(2, x.Count);
             Assert.True(x.Contains(1));
             Assert.True(x.Contains(2));
 
             var y = m.Slice(2, 4);
 
-            Assert.True(y.Count == 3);
+            Assert.Equal(3, y.Count);
             Assert.True(y.Contains(2));
             Assert.True(y.Contains(3));
             Assert.True(y.Contains(4));
 
             var z = m.Slice(4, 5);
 
-            Assert.True(z.Count == 2);
+            Assert.Equal(2, z.Count);
             Assert.True(z.Contains(4));
             Assert.True(z.Contains(5));
         }
@@ -283,8 +282,8 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 2, 3, 4, 5);
 
-            Assert.True(m.Min == 1);
-            Assert.True(m.Max == 5);
+            Assert.Equal(1, m.Min);
+            Assert.Equal(5, m.Max);
 
             var me = Set<int>();
 
@@ -298,20 +297,20 @@ namespace LanguageExt.Tests
             var m = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
             Assert.True(m.FindPredecessor(1) == None);
-            Assert.True(m.FindPredecessor(2) == 1);
-            Assert.True(m.FindPredecessor(3) == 2);
-            Assert.True(m.FindPredecessor(4) == 3);
-            Assert.True(m.FindPredecessor(5) == 4);
-            Assert.True(m.FindPredecessor(6) == 5);
-            Assert.True(m.FindPredecessor(7) == 6);
-            Assert.True(m.FindPredecessor(8) == 7);
-            Assert.True(m.FindPredecessor(9) == 8);
-            Assert.True(m.FindPredecessor(10) == 9);
-            Assert.True(m.FindPredecessor(11) == 10);
-            Assert.True(m.FindPredecessor(12) == 11);
-            Assert.True(m.FindPredecessor(13) == 12);
-            Assert.True(m.FindPredecessor(14) == 13);
-            Assert.True(m.FindPredecessor(15) == 14);
+            Assert.Equal(1, m.FindPredecessor(2));
+            Assert.Equal(2, m.FindPredecessor(3));
+            Assert.Equal(3, m.FindPredecessor(4));
+            Assert.Equal(4, m.FindPredecessor(5));
+            Assert.Equal(5, m.FindPredecessor(6));
+            Assert.Equal(6, m.FindPredecessor(7));
+            Assert.Equal(7, m.FindPredecessor(8));
+            Assert.Equal(8, m.FindPredecessor(9));
+            Assert.Equal(9, m.FindPredecessor(10));
+            Assert.Equal(10, m.FindPredecessor(11));
+            Assert.Equal(11, m.FindPredecessor(12));
+            Assert.Equal(12, m.FindPredecessor(13));
+            Assert.Equal(13, m.FindPredecessor(14));
+            Assert.Equal(14, m.FindPredecessor(15));
         }
 
         [Fact]
@@ -320,20 +319,20 @@ namespace LanguageExt.Tests
             var m = Set(1, 3, 5, 7, 9, 11, 13, 15);
 
             Assert.True(m.FindPredecessor(1) == None);
-            Assert.True(m.FindPredecessor(2) == 1);
-            Assert.True(m.FindPredecessor(3) == 1);
-            Assert.True(m.FindPredecessor(4) == 3);
-            Assert.True(m.FindPredecessor(5) == 3);
-            Assert.True(m.FindPredecessor(6) == 5);
-            Assert.True(m.FindPredecessor(7) == 5);
-            Assert.True(m.FindPredecessor(8) == 7);
-            Assert.True(m.FindPredecessor(9) == 7);
-            Assert.True(m.FindPredecessor(10) == 9);
-            Assert.True(m.FindPredecessor(11) == 9);
-            Assert.True(m.FindPredecessor(12) == 11);
-            Assert.True(m.FindPredecessor(13) == 11);
-            Assert.True(m.FindPredecessor(14) == 13);
-            Assert.True(m.FindPredecessor(15) == 13);
+            Assert.Equal(1, m.FindPredecessor(2));
+            Assert.Equal(1, m.FindPredecessor(3));
+            Assert.Equal(3, m.FindPredecessor(4));
+            Assert.Equal(3, m.FindPredecessor(5));
+            Assert.Equal(5, m.FindPredecessor(6));
+            Assert.Equal(5, m.FindPredecessor(7));
+            Assert.Equal(7, m.FindPredecessor(8));
+            Assert.Equal(7, m.FindPredecessor(9));
+            Assert.Equal(9, m.FindPredecessor(10));
+            Assert.Equal(9, m.FindPredecessor(11));
+            Assert.Equal(11, m.FindPredecessor(12));
+            Assert.Equal(11, m.FindPredecessor(13));
+            Assert.Equal(13, m.FindPredecessor(14));
+            Assert.Equal(13, m.FindPredecessor(15));
         }
 
         [Fact]
@@ -341,21 +340,21 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
-            Assert.True(m.FindExactOrPredecessor(1) == 1);
-            Assert.True(m.FindExactOrPredecessor(2) == 2);
-            Assert.True(m.FindExactOrPredecessor(3) == 3);
-            Assert.True(m.FindExactOrPredecessor(4) == 4);
-            Assert.True(m.FindExactOrPredecessor(5) == 5);
-            Assert.True(m.FindExactOrPredecessor(6) == 6);
-            Assert.True(m.FindExactOrPredecessor(7) == 7);
-            Assert.True(m.FindExactOrPredecessor(8) == 8);
-            Assert.True(m.FindExactOrPredecessor(9) == 9);
-            Assert.True(m.FindExactOrPredecessor(10) == 10);
-            Assert.True(m.FindExactOrPredecessor(11) == 11);
-            Assert.True(m.FindExactOrPredecessor(12) == 12);
-            Assert.True(m.FindExactOrPredecessor(13) == 13);
-            Assert.True(m.FindExactOrPredecessor(14) == 14);
-            Assert.True(m.FindExactOrPredecessor(15) == 15);
+            Assert.Equal(1, m.FindExactOrPredecessor(1));
+            Assert.Equal(2, m.FindExactOrPredecessor(2));
+            Assert.Equal(3, m.FindExactOrPredecessor(3));
+            Assert.Equal(4, m.FindExactOrPredecessor(4));
+            Assert.Equal(5, m.FindExactOrPredecessor(5));
+            Assert.Equal(6, m.FindExactOrPredecessor(6));
+            Assert.Equal(7, m.FindExactOrPredecessor(7));
+            Assert.Equal(8, m.FindExactOrPredecessor(8));
+            Assert.Equal(9, m.FindExactOrPredecessor(9));
+            Assert.Equal(10, m.FindExactOrPredecessor(10));
+            Assert.Equal(11, m.FindExactOrPredecessor(11));
+            Assert.Equal(12, m.FindExactOrPredecessor(12));
+            Assert.Equal(13, m.FindExactOrPredecessor(13));
+            Assert.Equal(14, m.FindExactOrPredecessor(14));
+            Assert.Equal(15, m.FindExactOrPredecessor(15));
         }
 
         [Fact]
@@ -363,21 +362,21 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 3, 5, 7, 9, 11, 13, 15);
 
-            Assert.True(m.FindExactOrPredecessor(1) == 1);
-            Assert.True(m.FindExactOrPredecessor(2) == 1);
-            Assert.True(m.FindExactOrPredecessor(3) == 3);
-            Assert.True(m.FindExactOrPredecessor(4) == 3);
-            Assert.True(m.FindExactOrPredecessor(5) == 5);
-            Assert.True(m.FindExactOrPredecessor(6) == 5);
-            Assert.True(m.FindExactOrPredecessor(7) == 7);
-            Assert.True(m.FindExactOrPredecessor(8) == 7);
-            Assert.True(m.FindExactOrPredecessor(9) == 9);
-            Assert.True(m.FindExactOrPredecessor(10) == 9);
-            Assert.True(m.FindExactOrPredecessor(11) == 11);
-            Assert.True(m.FindExactOrPredecessor(12) == 11);
-            Assert.True(m.FindExactOrPredecessor(13) == 13);
-            Assert.True(m.FindExactOrPredecessor(14) == 13);
-            Assert.True(m.FindExactOrPredecessor(15) == 15);
+            Assert.Equal(1, m.FindExactOrPredecessor(1));
+            Assert.Equal(1, m.FindExactOrPredecessor(2));
+            Assert.Equal(3, m.FindExactOrPredecessor(3));
+            Assert.Equal(3, m.FindExactOrPredecessor(4));
+            Assert.Equal(5, m.FindExactOrPredecessor(5));
+            Assert.Equal(5, m.FindExactOrPredecessor(6));
+            Assert.Equal(7, m.FindExactOrPredecessor(7));
+            Assert.Equal(7, m.FindExactOrPredecessor(8));
+            Assert.Equal(9, m.FindExactOrPredecessor(9));
+            Assert.Equal(9, m.FindExactOrPredecessor(10));
+            Assert.Equal(11, m.FindExactOrPredecessor(11));
+            Assert.Equal(11, m.FindExactOrPredecessor(12));
+            Assert.Equal(13, m.FindExactOrPredecessor(13));
+            Assert.Equal(13, m.FindExactOrPredecessor(14));
+            Assert.Equal(15, m.FindExactOrPredecessor(15));
         }
 
         [Fact]
@@ -385,20 +384,20 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
-            Assert.True(m.FindSuccessor(1) == 2);
-            Assert.True(m.FindSuccessor(2) == 3);
-            Assert.True(m.FindSuccessor(3) == 4);
-            Assert.True(m.FindSuccessor(4) == 5);
-            Assert.True(m.FindSuccessor(5) == 6);
-            Assert.True(m.FindSuccessor(6) == 7);
-            Assert.True(m.FindSuccessor(7) == 8);
-            Assert.True(m.FindSuccessor(8) == 9);
-            Assert.True(m.FindSuccessor(9) == 10);
-            Assert.True(m.FindSuccessor(10) == 11);
-            Assert.True(m.FindSuccessor(11) == 12);
-            Assert.True(m.FindSuccessor(12) == 13);
-            Assert.True(m.FindSuccessor(13) == 14);
-            Assert.True(m.FindSuccessor(14) == 15);
+            Assert.Equal(2, m.FindSuccessor(1));
+            Assert.Equal(3, m.FindSuccessor(2));
+            Assert.Equal(4, m.FindSuccessor(3));
+            Assert.Equal(5, m.FindSuccessor(4));
+            Assert.Equal(6, m.FindSuccessor(5));
+            Assert.Equal(7, m.FindSuccessor(6));
+            Assert.Equal(8, m.FindSuccessor(7));
+            Assert.Equal(9, m.FindSuccessor(8));
+            Assert.Equal(10, m.FindSuccessor(9));
+            Assert.Equal(11, m.FindSuccessor(10));
+            Assert.Equal(12, m.FindSuccessor(11));
+            Assert.Equal(13, m.FindSuccessor(12));
+            Assert.Equal(14, m.FindSuccessor(13));
+            Assert.Equal(15, m.FindSuccessor(14));
             Assert.True(m.FindSuccessor(15) == None);
         }
 
@@ -407,20 +406,20 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 3, 5, 7, 9, 11, 13, 15);
 
-            Assert.True(m.FindSuccessor(1) == 3);
-            Assert.True(m.FindSuccessor(2) == 3);
-            Assert.True(m.FindSuccessor(3) == 5);
-            Assert.True(m.FindSuccessor(4) == 5);
-            Assert.True(m.FindSuccessor(5) == 7);
-            Assert.True(m.FindSuccessor(6) == 7);
-            Assert.True(m.FindSuccessor(7) == 9);
-            Assert.True(m.FindSuccessor(8) == 9);
-            Assert.True(m.FindSuccessor(9) == 11);
-            Assert.True(m.FindSuccessor(10) == 11);
-            Assert.True(m.FindSuccessor(11) == 13);
-            Assert.True(m.FindSuccessor(12) == 13);
-            Assert.True(m.FindSuccessor(13) == 15);
-            Assert.True(m.FindSuccessor(14) == 15);
+            Assert.Equal(3, m.FindSuccessor(1));
+            Assert.Equal(3, m.FindSuccessor(2));
+            Assert.Equal(5, m.FindSuccessor(3));
+            Assert.Equal(5, m.FindSuccessor(4));
+            Assert.Equal(7, m.FindSuccessor(5));
+            Assert.Equal(7, m.FindSuccessor(6));
+            Assert.Equal(9, m.FindSuccessor(7));
+            Assert.Equal(9, m.FindSuccessor(8));
+            Assert.Equal(11, m.FindSuccessor(9));
+            Assert.Equal(11, m.FindSuccessor(10));
+            Assert.Equal(13, m.FindSuccessor(11));
+            Assert.Equal(13, m.FindSuccessor(12));
+            Assert.Equal(15, m.FindSuccessor(13));
+            Assert.Equal(15, m.FindSuccessor(14));
             Assert.True(m.FindSuccessor(15) == None);
         }
 
@@ -429,21 +428,21 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
-            Assert.True(m.FindExactOrSuccessor(1) == 1);
-            Assert.True(m.FindExactOrSuccessor(2) == 2);
-            Assert.True(m.FindExactOrSuccessor(3) == 3);
-            Assert.True(m.FindExactOrSuccessor(4) == 4);
-            Assert.True(m.FindExactOrSuccessor(5) == 5);
-            Assert.True(m.FindExactOrSuccessor(6) == 6);
-            Assert.True(m.FindExactOrSuccessor(7) == 7);
-            Assert.True(m.FindExactOrSuccessor(8) == 8);
-            Assert.True(m.FindExactOrSuccessor(9) == 9);
-            Assert.True(m.FindExactOrSuccessor(10) == 10);
-            Assert.True(m.FindExactOrSuccessor(11) == 11);
-            Assert.True(m.FindExactOrSuccessor(12) == 12);
-            Assert.True(m.FindExactOrSuccessor(13) == 13);
-            Assert.True(m.FindExactOrSuccessor(14) == 14);
-            Assert.True(m.FindExactOrSuccessor(15) == 15);
+            Assert.Equal(1, m.FindExactOrSuccessor(1));
+            Assert.Equal(2, m.FindExactOrSuccessor(2));
+            Assert.Equal(3, m.FindExactOrSuccessor(3));
+            Assert.Equal(4, m.FindExactOrSuccessor(4));
+            Assert.Equal(5, m.FindExactOrSuccessor(5));
+            Assert.Equal(6, m.FindExactOrSuccessor(6));
+            Assert.Equal(7, m.FindExactOrSuccessor(7));
+            Assert.Equal(8, m.FindExactOrSuccessor(8));
+            Assert.Equal(9, m.FindExactOrSuccessor(9));
+            Assert.Equal(10, m.FindExactOrSuccessor(10));
+            Assert.Equal(11, m.FindExactOrSuccessor(11));
+            Assert.Equal(12, m.FindExactOrSuccessor(12));
+            Assert.Equal(13, m.FindExactOrSuccessor(13));
+            Assert.Equal(14, m.FindExactOrSuccessor(14));
+            Assert.Equal(15, m.FindExactOrSuccessor(15));
         }
 
         [Fact]
@@ -451,21 +450,21 @@ namespace LanguageExt.Tests
         {
             var m = Set(1, 3, 5, 7, 9, 11, 13, 15);
 
-            Assert.True(m.FindExactOrSuccessor(1) == 1);
-            Assert.True(m.FindExactOrSuccessor(2) == 3);
-            Assert.True(m.FindExactOrSuccessor(3) == 3);
-            Assert.True(m.FindExactOrSuccessor(4) == 5);
-            Assert.True(m.FindExactOrSuccessor(5) == 5);
-            Assert.True(m.FindExactOrSuccessor(6) == 7);
-            Assert.True(m.FindExactOrSuccessor(7) == 7);
-            Assert.True(m.FindExactOrSuccessor(8) == 9);
-            Assert.True(m.FindExactOrSuccessor(9) == 9);
-            Assert.True(m.FindExactOrSuccessor(10) == 11);
-            Assert.True(m.FindExactOrSuccessor(11) == 11);
-            Assert.True(m.FindExactOrSuccessor(12) == 13);
-            Assert.True(m.FindExactOrSuccessor(13) == 13);
-            Assert.True(m.FindExactOrSuccessor(14) == 15);
-            Assert.True(m.FindExactOrSuccessor(15) == 15);
+            Assert.Equal(1, m.FindExactOrSuccessor(1));
+            Assert.Equal(3, m.FindExactOrSuccessor(2));
+            Assert.Equal(3, m.FindExactOrSuccessor(3));
+            Assert.Equal(5, m.FindExactOrSuccessor(4));
+            Assert.Equal(5, m.FindExactOrSuccessor(5));
+            Assert.Equal(7, m.FindExactOrSuccessor(6));
+            Assert.Equal(7, m.FindExactOrSuccessor(7));
+            Assert.Equal(9, m.FindExactOrSuccessor(8));
+            Assert.Equal(9, m.FindExactOrSuccessor(9));
+            Assert.Equal(11, m.FindExactOrSuccessor(10));
+            Assert.Equal(11, m.FindExactOrSuccessor(11));
+            Assert.Equal(13, m.FindExactOrSuccessor(12));
+            Assert.Equal(13, m.FindExactOrSuccessor(13));
+            Assert.Equal(15, m.FindExactOrSuccessor(14));
+            Assert.Equal(15, m.FindExactOrSuccessor(15));
         }
 
         [Fact]

@@ -1,5 +1,4 @@
 ﻿using System;
-using static LanguageExt.Prelude;
 using Xunit;
 using System.Threading.Tasks;
 using LanguageExt.Common;
@@ -17,7 +16,7 @@ public class ChoiceTests
 
         var res = choice(ma, mb, mc);
 
-        Assert.True(await res == 123);
+        Assert.Equal(123, await res);
     }
 
     [Fact]
@@ -29,7 +28,7 @@ public class ChoiceTests
 
         var res = choice(ma, mb, mc);
 
-        Assert.True(await res == 123);
+        Assert.Equal(123, await res);
     }
 
     [Fact]
@@ -41,7 +40,7 @@ public class ChoiceTests
 
         var res = choice(ma, mb, mc);
 
-        Assert.True(await res == 123);
+        Assert.Equal(123, await res);
     }
 
     [Fact]

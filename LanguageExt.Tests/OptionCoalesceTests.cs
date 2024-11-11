@@ -9,7 +9,7 @@ public class OptionCoalesceTests
     {
         var optional = Some(123);
         var value    = optional || 456;
-        Assert.True(value == 123);
+        Assert.Equal(123, value);
     }
 
     [Fact]
@@ -18,7 +18,7 @@ public class OptionCoalesceTests
         Option<int> optional = None;
 
         var value = optional || 456;
-        Assert.True(value == 456);
+        Assert.Equal(456, value);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class OptionCoalesceTests
         Option<int> optional1 = None;
         Option<int> optional2 = None;
         var         value     = optional1 || optional2 || 456;
-        Assert.True(value == 456);
+        Assert.Equal(456, value);
     }
 
     [Fact]
@@ -35,6 +35,6 @@ public class OptionCoalesceTests
     {
         var optional = Some(123);
         var value    = optional || 456;
-        Assert.True(value == 123);
+        Assert.Equal(123, value);
     }
 }

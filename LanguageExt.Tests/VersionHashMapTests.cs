@@ -17,7 +17,7 @@ public class VersionHashMapTests
 
         var str = data.AsIterable().OrderBy(p => p.Key).AsIterable().ToSeq().ToString();
 
-        Assert.True(str == "[(a, 1), (b, 3)]");
+        Assert.Equal("[(a, 1), (b, 3)]", str);
     }
         
     [Fact]
@@ -35,7 +35,7 @@ public class VersionHashMapTests
 
         var str = data.AsIterable().OrderBy(p => p.Key).AsIterable().ToSeq().ToString();
 
-        Assert.True(str == "[(a, 1), (b, 3)]");
+        Assert.Equal("[(a, 1), (b, 3)]", str);
     }
         
     [Fact]
@@ -53,7 +53,7 @@ public class VersionHashMapTests
 
         var str = data.AsIterable().OrderBy(p => p.Key).AsIterable().ToSeq().ToString();
 
-        Assert.True(str == "[(a, 1), (b, 3)]");
+        Assert.Equal("[(a, 1), (b, 3)]", str);
     }
         
     [Fact]
@@ -71,7 +71,7 @@ public class VersionHashMapTests
 
         var str = data.AsIterable().OrderBy(p => p.Key).AsIterable().ToSeq().ToString();
 
-        Assert.True(str == "[(a, 2), (b, 3)]");
+        Assert.Equal("[(a, 2), (b, 3)]", str);
     }
         
     [Fact]
@@ -89,6 +89,6 @@ public class VersionHashMapTests
 
         var str = data.AsIterable().OrderBy(p => p.Key).AsIterable().ToSeq().ToString();
 
-        Assert.True(str == "[(a, 2), (b, 3)]");
+        Assert.Equal("[(a, 2), (b, 3)]", str);
     }
 }

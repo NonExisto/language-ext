@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using M = LanguageExt.Map;
 using LanguageExt.Parsec;
-using static LanguageExt.Prelude;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using static LanguageExt.Parsec.Expr;
 using static LanguageExt.Parsec.Token;
-using static LanguageExt.UnitsOfMeasure;
 using LanguageExt.ClassInstances;
-using Char = System.Char;
 using System.Globalization;
 
 namespace LanguageExt.Tests
@@ -50,7 +44,7 @@ namespace LanguageExt.Tests
             var r = parse(p, "Hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 1234);
+            Assert.Equal(1234, r.Reply.Result);
         }
 
         [Fact]
@@ -69,8 +63,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "Hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'H');
-            Assert.True(r.Reply.State.ToString() == "ello");
+            Assert.Equal('H', r.Reply.Result);
+            Assert.Equal("ello", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -89,14 +83,14 @@ namespace LanguageExt.Tests
             var r1 = parse(p, "Hello");
 
             Assert.False(r1.IsFaulted);
-            Assert.True(r1.Reply.Result == 'H');
-            Assert.True(r1.Reply.State.ToString() == "ello");
+            Assert.Equal('H', r1.Reply.Result);
+            Assert.Equal("ello", r1.Reply.State.ToString());
 
             var r2 = parse(p, r1.Reply.State);
 
             Assert.False(r2.IsFaulted);
-            Assert.True(r2.Reply.Result == 'e');
-            Assert.True(r2.Reply.State.ToString() == "llo");
+            Assert.Equal('e', r2.Reply.Result);
+            Assert.Equal("llo", r2.Reply.State.ToString());
 
         }
 
@@ -109,8 +103,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "Hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'H');
-            Assert.True(r.Reply.State.ToString() == "ello");
+            Assert.Equal('H', r.Reply.Result);
+            Assert.Equal("ello", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -123,9 +117,9 @@ namespace LanguageExt.Tests
             var r = parse(p, "Hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result.Item1 == 'H');
-            Assert.True(r.Reply.Result.Item2 == 'e');
-            Assert.True(r.Reply.State.ToString() == "llo");
+            Assert.Equal('H', r.Reply.Result.Item1);
+            Assert.Equal('e', r.Reply.Result.Item2);
+            Assert.Equal("llo", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -136,8 +130,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "a");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'a');
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal('a', r.Reply.Result);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -148,8 +142,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "1");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == '1');
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal('1', r.Reply.Result);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -162,9 +156,9 @@ namespace LanguageExt.Tests
             var r = parse(p, "a1");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result.Item1 == 'a');
-            Assert.True(r.Reply.Result.Item2 == '1');
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal('a', r.Reply.Result.Item1);
+            Assert.Equal('1', r.Reply.Result.Item2);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -174,8 +168,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "Hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'H');
-            Assert.True(r.Reply.State.ToString() == "ello");
+            Assert.Equal('H', r.Reply.Result);
+            Assert.Equal("ello", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -194,8 +188,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'h');
-            Assert.True(r.Reply.State.ToString() == "ello");
+            Assert.Equal('h', r.Reply.Result);
+            Assert.Equal("ello", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -214,8 +208,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "1234");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == '1');
-            Assert.True(r.Reply.State.ToString() == "234");
+            Assert.Equal('1', r.Reply.Result);
+            Assert.Equal("234", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -234,8 +228,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "hello");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 'h');
-            Assert.True(r.Reply.State.ToString() == "ello");
+            Assert.Equal('h', r.Reply.Result);
+            Assert.Equal("ello", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -254,8 +248,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "hello   ");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == "hello");
-            Assert.True(r.Reply.State.ToString() == "   ");
+            Assert.Equal("hello", r.Reply.Result);
+            Assert.Equal("   ", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -274,8 +268,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "hello world");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == "hello");
-            Assert.True(r.Reply.State.ToString() == " world");
+            Assert.Equal("hello", r.Reply.Result);
+            Assert.Equal(" world", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -309,8 +303,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "1234  ");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 1234);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal(1234, r.Reply.Result);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -333,8 +327,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "1234  ");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 1234);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal(1234, r.Reply.Result);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -347,7 +341,7 @@ namespace LanguageExt.Tests
 
             Assert.False(r.IsFaulted);
             Assert.True(r.Reply.Result == -1234);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -373,8 +367,8 @@ namespace LanguageExt.Tests
             var r = parse(p, "[1]  ");
 
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == 1);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal(1, r.Reply.Result);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -401,11 +395,11 @@ namespace LanguageExt.Tests
             Assert.False(r.IsFaulted);
 
             var arr = r.Reply.Result.ToArray();
-            Assert.True(arr[0] == 1);
-            Assert.True(arr[1] == 2);
-            Assert.True(arr[2] == 3);
-            Assert.True(arr[3] == 4);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal(1, arr[0]);
+            Assert.Equal(2, arr[1]);
+            Assert.Equal(3, arr[2]);
+            Assert.Equal(4, arr[3]);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -422,11 +416,11 @@ namespace LanguageExt.Tests
             Assert.False(r.IsFaulted);
 
             var arr = r.Reply.Result.ToArray();
-            Assert.True(arr[0] == 1);
-            Assert.True(arr[1] == 2);
-            Assert.True(arr[2] == 3);
-            Assert.True(arr[3] == 4);
-            Assert.True(r.Reply.State.ToString() == "");
+            Assert.Equal(1, arr[0]);
+            Assert.Equal(2, arr[1]);
+            Assert.Equal(3, arr[2]);
+            Assert.Equal(4, arr[3]);
+            Assert.Equal("", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -481,7 +475,7 @@ namespace LanguageExt.Tests
             var r = parse(p, "    // A comment\nabc");
             Assert.False(r.IsFaulted);
             Assert.True(r.Reply.Result == unit);
-            Assert.True(r.Reply.State.ToString() == "abc");
+            Assert.Equal("abc", r.Reply.State.ToString());
         }
 
         [Fact]
@@ -492,7 +486,7 @@ namespace LanguageExt.Tests
             var p = tok.StringLiteral;
             var r = parse(p, "\"/abc\"");
             Assert.False(r.IsFaulted);
-            Assert.True(r.Reply.Result == "/abc");
+            Assert.Equal("/abc", r.Reply.Result);
         }
 
         [Theory]
@@ -507,7 +501,7 @@ namespace LanguageExt.Tests
 
             var r = parse(p, input).ToEither();
 
-            Assert.True(r.IfLeft("") == "1234");
+            Assert.Equal("1234", r.IfLeft(""));
         }
 
         [Theory]
@@ -568,8 +562,8 @@ namespace LanguageExt.Tests
         [Fact]
         public void ParseN0TimesZeroNegative()
         {
-            Assert.True(parse(asString(manyn0(digit, 0)), "123").ToEither().IfLeft("x") == "");
-            Assert.True(parse(asString(manyn0(digit, -1)), "123").ToEither().IfLeft("x") == "");
+            Assert.Equal("", parse(asString(manyn0(digit, 0)), "123").ToEither().IfLeft("x"));
+            Assert.Equal("", parse(asString(manyn0(digit, -1)), "123").ToEither().IfLeft("x"));
         }
 
         [Fact]
@@ -694,10 +688,10 @@ namespace LanguageExt.Tests
 
             var lexer = makeTokenParser(definition);
             var input = "3.14159";
-            var result = lexer.NaturalOrFloat.Parse(input).ToEither().Map(x => x.IfLeft(Double.MaxValue));
+            var result = lexer.NaturalOrFloat.Parse(input).ToEither().Map(x => x.IfLeft(double.MaxValue));
                 // > Success(Right(1418.9))
 
-            var expected = lexer.Float.Parse(input).ToEither().IfLeft(Double.MinValue);
+            var expected = lexer.Float.Parse(input).ToEither().IfLeft(double.MinValue);
                 // > Success(3.14159)
 
             Assert.True(result == expected);
@@ -724,7 +718,7 @@ namespace LanguageExt.Tests
             var lexer  = makeTokenParser(definition);
             var input  = "300";
             var result = lexer.NaturalOrFloat.Parse(input).ToEither().Map(x => x.IfRight(0));
-            Assert.True(result == 300);
+            Assert.Equal(300, result);
         }
 
         [Fact]

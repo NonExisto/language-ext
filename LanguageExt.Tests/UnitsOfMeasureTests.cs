@@ -37,8 +37,8 @@ public class UnitsOfMeasureTests
     {
         Length length = 1000.Millimetres();
 
-        Assert.True(length.Metres      == 1.0);
-        Assert.True(length.Millimetres == 1000.0);
+        Assert.Equal(1.0, length.Metres);
+        Assert.Equal(1000.0, length.Millimetres);
     }
 
     [Fact]
@@ -63,11 +63,11 @@ public class UnitsOfMeasureTests
 
         double val = len / (1 *m); // Divide by 1 metre to get a dimensionless value
 
-        Assert.True(val == 1000.0);
+        Assert.Equal(1000.0, val);
 
         val = len / (1000 *m);
 
-        Assert.True(val == 1.0);
+        Assert.Equal(1.0, val);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class UnitsOfMeasureTests
         double r = l / (1 *m);
 
         Assert.True(l == 200 * m);
-        Assert.True(r == 200.0);
+        Assert.Equal(200.0, r);
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class UnitsOfMeasureTests
         Velocity vel = g   * 5 *sec;
         Length   len = vel * 5 *sec;
 
-        Assert.True(vel.MetresPerSecond == 49.0);
-        Assert.True(len.Metres          == 245.0);
+        Assert.Equal(49.0, vel.MetresPerSecond);
+        Assert.Equal(245.0, len.Metres);
     }
 
     [Fact]
@@ -172,8 +172,8 @@ public class UnitsOfMeasureTests
 
     private void AssertTypeObjectEquals<T>(T t)
     {
-        object o1 = t;
-        object o2 = t;
+        object o1 = t!;
+        object o2 = t!;
         Assert.True(o1.Equals(o2));
     }
 
@@ -181,7 +181,7 @@ public class UnitsOfMeasureTests
     public void CelsiusToStringTest()
     {
         var x = 10 * degC;
-        Assert.True(x.ToString() == "10 °C");
+        Assert.Equal("10 °C", x.ToString());
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class UnitsOfMeasureTests
     public void FahrenheitToStringTest()
     {
         var x = 10 * degF;
-        Assert.True(x.ToString() == "10 °F");
+        Assert.Equal("10 °F", x.ToString());
     }
 
     [Fact]
@@ -271,7 +271,7 @@ public class UnitsOfMeasureTests
     public void KelvinToStringTest()
     {
         var x = 10 * K;
-        Assert.True(x.ToString() == "10 K");
+        Assert.Equal("10 K", x.ToString());
     }
 
     [Fact]
@@ -339,7 +339,7 @@ public class UnitsOfMeasureTests
     public void RetrieveKValueTest()
     {
         var x = 100.0 * degC;
-        Assert.True(x.KValue == 373.15);
+        Assert.Equal(373.15, x.KValue);
     }
 
     private double delta = 0.00001;

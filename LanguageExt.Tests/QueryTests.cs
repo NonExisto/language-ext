@@ -1,10 +1,9 @@
 ﻿using Xunit;
-using static LanguageExt.Prelude;
 using static LanguageExt.Query;
 
 namespace LanguageExt.Tests
 {
-    
+
     public class QueryTests
     {
         [Fact]
@@ -21,7 +20,7 @@ namespace LanguageExt.Tests
             // Generates 120
             var output3 = fold(output2, 0, (x, s) => s + x);
 
-            Assert.True(output3 == 120);
+            Assert.Equal(120, output3);
         }
 
         [Fact]
@@ -37,7 +36,7 @@ namespace LanguageExt.Tests
             // Generates 120
             var output3 = reduce(output2, (x, s) => s + x);
 
-            Assert.True(output3 == 120);
+            Assert.Equal(120, output3);
         }
 
         [Fact]
@@ -53,7 +52,7 @@ namespace LanguageExt.Tests
             // Generates 120
             var output3 = reduce(output2, (x, s) => s + x);
 
-            Assert.True(output3 == 120);
+            Assert.Equal(120, output3);
         }
 
         [Fact]
@@ -64,7 +63,7 @@ namespace LanguageExt.Tests
                         .Filter(x => x > 20)
                         .Fold(0, (x, s) => s + x);
 
-            Assert.True(res == 120);
+            Assert.Equal(120, res);
         }
 
         [Fact]
@@ -75,7 +74,7 @@ namespace LanguageExt.Tests
                         .Filter(x => x > 20)
                         .Reduce((x, s) => s + x);
 
-            Assert.True(res == 120);
+            Assert.Equal(120, res);
         }
     }
 }

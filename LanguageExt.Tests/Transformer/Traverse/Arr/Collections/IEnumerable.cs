@@ -1,8 +1,4 @@
 using Xunit;
-using System.Linq;
-using LanguageExt.Traits;
-using System.Collections.Generic;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.ArrT.Collections;
 

@@ -1,13 +1,12 @@
 using Xunit;
 using LanguageExt.ClassInstances;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
 public class DistinctTests
 {
     [Fact]
-    void SeqDistinctIgnoreCase()
+    public void SeqDistinctIgnoreCase()
     {
         var items = Seq("Test", "other", "test");
             

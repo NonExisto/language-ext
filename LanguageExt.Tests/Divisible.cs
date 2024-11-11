@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using LanguageExt.ClassInstances;
-using static LanguageExt.Prelude;
 
 
 namespace LanguageExt.Tests;
@@ -14,6 +13,6 @@ public class Divisible
         var y = Some(10);
         var z = divide<TInt, int>(x, y);
 
-        Assert.True(z == 2);
+        Assert.Equal(2, z);
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using Newtonsoft.Json;
 using static LanguageExt.HashSet;
-using LanguageExt.ClassInstances;
 
 namespace LanguageExt.Tests;
 
@@ -32,7 +31,7 @@ public class HashSetTests
             () => "failed"
         );
 
-        Assert.True(res == "world");
+        Assert.Equal("world", res);
     }
 
     [Fact]
@@ -122,10 +121,10 @@ public class HashSetTests
         m.Find("d").IfNone(() => failwith<string>("Broken 4"));
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
-        Assert.True(m.Count == 5);
+        Assert.Equal(5, m.Count);
 
         m = remove(m, "d");
-        Assert.True(m.Count == 4);
+        Assert.Equal(4, m.Count);
         Assert.True(m.Find("d").IsNone);
         m.Find("a").IfNone(() => failwith<string>("Broken 1"));
         m.Find("b").IfNone(() => failwith<string>("Broken 2"));
@@ -133,25 +132,25 @@ public class HashSetTests
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "a");
-        Assert.True(m.Count == 3);
+        Assert.Equal(3, m.Count);
         Assert.True(m.Find("a").IsNone);
         m.Find("b").IfNone(() => failwith<string>("Broken 2"));
         m.Find("c").IfNone(() => failwith<string>("Broken 3"));
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "b");
-        Assert.True(m.Count == 2);
+        Assert.Equal(2, m.Count);
         Assert.True(m.Find("b").IsNone);
         m.Find("c").IfNone(() => failwith<string>("Broken 3"));
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "c");
-        Assert.True(m.Count == 1);
+        Assert.Equal(1, m.Count);
         Assert.True(m.Find("c").IsNone);
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "e");
-        Assert.True(m.Count == 0);
+        Assert.Equal(0, m.Count);
         Assert.True(m.Find("e").IsNone);
     }
 
@@ -186,12 +185,12 @@ public class HashSetTests
     public void EqualsTest()
     {
         Assert.False(HashSet(1, 2, 3).Equals(HashSet<int>()));
-        Assert.False(HashSet<int>().Equals(HashSet<int>(1, 2, 3)));
+        Assert.False(HashSet<int>().Equals(HashSet(1, 2, 3)));
         Assert.True(HashSet<int>().Equals(HashSet<int>()));
-        Assert.True(HashSet<int>(1).Equals(HashSet<int>(1)));
-        Assert.True(HashSet<int>(1, 2).Equals(HashSet<int>(1, 2)));
-        Assert.False(HashSet<int>(1, 2).Equals(HashSet<int>(1, 2, 3)));
-        Assert.False(HashSet<int>(1, 2, 3).Equals(HashSet<int>(1, 2)));
+        Assert.True(HashSet(1).Equals(HashSet(1)));
+        Assert.True(HashSet(1, 2).Equals(HashSet(1, 2)));
+        Assert.False(HashSet(1, 2).Equals(HashSet(1, 2, 3)));
+        Assert.False(HashSet(1, 2, 3).Equals(HashSet(1, 2)));
     }
         
     [Fact]

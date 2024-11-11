@@ -1,6 +1,4 @@
-﻿using LanguageExt.Traits;
-using Xunit;
-using static LanguageExt.Prelude;
+﻿using Xunit;
 
 namespace LanguageExt.Tests.Transformer.Traverse.Identity.Collections
 {

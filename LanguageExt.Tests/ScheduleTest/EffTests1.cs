@@ -42,7 +42,7 @@ public static class EffTests1
         var counter = 0;
         var effect = liftEff(async () => await (++counter).AsValueTask());
         var result = effect.RepeatIO(TestSchedule()).Run();
-        Assert.True(counter == 6);
+        Assert.Equal(6, counter);
         result.AssertSucc(6);
     }
 
@@ -53,7 +53,7 @@ public static class EffTests1
         var       counter = 0;
         var       effect  = liftEff<Runtime, int>(async _ => await (++counter).AsValueTask());
         var       result  = effect.RepeatIO(TestSchedule()).Run(rt, EnvIO.New());
-        Assert.True(counter == 6);
+        Assert.Equal(6, counter);
         result.AssertSucc(6);
     }
 
@@ -266,7 +266,7 @@ public static class EffTests1
         var effect  = liftEff<Runtime, int>(async _ => await (++counter).AsValueTask()).RepeatIO(Schedule.Forever);
         envIO.Source.Cancel();
         var result = effect.Run(rt, envIO);
-        Assert.True(counter == 0);
+        Assert.Equal(0, counter);
         result.AssertFail(Errors.Cancelled);
     }
     

@@ -24,5 +24,7 @@ public class DirectoryTests
         var actual = (await computation.RunAsync(rt)).ThrowIfFail();
 
         Assert.True(actual == Seq(expected));
+
+        Directory.Delete(path, true);
     }
 }

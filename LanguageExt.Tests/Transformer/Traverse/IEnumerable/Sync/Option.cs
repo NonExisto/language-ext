@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests.Transformer.Traverse.IEnumerableT.Sync
 {
@@ -13,7 +12,7 @@ namespace LanguageExt.Tests.Transformer.Traverse.IEnumerableT.Sync
             var ma = Option<Iterable<int>>.None;
             var mb = ma.Traverse(mx => mx).As();
 
-            IEnumerable<Option<int>> mc = new[] { Option<int>.None };
+            IEnumerable<Option<int>> mc = [Option<int>.None];
 
             Assert.True(mb.ToSeq() == mc.AsIterable().ToSeq());
         }

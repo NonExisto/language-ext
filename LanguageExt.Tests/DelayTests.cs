@@ -19,7 +19,7 @@ public class DelayTests
 
         while( DateTime.Now < till )
         {
-            Assert.True(v == 0);
+            Assert.Equal(0, v);
             Thread.Sleep(10);
         }
 
@@ -28,6 +28,6 @@ public class DelayTests
             Thread.Sleep(10);
         }
 
-        Assert.True(v == 1);
+        Assert.Equal(1, v);
     }
 }

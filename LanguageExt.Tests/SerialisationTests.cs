@@ -1,12 +1,11 @@
 ﻿using System;
 using Xunit;
 using Newtonsoft.Json;
-using System.Runtime.Serialization;
 using LanguageExt.Common;
 
 namespace LanguageExt.Tests
 {
-    
+
     public class SerialisationTests
     {
         [Fact]
@@ -19,7 +18,7 @@ namespace LanguageExt.Tests
             set = JsonConvert.DeserializeObject<Set<string>>(json);
             var lst = JsonConvert.DeserializeObject<Lst<string>>(json);
 
-            Assert.True(set.Count == 5);
+            Assert.Equal(5, set.Count);
             Assert.True(set.Contains("test1"));
             Assert.True(set.Contains("test2"));
             Assert.True(set.Contains("test3"));
@@ -36,12 +35,12 @@ namespace LanguageExt.Tests
 
             list = JsonConvert.DeserializeObject<Lst<string>>(json);
 
-            Assert.True(list.Count == 5);
-            Assert.True(list[0] == "test5");
-            Assert.True(list[1] == "test2");
-            Assert.True(list[2] == "test1");
-            Assert.True(list[3] == "test3");
-            Assert.True(list[4] == "test4");
+            Assert.Equal(5, list.Count);
+            Assert.Equal("test5", list[0]);
+            Assert.Equal("test2", list[1]);
+            Assert.Equal("test1", list[2]);
+            Assert.Equal("test3", list[3]);
+            Assert.Equal("test4", list[4]);
         }
 
         [Fact]
@@ -53,12 +52,12 @@ namespace LanguageExt.Tests
 
             seq = JsonConvert.DeserializeObject<Seq<string>>(json);
 
-            Assert.True(seq.Count == 5);
-            Assert.True(seq[0] == "test5");
-            Assert.True(seq[1] == "test2");
-            Assert.True(seq[2] == "test1");
-            Assert.True(seq[3] == "test3");
-            Assert.True(seq[4] == "test4");
+            Assert.Equal(5, seq.Count);
+            Assert.Equal("test5", seq[0]);
+            Assert.Equal("test2", seq[1]);
+            Assert.Equal("test1", seq[2]);
+            Assert.Equal("test3", seq[3]);
+            Assert.Equal("test4", seq[4]);
         }
 
         [Fact]

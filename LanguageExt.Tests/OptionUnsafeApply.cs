@@ -1,12 +1,10 @@
 ﻿using System;
-using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests
 {
     public class OptionUnsafeApply
     {
-        Func<int, int, int> add = (a, b) => a + b;
+        //Func<int, int, int> add = (a, b) => a + b;
 
         // TODO: Restore
 

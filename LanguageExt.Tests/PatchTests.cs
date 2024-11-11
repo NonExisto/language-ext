@@ -1,5 +1,4 @@
-﻿using static LanguageExt.Prelude;
-using static LanguageExt.Patch;
+﻿using static LanguageExt.Patch;
 using LanguageExt.ClassInstances;
 using Xunit;
 
@@ -57,7 +56,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Insert.New(2, "Again"));
         }
 
@@ -69,7 +68,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Insert.New(0, "Again"));
         }
 
@@ -81,7 +80,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Insert.New(1, "Again"));
         }
 
@@ -93,7 +92,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 3);
+            Assert.Equal(3, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Insert.New(0, "It's"));
             Assert.True(patch.Edits.Tail.Head == Edit<EqString, string>.Insert.New(1, "Again"));
             Assert.True(patch.Edits.Tail.Tail.Head == Edit<EqString, string>.Insert.New(2, "Cheers"));
@@ -108,7 +107,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Delete.New(2, "Again"));
         }
 
@@ -120,7 +119,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Delete.New(0, "Again"));
         }
 
@@ -132,7 +131,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Delete.New(1, "Again"));
         }
 
@@ -144,7 +143,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 3);
+            Assert.Equal(3, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Delete.New(0, "It's"));
             Assert.True(patch.Edits.Tail.Head == Edit<EqString, string>.Delete.New(2, "Again"));
             Assert.True(patch.Edits.Tail.Tail.Head == Edit<EqString, string>.Delete.New(4, "Cheers"));
@@ -159,7 +158,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Replace.New(2, "Again", "Once More"));
         }
 
@@ -171,7 +170,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Replace.New(0, "Again", "Once More"));
         }
 
@@ -183,7 +182,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 1);
+            Assert.Equal(1, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Replace.New(1, "Again", "Once More"));
         }
 
@@ -195,7 +194,7 @@ namespace LanguageExt.Tests
 
             var patch = diff<EqString, string>(docA, docB);
 
-            Assert.True(patch.Edits.Count == 3);
+            Assert.Equal(3, patch.Edits.Count);
             Assert.True(patch.Edits.Head == Edit<EqString, string>.Replace.New(0, "It's", "Yes"));
             Assert.True(patch.Edits.Tail.Head == Edit<EqString, string>.Replace.New(2, "Again", "My"));
             Assert.True(patch.Edits.Tail.Tail.Head == Edit<EqString, string>.Replace.New(4, "Cheers", "Of Joy"));

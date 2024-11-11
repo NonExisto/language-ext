@@ -10,7 +10,7 @@ public class EitherCoalesceTests
         Either<string, int> either = 123;
 
         var value = either || 456;
-        Assert.True(value == 123);
+        Assert.Equal(123, value);
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class EitherCoalesceTests
         Either<string, int> either = "Hello";
 
         var value = either || 456;
-        Assert.True(value == 456);
+        Assert.Equal(456, value);
     }
 
     [Fact]
@@ -29,6 +29,6 @@ public class EitherCoalesceTests
         Either<string, int> either2 = "World";
 
         var value = either1 || either2 || 456;
-        Assert.True(value == 456);
+        Assert.Equal(456, value);
     }
 }

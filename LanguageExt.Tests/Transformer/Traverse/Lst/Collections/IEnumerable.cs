@@ -1,19 +1,14 @@
-using System.Linq;
 using Xunit;
 using G = System.Collections.Generic;
 
 namespace LanguageExt.Tests.Transformer.Traverse.Lst.Collections
 {
     using static Prelude;
-    
+
     public class IEnumerableLst
     {
-        G.IEnumerable<T> mkEnum<T>(params T[] ts)
-        {
-            foreach (var t in ts)
-                yield return t;
-        }
-        
+        G.IEnumerable<T> mkEnum<T>(params T[] ts) => ts;
+
         [Fact]
         public void EmptyEmptyIsEmptyEmpty()
         {

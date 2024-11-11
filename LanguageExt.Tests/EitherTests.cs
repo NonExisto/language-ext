@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
@@ -9,26 +8,26 @@ public class EitherTests
     {
         Either<string, int> either = Right(123);
 
-        either.Match( Right: i => Assert.True(i == 123),
+        either.Match( Right: i => Assert.Equal(123, i),
                       Left:  _ => Assert.Fail("Shouldn't get here") );
 
         int c = either.Match( Right: i  => i + 1, 
                               Left: _ => 0 );
 
-        Assert.True(c == 124);
+        Assert.Equal(124, c);
     }
 
     [Fact] public void SomeGeneratorTestsFunction()
     {
         var either = Right<string, int>(123);
 
-        match(either, Right: i => Assert.True(i == 123),
+        match(either, Right: i => Assert.Equal(123, i),
               Left:  _ => Assert.Fail("Shouldn't get here") );
 
         int c = match(either, Right: i => i + 1,
                       Left:  _ => 0 );
 
-        Assert.True(c == 124);
+        Assert.Equal(124, c);
     }
 
     [Fact] public void LeftGeneratorTestsObject()
@@ -36,12 +35,12 @@ public class EitherTests
         var either = ItsLeft;
 
         either.Match( Right: r => Assert.Fail("Shouldn't get here"),
-                      Left:  l => Assert.True(l == "Left") );
+                      Left:  l => Assert.Equal("Left", l));
 
         int c = either.Match( Right: r => r + 1, 
                               Left:  l => 0 );
 
-        Assert.True(c == 0);
+        Assert.Equal(0, c);
     }
 
     [Fact] public void LeftGeneratorTestsFunction()
@@ -49,12 +48,12 @@ public class EitherTests
         var either = ItsLeft;
 
         match(either, Right: r => Assert.Fail("Shouldn't get here"),
-              Left:  l => Assert.True(l == "Left") );
+              Left:  l => Assert.Equal("Left", l));
 
         int c = match(either, Right: r => r + 1,
                       Left:  l => 0 );
 
-        Assert.True(c == 0);
+        Assert.Equal(0, c);
     }
 
     [Fact]
@@ -64,7 +63,7 @@ public class EitherTests
          from z in Six
          select x + y + z)
        .Match(
-            Right: r => Assert.True(r == 12),
+            Right: r => Assert.Equal(12, r),
             Left:  _ => Assert.Fail("Shouldn't get here"));
 
     [Fact] public void LeftLinqTest() =>
@@ -74,7 +73,7 @@ public class EitherTests
          from z in Six
          select x + y + z)
        .Match(
-            l => Assert.True(l == "Left"),
+            l => Assert.Equal("Left", l),
             _ => Assert.Fail("Shouldn't get here"));
 
     [Fact] public void EitherFluentSomeNoneTest()
@@ -87,11 +86,11 @@ public class EitherTests
                   .Right(r => r + 10)
                   .Left (l => l.Length);
 
-        Assert.True(res1 == 1010);
-        Assert.True(res2 == 4);
+        Assert.Equal(1010, res1);
+        Assert.Equal(4, res2);
     }
 
-    private Either<string, int> GetValue(bool select)
+    private static Either<string, int> GetValue(bool select)
     {
         if (select)
         {
@@ -118,7 +117,7 @@ public class EitherTests
          from y in Right<string, int>(123)
          from z in Right(5)
          select x + y + z)
-        .Match(Right: r => Assert.True(r == 130),
+        .Match(Right: r => Assert.Equal(130, r),
                Left: _ => Assert.True(false));
 
     [Fact]
@@ -130,21 +129,13 @@ public class EitherTests
     [Fact]
     public void EitherInfer1() => AddEithers(Right(10), Left("error"));
 
-    void EitherInfer2(bool v)
-    {
-        Either<string, int> x =
-            v ? Right(10)
-              : Left("error");
-    }
-
-    public Either<string, int> AddEithers(Either<string, int> x, Either<string, int> y) =>
+    public static Either<string, int> AddEithers(Either<string, int> x, Either<string, int> y) =>
         from a in x
         from b in y
         select a + b;
-
-    private Either<string, int> ImplicitConversion() => 1000;
-    private Either<string, int> ItsLeft => "Left";
-    private Either<string, int> Two => 2;
-    private Either<string, int> Four => 4;
-    private Either<string, int> Six => 6;
+    
+    private static Either<string, int> ItsLeft => "Left";
+    private static Either<string, int> Two => 2;
+    private static Either<string, int> Four => 4;
+    private static Either<string, int> Six => 6;
 }

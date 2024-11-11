@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using static LanguageExt.Prelude;
 using Xunit;
 using System.Diagnostics;
 

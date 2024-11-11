@@ -12,12 +12,12 @@ public class ListMatchingTests
         var list1 = List(10);
         var list5 = List(10,20,30,40,50);
 
-        Assert.True(Sum(list0) == 0);
-        Assert.True(Sum(list1) == 10);
-        Assert.True(Sum(list5) == 150);
+        Assert.Equal(0, Sum(list0));
+        Assert.Equal(10, Sum(list1));
+        Assert.Equal(150, Sum(list5));
     }
 
-    public int Sum(IEnumerable<int> list) =>
+    public static int Sum(IEnumerable<int> list) =>
         match(list,
               ()      => 0,
               x       => x,
@@ -30,12 +30,12 @@ public class ListMatchingTests
         var list1 = List(10);
         var list5 = List(10, 20, 30, 40, 50);
 
-        Assert.True(Multiply(list0) == 0);
-        Assert.True(Multiply(list1) == 10);
-        Assert.True(Multiply(list5) == 12000000);
+        Assert.Equal(0, Multiply(list0));
+        Assert.Equal(10, Multiply(list1));
+        Assert.Equal(12000000, Multiply(list5));
     }
 
-    public int Multiply(IEnumerable<int> list) =>
+    public static int Multiply(IEnumerable<int> list) =>
         list.Match(
             ()      => 0,
             x       => x,
@@ -48,12 +48,12 @@ public class ListMatchingTests
         var list1 = List(10);
         var list5 = List(10, 20, 30, 40, 50);
 
-        Assert.True(AnotherSum(list0) == 0);
-        Assert.True(AnotherSum(list1) == 10);
-        Assert.True(AnotherSum(list5) == 150);
+        Assert.Equal(0, AnotherSum(list0));
+        Assert.Equal(10, AnotherSum(list1));
+        Assert.Equal(150, AnotherSum(list5));
     }
 
-    public int AnotherSum(IEnumerable<int> list) =>
+    public static int AnotherSum(IEnumerable<int> list) =>
         match(list,
               ()      => 0,
               (x, xs) => x + AnotherSum(xs));
@@ -65,9 +65,9 @@ public class ListMatchingTests
         var list1 = List(10);
         var list5 = List(10, 20, 30, 40, 50);
 
-        Assert.True(AnotherMultiply(list0) == 1);
-        Assert.True(AnotherMultiply(list1) == 10);
-        Assert.True(AnotherMultiply(list5) == 12000000);
+        Assert.Equal(1, AnotherMultiply(list0));
+        Assert.Equal(10, AnotherMultiply(list1));
+        Assert.Equal(12000000, AnotherMultiply(list5));
     }
 
     public int AnotherMultiply(IEnumerable<int> list) =>

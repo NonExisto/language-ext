@@ -2,7 +2,6 @@
 using Xunit;
 using System;
 using System.Linq;
-using LanguageExt.ClassInstances;
 using FluentAssertions;
 using System.Collections.Generic;
 
@@ -31,7 +30,7 @@ public class MapTests
             () => "failed"
         );
 
-        Assert.True(res == "world");
+        Assert.Equal("world", res);
     }
 
     [Fact]
@@ -45,13 +44,13 @@ public class MapTests
 
         match( 
             m1, 1, 
-            Some: v => Assert.True(v == "a"), 
+            Some: v => Assert.Equal("a", v), 
             None: () => Assert.False(true) 
         );
 
         match(
             find(m2, 1),
-            Some: v => Assert.True(v == "x"),
+            Some: v => Assert.Equal("x", v),
             None: () => Assert.False(true)
         );
 
@@ -171,10 +170,10 @@ public class MapTests
         m.Find(4).IfNone(() => failwith<string>("Broken 4"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
-        Assert.True(m.Count == 5);
+        Assert.Equal(5, m.Count);
 
         m = remove(m,4);
-        Assert.True(m.Count == 4);
+        Assert.Equal(4, m.Count);
         Assert.True(m.Find(4).IsNone);
         m.Find(1).IfNone(() => failwith<string>("Broken 1"));
         m.Find(2).IfNone(() => failwith<string>("Broken 2"));
@@ -182,25 +181,25 @@ public class MapTests
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 1);
-        Assert.True(m.Count == 3);
+        Assert.Equal(3, m.Count);
         Assert.True(m.Find(1).IsNone);
         m.Find(2).IfNone(() => failwith<string>("Broken 2"));
         m.Find(3).IfNone(() => failwith<string>("Broken 3"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 2);
-        Assert.True(m.Count == 2);
+        Assert.Equal(2, m.Count);
         Assert.True(m.Find(2).IsNone);
         m.Find(3).IfNone(() => failwith<string>("Broken 3"));
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 3);
-        Assert.True(m.Count == 1);
+        Assert.Single(m);
         Assert.True(m.Find(3).IsNone);
         m.Find(5).IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, 5);
-        Assert.True(m.Count == 0);
+        Assert.Empty(m);
         Assert.True(m.Find(5).IsNone);
     }
 
@@ -251,16 +250,16 @@ public class MapTests
         m = m.AddOrUpdate((Some(1), None), "Some None");
         m = m.AddOrUpdate((None, None), "None None");
 
-        Assert.True(m[(Some(1), Some(1))] == "Some Some");
-        Assert.True(m[(None, Some(1))]    == "None Some");
-        Assert.True(m[(Some(1), None)]    == "Some None");
-        Assert.True(m[(None, None)]       == "None None");
+        Assert.Equal("Some Some", m[(Some(1), Some(1))]);
+        Assert.Equal("None Some", m[(None, Some(1))]);
+        Assert.Equal("Some None", m[(Some(1), None)]);
+        Assert.Equal("None None", m[(None, None)]);
 
-        Assert.True(m.Count() == 4);
+        Assert.Equal(4, m.Count());
 
         m = m.Filter(v => v.EndsWith("None", StringComparison.Ordinal));
 
-        Assert.True(m.Count() == 2);
+        Assert.Equal(2, m.Count());
     }
 
     [Fact]
@@ -270,12 +269,12 @@ public class MapTests
 
         var vs = toSeq(m.Values);
 
-        Assert.True(vs.Head                     == 1);
-        Assert.True(vs.Tail.Head                == 2);
-        Assert.True(vs.Tail.Tail.Head           == 3);
-        Assert.True(vs.Tail.Tail.Tail.Head      == 4);
-        Assert.True(vs.Tail.Tail.Tail.Tail.Head == 5);
-        Assert.True(vs.Count                    == 5);
+        Assert.Equal(1, vs.Head);
+        Assert.Equal(2, vs.Tail.Head);
+        Assert.Equal(3, vs.Tail.Tail.Head);
+        Assert.Equal(4, vs.Tail.Tail.Tail.Head);
+        Assert.Equal(5, vs.Tail.Tail.Tail.Tail.Head);
+        Assert.Equal(5, vs.Count);
     }
 
     [Fact]
@@ -285,12 +284,12 @@ public class MapTests
 
         var vs = toSeq(m.Keys);
 
-        Assert.True(vs.Head                     == 1);
-        Assert.True(vs.Tail.Head                == 2);
-        Assert.True(vs.Tail.Tail.Head           == 3);
-        Assert.True(vs.Tail.Tail.Tail.Head      == 4);
-        Assert.True(vs.Tail.Tail.Tail.Tail.Head == 5);
-        Assert.True(vs.Count                    == 5);
+        Assert.Equal(1, vs.Head);
+        Assert.Equal(2, vs.Tail.Head);
+        Assert.Equal(3, vs.Tail.Tail.Head);
+        Assert.Equal(4, vs.Tail.Tail.Tail.Head);
+        Assert.Equal(5, vs.Tail.Tail.Tail.Tail.Head);
+        Assert.Equal(5, vs.Count);
     }
 
     [Fact]
@@ -372,20 +371,20 @@ public class MapTests
 
         var x = m.Slice(1, 2);
 
-        Assert.True(x.Count == 2);
+        Assert.Equal(2, x.Count);
         Assert.True(x.ContainsKey(1));
         Assert.True(x.ContainsKey(2));
 
         var y = m.Slice(2, 4);
 
-        Assert.True(y.Count == 3);
+        Assert.Equal(3, y.Count);
         Assert.True(y.ContainsKey(2));
         Assert.True(y.ContainsKey(3));
         Assert.True(y.ContainsKey(4));
 
         var z = m.Slice(4, 5);
 
-        Assert.True(z.Count == 2);
+        Assert.Equal(2, z.Count);
         Assert.True(z.ContainsKey(4));
         Assert.True(z.ContainsKey(5));
     }

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using Xunit;
 using LanguageExt.Common;
 using Newtonsoft.Json;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
@@ -48,8 +47,8 @@ public class ErrorTests
         Assert.True(
             ea switch
             {
-                var ex when ex.IsExpected => true,    
-                var ex => false    
+                var ex when ex.IsExpected => true,
+                _ => false    
             });
     }
 
@@ -123,7 +122,7 @@ public class ErrorTests
         var es = JsonConvert.DeserializeObject<Error>(json, settings).require("Deserialization failed");
 
         Assert.False(es.IsEmpty);
-        Assert.True(es.Count == 3);
+        Assert.Equal(3, es.Count);
         Assert.True(es.IsExpected);
         Assert.False(eb.IsExceptional);
 

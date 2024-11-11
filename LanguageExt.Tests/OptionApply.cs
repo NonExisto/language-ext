@@ -1,13 +1,12 @@
 ﻿using System;
 using Xunit;
 using LanguageExt.ClassInstances;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
 public class OptionApply
 {
-    Func<int, int, int> add = (a, b) => a + b;
+    readonly Func<int, int, int> add = (a, b) => a + b;
 
     [Fact]
     public void ApplySomeArgs()

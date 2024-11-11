@@ -26,7 +26,7 @@ public class OptionTTests
         var result = list.KindT<Lst, Option, Option<int>, int>()
                          .SumT();
 
-        Assert.True(result == 15);
+        Assert.Equal(15, result);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class OptionTTests
         var result = list.KindT<Lst, Option, Option<int>, int>()
                          .CountT();
 
-        Assert.True(result == 5);
+        Assert.Equal(5, result);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class OptionTTests
 
         var total = res.Sum();
 
-        Assert.True(total == 30);
+        Assert.Equal(30, total);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class OptionTTests
 
         var fd = res.AsIterable().Fold("", (s, x) => s + x);
 
-        Assert.True(fd == "abcde");
+        Assert.Equal("abcde", fd);
     }
 
     [Fact]

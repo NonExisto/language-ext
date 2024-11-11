@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace LanguageExt.Tests
@@ -58,7 +56,7 @@ namespace LanguageExt.Tests
 
             var res = ctor("Hello");
 
-            Assert.True(res.W == "Hello");
+            Assert.Equal("Hello", res.W);
         }
 
         [Fact]
@@ -68,8 +66,8 @@ namespace LanguageExt.Tests
 
             var res = ctor("Hello", "World");
 
-            Assert.True(res.W == "Hello");
-            Assert.True(res.X == "World");
+            Assert.Equal("Hello", res.W);
+            Assert.Equal("World", res.X);
         }
 
         [Fact]
@@ -79,8 +77,8 @@ namespace LanguageExt.Tests
 
             var res = ctor("Hello", true);
 
-            Assert.True(res.W == "Hello");
-            Assert.True(res.X == "True");
+            Assert.Equal("Hello", res.W);
+            Assert.Equal("True", res.X);
         }
 
         [Fact]
@@ -90,9 +88,9 @@ namespace LanguageExt.Tests
 
             var res = ctor("Roland","TR", "909");
 
-            Assert.True(res.W == "Roland");
-            Assert.True(res.X == "TR");
-            Assert.True(res.Y == "909");
+            Assert.Equal("Roland", res.W);
+            Assert.Equal("TR", res.X);
+            Assert.Equal("909", res.Y);
         }
 
         [Fact]
@@ -102,10 +100,10 @@ namespace LanguageExt.Tests
 
             var res = ctor("Chandler", "Curve", "Bender", "EQ");
 
-            Assert.True(res.W == "Chandler");
-            Assert.True(res.X == "Curve");
-            Assert.True(res.Y == "Bender");
-            Assert.True(res.Z == "EQ");
+            Assert.Equal("Chandler", res.W);
+            Assert.Equal("Curve", res.X);
+            Assert.Equal("Bender", res.Y);
+            Assert.Equal("EQ", res.Z);
         }
 
         [Fact]
