@@ -3,11 +3,6 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-/// <summary>
-/// `MonadReaderT` trait implementation for `ReaderT` 
-/// </summary>
-/// <typeparam name="Env">Reader environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public partial class ReaderT<Env, M> :
     MonadT<ReaderT<Env, M>, M>,
     Readable<ReaderT<Env, M>, Env>, 

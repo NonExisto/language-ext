@@ -1,6 +1,7 @@
 ﻿using System;
 using static LanguageExt.Prelude;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LanguageExt.Parsec
 {
@@ -12,33 +13,37 @@ namespace LanguageExt.Parsec
 
     public static partial class Reply
     {
-        public static Reply<T> OK<T>(T result, PString remaining, ParserError error = null) =>
-            new Reply<T>(result, remaining, error);
+        public static Reply<T> OK<T>(T result, PString remaining, ParserError? error = null) =>
+            new(result, remaining, error);
 
         public static Reply<T> Error<T>(ParserErrorTag tag, Pos pos, string message, Lst<string> expected) =>
-            new Reply<T>(new ParserError(tag, pos, message, expected, null));
+            new(new ParserError(tag, pos, message, expected, null));
 
         public static Reply<T> Error<T>(ParserError error) =>
-            new Reply<T>(error);
+            new(error);
     }
 
     public class Reply<T>
     {
         public readonly ReplyTag Tag;
-        public readonly T Result;
+        public readonly T? Result;
         public readonly PString State;
-        public readonly ParserError Error;
+        public readonly ParserError? Error;
 
-        internal Reply(ParserError error)
+        [MemberNotNullWhen(true, nameof(Error))]
+        [MemberNotNullWhen(false, nameof(Result))]
+        public bool IsFaulted => Tag == ReplyTag.Error;
+
+        internal Reply([DisallowNull]ParserError error)
         {
-            Debug.Assert(error != null);
+            Debug.Assert(error is not null);
 
             Tag = ReplyTag.Error;
             Error = error;
             State = PString.Zero;
         }
 
-        internal Reply(T result, PString state, ParserError error = null)
+        internal Reply(T result, PString state, ParserError? error = null)
         {
             Debug.Assert(notnull(result));
 
@@ -48,7 +53,7 @@ namespace LanguageExt.Parsec
             Error = error;
         }
 
-        internal Reply(ReplyTag tag, T result, PString state, ParserError error)
+        internal Reply(ReplyTag tag, T? result, PString state, ParserError? error)
         {
             Tag = tag;
             Result = result;
@@ -57,16 +62,16 @@ namespace LanguageExt.Parsec
         }
 
         public Reply<U> Project<S, U>(S s, Func<S, T, U> project) =>
-            Tag == ReplyTag.Error
+            IsFaulted
                 ? Reply.Error<U>(Error)
                 : Reply.OK(project(s, Result), State, Error);
 
         public Reply<U> Select<U>(Func<T, U> map) =>
-            Tag == ReplyTag.Error
+            IsFaulted
                 ? Reply.Error<U>(Error)
                 : Reply.OK(map(Result), State, Error);
 
         internal Reply<T> SetEndIndex(int endIndex) =>
-            new Reply<T>(Tag, Result, State.SetEndIndex(endIndex), Error);
+            new(Tag, Result, State.SetEndIndex(endIndex), Error);
     }
 }

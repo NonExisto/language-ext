@@ -62,7 +62,7 @@ public class ErrorTests
         };
         var ea = Error.New(123, "Err");
         var json = JsonConvert.SerializeObject(ea, settings);
-        var eb = JsonConvert.DeserializeObject<Error>(json, settings);
+        var eb = JsonConvert.DeserializeObject<Error>(json, settings).require("Deserialization failed");
         Assert.True(eb.IsExpected);
         Assert.False(eb.IsExceptional);
         Assert.True(ea == eb);
@@ -79,7 +79,7 @@ public class ErrorTests
         };
         var ea = Error.New(new Exception("Hello, World"));
         var json = JsonConvert.SerializeObject(ea, settings);
-        var eb = JsonConvert.DeserializeObject<Error>(json, settings);
+        var eb = JsonConvert.DeserializeObject<Error>(json, settings).require("Deserialization failed");
         Assert.False(eb.IsExpected);
         Assert.True(eb.IsExceptional);
         Assert.True(ea.Is(eb));
@@ -98,7 +98,7 @@ public class ErrorTests
         };
         var ea = new BespokeError(true);
         var json = JsonConvert.SerializeObject(ea, settings);
-        var eb = JsonConvert.DeserializeObject<Error>(json, settings);
+        var eb = JsonConvert.DeserializeObject<Error>(json, settings).require("Deserialization failed");
         Assert.True(eb.IsExpected);
         Assert.False(eb.IsExceptional);
         Assert.True(ea == eb);
@@ -120,7 +120,7 @@ public class ErrorTests
 
         var json = JsonConvert.SerializeObject(ea + eb + ec, settings);
 
-        var es = JsonConvert.DeserializeObject<Error>(json, settings);
+        var es = JsonConvert.DeserializeObject<Error>(json, settings).require("Deserialization failed");
 
         Assert.False(es.IsEmpty);
         Assert.True(es.Count == 3);
@@ -139,7 +139,7 @@ public class ErrorTests
         var eb = Error.New(345, "Err 2");
         var ec = Error.New(678, "Err 3");
 
-        Assert.True((ea + eb) + ec == ea + (eb + ec), "Associativity");
+        Assert.True(ea + eb + ec == ea + (eb + ec), "Associativity");
         Assert.True(Error.Empty + ea == ea, "Left Identity");
         Assert.True(ea + Error.Empty == ea, "Right Identity");
     }

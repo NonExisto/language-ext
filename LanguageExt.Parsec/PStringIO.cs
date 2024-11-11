@@ -33,24 +33,24 @@ namespace LanguageExt.Parsec
                     : TokenPos(Value[Value.Length - 1]);
 
         public PString<T> SetValue(T[] value) =>
-            new PString<T>(value, Index, value.Length, UserState, TokenPos);
+            new(value, Index, value.Length, UserState, TokenPos);
 
         public PString<T> SetIndex(int index) =>
-            new PString<T>(Value, index, EndIndex, UserState, TokenPos);
+            new(Value, index, EndIndex, UserState, TokenPos);
 
-        public PString<T> SetUserState(object state) =>
-            new PString<T>(Value, Index, EndIndex, state, TokenPos);
+        public PString<T> SetUserState(object? state) =>
+            new(Value, Index, EndIndex, state, TokenPos);
 
         public PString<T> SetEndIndex(int endIndex) =>
-            new PString<T>(Value, Index, endIndex, UserState, TokenPos);
+            new(Value, Index, endIndex, UserState, TokenPos);
 
         public override string ToString() =>
             $"{typeof(T).Name}({Index}, {EndIndex})";
 
         public static PString<T> Zero(Func<T, Pos> tokenPos) =>
-            new PString<T>(System.Array.Empty<T>(), 0, 0, None, tokenPos);
+            new(System.Array.Empty<T>(), 0, 0, None, tokenPos);
 
         public PString<U> Cast<U>() where U : T =>
-            new PString<U>(Value.Cast<U>().ToArray(), Index, EndIndex, UserState, u => TokenPos((T)u));
+            new(Value.Cast<U>().ToArray(), Index, EndIndex, UserState, u => TokenPos((T)u));
     }
 }

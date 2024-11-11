@@ -97,8 +97,8 @@ public static class ExprIO
                                        from post in postfixP
                                        select post(pre(x));
 
-                           Func<O, Parser<I, O>> rassocP  = null;
-                           Func<O, Parser<I, O>> rassocP1 = null;
+                           Func<O, Parser<I, O>> rassocP  = null!;
+                           Func<O, Parser<I, O>> rassocP1 = null!;
 
                            rassocP1 = fun((O x) => either(rassocP(x), result<I, O>(x)));
 
@@ -112,8 +112,8 @@ public static class ExprIO
                                                  ambigiousLeft,
                                                  ambigiousNon));
 
-                           Func<O, Parser<I, O>> lassocP  = null;
-                           Func<O, Parser<I, O>> lassocP1 = null;
+                           Func<O, Parser<I, O>> lassocP  = null!;
+                           Func<O, Parser<I, O>> lassocP1 = null!;
 
                            lassocP1 = fun((O x) => either(lassocP(x), result<I, O>(x)));
 

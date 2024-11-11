@@ -9,10 +9,7 @@ namespace LanguageExt.Tests;
 public class SeqModuleTests
 {
     [Fact]
-    public void EmptyTest()
-    {
-        Assert.True(Seq.empty<int>().IsEmpty);
-    }
+    public void EmptyTest() => Assert.True(Seq.empty<int>().IsEmpty);
 
     [Fact]
     public void CreateTest()
@@ -21,97 +18,97 @@ public class SeqModuleTests
 
         var seq = Seq.create(1, 2, 3, 4, 5);
 
-        Assert.True(seq.Head                     == 1);
-        Assert.True(seq.Tail.Head                == 2);
-        Assert.True(seq.Tail.Tail.Head           == 3);
-        Assert.True(seq.Tail.Tail.Tail.Head      == 4);
-        Assert.True(seq.Tail.Tail.Tail.Tail.Head == 5);
+        Assert.Equal(1, seq.Head);
+        Assert.Equal(2, seq.Tail.Head);
+        Assert.Equal(3, seq.Tail.Tail.Head);
+        Assert.Equal(4, seq.Tail.Tail.Tail.Head);
+        Assert.Equal(5, seq.Tail.Tail.Tail.Tail.Head);
 
         var seqr = Seq.createRange(new[] { 1, 2, 3, 4, 5 });
 
-        Assert.True(seqr.Head                     == 1);
-        Assert.True(seqr.Tail.Head                == 2);
-        Assert.True(seqr.Tail.Tail.Head           == 3);
-        Assert.True(seqr.Tail.Tail.Tail.Head      == 4);
-        Assert.True(seqr.Tail.Tail.Tail.Tail.Head == 5);
+        Assert.Equal(1, seqr.Head);
+        Assert.Equal(2, seqr.Tail.Head);
+        Assert.Equal(3, seqr.Tail.Tail.Head);
+        Assert.Equal(4, seqr.Tail.Tail.Tail.Head);
+        Assert.Equal(5, seqr.Tail.Tail.Tail.Tail.Head);
     }
 
     [Fact]
     public void InitTest()
     {
         int            counter = 0;
-        Func<int, int> run     = x => { counter++; return x; };
+        int run(int x) { counter++; return x; }
 
         var seq = Seq.generate(5, x => run((x + 1) * 2));
 
         var fst = seq.Take(1).Head;
 
-        Assert.True(counter == 1);
-        Assert.True(fst     == 2);
+        Assert.Equal(1, counter);
+        Assert.Equal(2, fst);
 
         var snd = seq.Skip(1).Take(1).Head;
 
-        Assert.True(counter == 2);
-        Assert.True(snd     == 4);
+        Assert.Equal(2, counter);
+        Assert.Equal(4, snd);
 
         var thd = seq.Skip(2).Take(1).Head;
 
-        Assert.True(counter == 3);
-        Assert.True(thd     == 6);
+        Assert.Equal(3, counter);
+        Assert.Equal(6, thd);
 
         var fth = seq.Skip(3).Take(1).Head;
 
-        Assert.True(counter == 4);
-        Assert.True(fth     == 8);
+        Assert.Equal(4, counter);
+        Assert.Equal(8, fth);
 
         var fit = seq.Skip(4).Take(1).Head;
 
-        Assert.True(counter == 5);
-        Assert.True(fit     == 10);
+        Assert.Equal(5, counter);
+        Assert.Equal(10, fit);
 
         var sum = seq.Sum();
 
-        Assert.True(counter == 5);
-        Assert.True(sum     == 30);
+        Assert.Equal(5, counter);
+        Assert.Equal(30, sum);
     }
 
     [Fact]
     public void EquivalentOfTheInitTestWithIEnumerable()
     {
         int            counter = 0;
-        Func<int, int> run     = x => { counter++; return x; };
+        int run(int x) { counter++; return x; }
 
         var seq = List.generate(5, x => run((x + 1) * 2));
 
         var fst = seq.Take(1).First();
 
-        Assert.True(counter == 1);
-        Assert.True(fst     == 2);
+        Assert.Equal(1, counter);
+        Assert.Equal(2, fst);
 
         var snd = seq.Skip(1).Take(1).First();
 
         // Assert.True(counter == 2);  equals 3 by this point
-        Assert.True(snd == 4);
+        Assert.Equal(4, snd);
 
         var thd = seq.Skip(2).Take(1).First();
 
         // Assert.True(counter == 3);   equals 6 by this point
-        Assert.True(thd == 6);
+        Assert.Equal(6, thd);
 
         var fth = seq.Skip(3).Take(1).First();
 
         // Assert.True(counter == 4);   equals 10 by this point (double what the InitTest needs!)
-        Assert.True(fth == 8);
+        Assert.Equal(8, fth);
 
         var fit = seq.Skip(4).Take(1).First();
 
         //Assert.True(counter == 5);    equals 15 by this point (treble what the InitTest needs!)
-        Assert.True(fit == 10);
+        Assert.Equal(10, fit);
 
         var sum = seq.Sum();
 
         // Assert.True(counter == 5);   equals 20 by this point(four times what the InitTest needs!!!)
-        Assert.True(sum == 30);
+        Assert.Equal(30, sum);
     }
 
     [Fact]
@@ -148,7 +145,7 @@ public class SeqModuleTests
     public void CountTests()
     {
         int            counter = 0;
-        Func<int, int> run     = x => { counter++; return x; };
+        int run(int x) { counter++; return x; }
 
         var seq1 = Seq.generate(5, x => run((x + 1) * 2));
         var seq2 = 1.Cons(seq1);
@@ -156,9 +153,9 @@ public class SeqModuleTests
         var cnt1 = seq1.Count;
         var cnt2 = seq2.Count;
 
-        Assert.True(counter == 5);
-        Assert.True(cnt1    == 5);
-        Assert.True(cnt2    == 6);
+        Assert.Equal(5, counter);
+        Assert.Equal(5, cnt1);
+        Assert.Equal(6, cnt2);
 
         var seq3 = Seq.generate(5, x => run((x + 1) * 2));
         var seq4 = 1.Cons(seq3);
@@ -166,9 +163,9 @@ public class SeqModuleTests
         var cnt3 = seq4.Count;
         var cnt4 = seq3.Count;
 
-        Assert.True(counter == 10);
-        Assert.True(cnt4    == 5);
-        Assert.True(cnt3    == 6);
+        Assert.Equal(10, counter);
+        Assert.Equal(5, cnt4);
+        Assert.Equal(6, cnt3);
     }
 
     /// <summary>
@@ -195,9 +192,9 @@ public class SeqModuleTests
 
         seq.Iter((i, x) => Assert.True(x != 0, $"Invalid value in the sequence at index {i}"));
 
-        foreach (var task in tasks)
+        foreach (var task in results)
         {
-            Assert.True(task.Result == sum, $"Result is {task.Result}, should be: {sum}");
+            Assert.True(task == sum, $"Result is {task}, should be: {sum}");
         }
     }
 }

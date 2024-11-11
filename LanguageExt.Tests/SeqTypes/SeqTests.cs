@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
-using static LanguageExt.Prelude;
 using static LanguageExt.Seq;
 
 namespace LanguageExt.Tests;
@@ -16,16 +15,16 @@ public class SeqTests
     {
         var x = "test";
 
-        Assert.True(Seq(x).Count() == 1);
+        Assert.Equal(1, Seq(x).Count());
         Assert.True(Seq(x).Head()  == x);
     }
 
     [Fact]
     public void ObjectNull()
     {
-        string x = null;
+        string? x = null;
 
-        Assert.True(toSeq(x).Count() == 0);
+        Assert.Equal(0, toSeq(x).Count());
     }
 
     [Fact]
@@ -35,13 +34,14 @@ public class SeqTests
 
         var y = toSeq(x);
 
-        var res = toSeq(x).Tail().AsEnumerable().ToList();
+        var res = y.Tail().AsEnumerable().ToList();
+        res.Count.Should().Be(2);
 
 
-        Assert.True(toSeq(x).Count          == 3);
-        Assert.True(toSeq(x).Head           == "a");
-        Assert.True(toSeq(x).Tail.Head      == "b");
-        Assert.True(toSeq(x).Tail.Tail.Head == "c");
+        Assert.Equal(3, y.Count);
+        Assert.Equal("a", y.Head);
+        Assert.Equal("b", y.Tail.Head);
+        Assert.Equal("c", y.Tail.Tail.Head);
     }
 
     [Fact]
@@ -49,13 +49,13 @@ public class SeqTests
     {
         string[]? x = null;
 
-        Assert.True(toSeq(x).Count == 0);
+        Assert.Equal(0, toSeq(x).Count);
     }
 
     [Fact]
     public void TakeTest()
     {
-        IEnumerable<int> Numbers()
+        static IEnumerable<int> Numbers()
         {
             for (int i = 0; i < 100; i++)
             {
@@ -66,10 +66,10 @@ public class SeqTests
         var seq = Numbers().AsIterable().ToSeq();
 
         var a = seq.Take(5).Sum();
-        Assert.True(a == 10);
+        Assert.Equal(10, a);
 
         var b = seq.Skip(5).Take(5).Sum();
-        Assert.True(b == 35);
+        Assert.Equal(35, b);
 
     }
 
@@ -325,7 +325,7 @@ public class SeqTests
     {
         var str = "                          <p>The</p>".AsIterable();
         Assert.Equal("                          ",
-                     String.Join("", str.ToSeq().TakeWhile(ch => ch == ' ')));
+                     string.Join("", str.ToSeq().TakeWhile(ch => ch == ' ')));
     }
 
     [Fact]
@@ -333,21 +333,21 @@ public class SeqTests
     {
         var str = "                          <p>The</p>".AsIterable();
         Assert.Equal("                          ",
-                     String.Join("", str.ToSeq().TakeWhile((ch, index) => index != 26)));
+                     string.Join("", str.ToSeq().TakeWhile((ch, index) => index != 26)));
     }
 
     [Fact]
     public void TakeWhile_HalfDefaultCapacityTest()
     {
         var str = "1234".AsIterable();
-        Assert.Equal("1234", String.Join("", str.ToSeq().TakeWhile(ch => true)));
+        Assert.Equal("1234", string.Join("", str.ToSeq().TakeWhile(ch => true)));
     }
 
     [Fact]
     public void TakeWhileIndex_HalfDefaultCapacityTest()
     {
         var str = "1234".AsIterable();
-        Assert.Equal("1234", String.Join("", str.ToSeq().TakeWhile((ch, index) => true)));
+        Assert.Equal("1234", string.Join("", str.ToSeq().TakeWhile((ch, index) => true)));
     }
         
     [Fact]
@@ -480,141 +480,141 @@ public class SeqTests
     public void CheckItems()
     {
         var xs = Seq<int>();
-        Assert.True(xs.Count == 0);
+        Assert.Equal(0, xs.Count);
             
         xs = Seq(0);
-        Assert.True(xs.Count == 1);
-        Assert.True(xs[0]    == 0);
+        Assert.Equal(1, xs.Count);
+        Assert.Equal(0, xs[0]);
             
         xs = Seq(0, 1);
-        Assert.True(xs.Count == 2);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
+        Assert.Equal(2, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
             
         xs = Seq(0, 1, 2);
-        Assert.True(xs.Count == 3);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
+        Assert.Equal(3, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
             
         xs = Seq(0, 1, 2, 3);
-        Assert.True(xs.Count == 4);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
+        Assert.Equal(4, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
             
         xs = Seq(0, 1, 2, 3, 4);
-        Assert.True(xs.Count == 5);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
+        Assert.Equal(5, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
             
         xs = Seq(0, 1, 2, 3, 4, 5);
-        Assert.True(xs.Count == 6);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
+        Assert.Equal(6, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6);
-        Assert.True(xs.Count == 7);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
+        Assert.Equal(7, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7);
-        Assert.True(xs.Count == 8);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
+        Assert.Equal(8, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7, 8);
-        Assert.True(xs.Count == 9);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
-        Assert.True(xs[8]    == 8);
+        Assert.Equal(9, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
+        Assert.Equal(8, xs[8]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-        Assert.True(xs.Count == 10);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
-        Assert.True(xs[8]    == 8);
-        Assert.True(xs[9]    == 9);
+        Assert.Equal(10, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
+        Assert.Equal(8, xs[8]);
+        Assert.Equal(9, xs[9]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        Assert.True(xs.Count == 11);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
-        Assert.True(xs[8]    == 8);
-        Assert.True(xs[9]    == 9);
-        Assert.True(xs[10]   == 10);
+        Assert.Equal(11, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
+        Assert.Equal(8, xs[8]);
+        Assert.Equal(9, xs[9]);
+        Assert.Equal(10, xs[10]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-        Assert.True(xs.Count == 12);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
-        Assert.True(xs[8]    == 8);
-        Assert.True(xs[9]    == 9);
-        Assert.True(xs[10]   == 10);
-        Assert.True(xs[11]   == 11);
+        Assert.Equal(12, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
+        Assert.Equal(8, xs[8]);
+        Assert.Equal(9, xs[9]);
+        Assert.Equal(10, xs[10]);
+        Assert.Equal(11, xs[11]);
             
         xs = Seq(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        Assert.True(xs.Count == 13);
-        Assert.True(xs[0]    == 0);
-        Assert.True(xs[1]    == 1);
-        Assert.True(xs[2]    == 2);
-        Assert.True(xs[3]    == 3);
-        Assert.True(xs[4]    == 4);
-        Assert.True(xs[5]    == 5);
-        Assert.True(xs[6]    == 6);
-        Assert.True(xs[7]    == 7);
-        Assert.True(xs[8]    == 8);
-        Assert.True(xs[9]    == 9);
-        Assert.True(xs[10]   == 10);
-        Assert.True(xs[11]   == 11);
-        Assert.True(xs[12]   == 12);
+        Assert.Equal(13, xs.Count);
+        Assert.Equal(0, xs[0]);
+        Assert.Equal(1, xs[1]);
+        Assert.Equal(2, xs[2]);
+        Assert.Equal(3, xs[3]);
+        Assert.Equal(4, xs[4]);
+        Assert.Equal(5, xs[5]);
+        Assert.Equal(6, xs[6]);
+        Assert.Equal(7, xs[7]);
+        Assert.Equal(8, xs[8]);
+        Assert.Equal(9, xs[9]);
+        Assert.Equal(10, xs[10]);
+        Assert.Equal(11, xs[11]);
+        Assert.Equal(12, xs[12]);
     }
 
     [Fact]
-    void SeqHashCodeRegression()
+    public void SeqHashCodeRegression()
     {
         // GetHashCode is internally used to compare Seq values => has to be equal irrespective of creation method 
 

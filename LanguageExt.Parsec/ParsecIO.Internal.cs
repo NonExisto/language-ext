@@ -37,7 +37,7 @@ namespace LanguageExt.Parsec
                 : inp =>
             {
                 var results = new List<O>();
-                ParserError error = null;
+                ParserError error = null!;
 
                 foreach (var p in ps)
                 {
@@ -50,13 +50,13 @@ namespace LanguageExt.Parsec
                     }
 
                     // eok
-                    if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
+                    if (t.Tag == ResultTag.Empty && !t.Reply.IsFaulted)
                     {
                         return EmptyOK<I, O>(t.Reply.Result, t.Reply.State, mergeError(error, t.Reply.Error));
                     }
 
                     // cerr
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                     {
                         return ConsumedError<I, O>(mergeError(error, t.Reply.Error), inp.TokenPos);
                     }
@@ -88,8 +88,8 @@ namespace LanguageExt.Parsec
 
                 var current = inp;
                 var results = new List<O>();
-                ParserError error = null;
-                ParserResult<I,O> last = null;
+                ParserError? error = null;
+                ParserResult<I,O>? last = null;
                 int count = ps.Count;
 
                 foreach (var p in ps)
@@ -100,17 +100,17 @@ namespace LanguageExt.Parsec
                     if( last == null)
                     {
                         // cerr
-                        if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                        if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                         {
                             return ConsumedError<I, Seq<O>>(t.Reply.Error, inp.TokenPos);
                         }
                         // eerr
-                        else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                        else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                         {
                             return EmptyError<I, Seq<O>>(t.Reply.Error, inp.TokenPos);
                         }
                         // cok
-                        else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                        else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                         {
                             results.Add(t.Reply.Result);
                             last = t;
@@ -120,7 +120,7 @@ namespace LanguageExt.Parsec
                         // eok
                         else //if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
                         {
-                            results.Add(t.Reply.Result);
+                            results.Add(t.Reply.Result!);
                             last = t;
                             error = t.Reply.Error;
                         }
@@ -130,17 +130,17 @@ namespace LanguageExt.Parsec
                         if (last.Tag == ResultTag.Consumed)
                         {
                             // cok, cerr
-                            if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                            if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                             {
                                 return ConsumedError<I, Seq<O>>(t.Reply.Error, inp.TokenPos);
                             }
                             // cok, eerr
-                            else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                            else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                             {
                                 return ConsumedError<I, Seq<O>>(mergeError(error, t.Reply.Error), inp.TokenPos);
                             }
                             // cok, cok
-                            else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                            else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                             {
                                 if (count == 0)
                                 {
@@ -161,12 +161,12 @@ namespace LanguageExt.Parsec
                                 if (count == 0)
                                 {
                                     // cok, eok -> cok  (not a typo, this should be -> cok)
-                                    results.Add(t.Reply.Result);
+                                    results.Add(t.Reply.Result!);
                                     return ConsumedOK(toSeq(results), t.Reply.State, mergeError(error, t.Reply.Error));
                                 }
                                 else
                                 {
-                                    results.Add(t.Reply.Result);
+                                    results.Add(t.Reply.Result!);
                                     last = t;
                                     error = mergeError(error, t.Reply.Error);
                                 }
@@ -175,17 +175,17 @@ namespace LanguageExt.Parsec
                         else if (last.Tag == ResultTag.Empty)
                         {
                             // eok, cerr
-                            if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                            if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                             {
                                 return ConsumedError<I, Seq<O>>(t.Reply.Error, inp.TokenPos);
                             }
                             // eok, eerr
-                            else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                            else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                             {
                                 return EmptyError<I, Seq<O>>(mergeError(error, t.Reply.Error), inp.TokenPos);
                             }
                             // eok, cok
-                            else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                            else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                             {
                                 if (count == 0)
                                 {
@@ -205,12 +205,12 @@ namespace LanguageExt.Parsec
                             {
                                 if (count == 0)
                                 {
-                                    results.Add(t.Reply.Result);
+                                    results.Add(t.Reply.Result!);
                                     return EmptyOK(toSeq(results), t.Reply.State, mergeError(error, t.Reply.Error));
                                 }
                                 else
                                 {
-                                    results.Add(t.Reply.Result);
+                                    results.Add(t.Reply.Result!);
                                     last = t;
                                     error = mergeError(error, t.Reply.Error);
                                 }

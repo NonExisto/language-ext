@@ -134,18 +134,18 @@ namespace LanguageExt.Parsec
                 var m = p(inp);
 
                 // meerr
-                if (m.Tag == ResultTag.Empty && m.Reply.Tag == ReplyTag.Error)
+                if (m.Tag == ResultTag.Empty && m.Reply.IsFaulted)
                 {
                     var n = q(inp);
 
                     // neok
-                    if (n.Tag == ResultTag.Empty && n.Reply.Tag == ReplyTag.OK)
+                    if (n.Tag == ResultTag.Empty && !n.Reply.IsFaulted)
                     {
                         return EmptyOK(n.Reply.Result, n.Reply.State, mergeError(m.Reply.Error, n.Reply.Error));
                     }
 
                     // nerr
-                    if (n.Tag == ResultTag.Empty && n.Reply.Tag == ReplyTag.Error)
+                    if (n.Tag == ResultTag.Empty && n.Reply.IsFaulted)
                     {
                         return EmptyError<I, O>(mergeError(m.Reply.Error, n.Reply.Error), inp.TokenPos);
                     }
@@ -244,7 +244,7 @@ namespace LanguageExt.Parsec
             inp =>
             {
                 var res = p(inp);
-                if (res.Tag == ResultTag.Consumed && res.Reply.Tag == ReplyTag.Error)
+                if (res.Tag == ResultTag.Consumed && res.Reply.IsFaulted)
                 {
                     return EmptyError<I, O>(res.Reply.Error, inp.TokenPos);
                 }
@@ -264,7 +264,7 @@ namespace LanguageExt.Parsec
             inp =>
             {
                 var res = p(inp);
-                if (res.Reply.Tag == ReplyTag.OK)
+                if (!res.Reply.IsFaulted)
                 {
                     return EmptyOK(res.Reply.Result, inp);
                 }
@@ -290,14 +290,14 @@ namespace LanguageExt.Parsec
             {
                 var current = inp;
                 var results = new List<O>();
-                ParserError error = null;
+                ParserError? error = null;
 
                 while(true)
                 {
                     var t = p(current);
 
                     // cok
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                    if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                     {
                         results.Add(t.Reply.Result);
                         current = t.Reply.State;
@@ -313,7 +313,7 @@ namespace LanguageExt.Parsec
                     }
 
                     // cerr
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                     {
                         return ConsumedError<I, Seq<O>>(mergeError(error, t.Reply.Error), inp.TokenPos);
                     }
@@ -541,7 +541,7 @@ namespace LanguageExt.Parsec
         /// </returns>
         public static Parser<I, O> chainr1<I, O>(Parser<I, O> p, Parser<I, Func<O, O, O>> op)
         {
-            Parser<I, O> scan = null;
+            Parser<I, O> scan = null!;
 
             var rest = fun((O x) => either(from f in op
                                            from y in scan
@@ -564,7 +564,7 @@ namespace LanguageExt.Parsec
         /// </returns>
         public static Parser<I, O> chainl1<I, O>(Parser<I, O> p, Parser<I, Func<O, O, O>> op)
         {
-            Func<O, Parser<I, O>> rest = null;
+            Func<O, Parser<I, O>> rest = null!;
 
             rest = fun((O x) => either(from f in op
                                        from y in p
@@ -603,7 +603,7 @@ namespace LanguageExt.Parsec
         public static Parser<I, Unit> notFollowedBy<I, O>(Parser<I, O> p) =>
             attempt(
                 either(from c in attempt(p)
-                       from u in unexpected<I, Unit>(c.ToString())
+                       from u in unexpected<I, Unit>(c.ToString() ?? string.Empty)
                        select u,
                        result<I, Unit>(unit)));
 
@@ -617,7 +617,7 @@ namespace LanguageExt.Parsec
         /// Parse a T list and convert into a string
         /// </summary>
         public static Parser<I, string> asString<I, O>(Parser<I, Seq<O>> p) =>
-            p.Select(x => String.Join("",x.Select(o =>o.ToString())));
+            p.Select(x => string.Join(string.Empty, x.Select(o => o?.ToString() ?? string.Empty)));
 
         /// <summary>
         /// Parse a T list and convert into a string
@@ -675,7 +675,7 @@ namespace LanguageExt.Parsec
 
         public static Parser<I, Seq<O>> manyUntil<I, O, U>(Parser<I, O> p, Parser<I, U> end)
         {
-            Parser<I, Seq<O>> scan = null;
+            Parser<I, Seq<O>> scan = null!;
 
             scan = either(
                 from _ in end
@@ -726,7 +726,7 @@ namespace LanguageExt.Parsec
                         cres.Tag,
                         new Reply<TOKEN, A>(
                             cres.Reply.Tag,
-                            default(A),
+                            default,
                             cres.Reply.State,
                             cres.Reply.Error));
                 }

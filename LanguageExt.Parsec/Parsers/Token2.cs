@@ -43,12 +43,12 @@ public static class Token2
     /// </summary>
     public static GenTokenParser2 makeTokenParser(GenLanguageDef def)
     {
-        var simpleSpace = skipMany1(satisfy(System.Char.IsWhiteSpace));
+        var simpleSpace = skipMany1(satisfy(char.IsWhiteSpace));
 
-        Parser<Unit>       multiLineComment = null;
-        Parser<Unit>       inCommentMulti   = null;
-        Parser<Unit>       inCommentSingle  = null;
-        Func<string, bool> isReservedName   = null;
+        Parser<Unit>       multiLineComment = null!;
+        Parser<Unit>       inCommentMulti   = null!;
+        Parser<Unit>       inCommentSingle  = null!;
+        Func<string, bool> isReservedName   = null!;
 
         var startEnd = List.append(def.CommentEnd.ToArray(), def.CommentStart.ToArray()).Distinct().ToArray();
 
@@ -154,7 +154,7 @@ public static class Token2
         var charEsc = choice(escMap.Map(pair => parseEsc(pair.Item1, pair.Item2)));
 
         var charNum = choice(dec, hexadecimal, octal)
-                     .Map(System.Char.ConvertFromUtf32)
+                     .Map(char.ConvertFromUtf32)
                      .Map(x => x[0]);
 
         var charControl = from _ in ch('^')
@@ -364,19 +364,19 @@ public static class Token2
                     var bi = inp.Index;
                     var bp = inp.Pos;
                     var xr = p(inp);
-                    if (xr.Reply.Tag == ReplyTag.OK)
+                    if (!xr.Reply.IsFaulted)
                     {
                         var ei = xr.Reply.State.Index;
                         var ep = xr.Reply.State.Pos;
 
                         var wr = whiteSpace(xr.Reply.State);
 
-                        return (wr.Reply.Tag, wr.Tag) switch
+                        return (wr.Reply.IsFaulted, wr.Tag) switch
                                {
-                                   (ReplyTag.OK, ResultTag.Consumed)    => ParserResult.ConsumedOK((xr.Reply.Result, bp, ep, bi, ei), wr.Reply.State, xr.Reply.Error),
-                                   (ReplyTag.OK, ResultTag.Empty)       => ParserResult.ConsumedOK((xr.Reply.Result, bp, ep, bi, ei), wr.Reply.State, xr.Reply.Error),
-                                   (ReplyTag.Error, ResultTag.Consumed) => ParserResult.ConsumedError<(A T, Pos BeginPos, Pos EndPos, int BeginIndex, int EndIndex)>(wr.Reply.Error),
-                                   (ReplyTag.Error, ResultTag.Empty)    => ParserResult.EmptyError<(A T, Pos BeginPos, Pos EndPos, int BeginIndex, int EndIndex)>(wr.Reply.Error),
+                                   (false, ResultTag.Consumed)=> ParserResult.ConsumedOK((xr.Reply.Result, bp, ep, bi, ei), wr.Reply.State, xr.Reply.Error),
+                                   (false, ResultTag.Empty)   => ParserResult.ConsumedOK((xr.Reply.Result, bp, ep, bi, ei), wr.Reply.State, xr.Reply.Error),
+                                   (true, ResultTag.Consumed) => ParserResult.ConsumedError<(A T, Pos BeginPos, Pos EndPos, int BeginIndex, int EndIndex)>(wr.Reply.Error!),
+                                   (true, ResultTag.Empty)    => ParserResult.EmptyError<(A T, Pos BeginPos, Pos EndPos, int BeginIndex, int EndIndex)>(wr.Reply.Error!),
                                    _                                    => throw new NotSupportedException()
                                };
                     }

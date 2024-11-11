@@ -277,14 +277,11 @@ public class HashMapTests
     }
 
     [Fact]
-    public void itemLensGetShouldThrowExceptionForNonExistingValue()
-    {
-        Assert.Throws<ArgumentException>(() =>
-                                         {
-                                             var map    = HashMap((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"));
-                                             var actual = HashMap<int, string>.item(10).Get(map);
-                                         });
-    }
+    public void itemLensGetShouldThrowExceptionForNonExistingValue() => Assert.Throws<ArgumentException>(() =>
+                                                                                                              {
+                                                                                                                  var map = HashMap((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"));
+                                                                                                                  var actual = HashMap<int, string>.item(10).Get(map);
+                                                                                                              });
 
     [Fact]
     public void itemOrNoneLensGetShouldGetExistingValue()

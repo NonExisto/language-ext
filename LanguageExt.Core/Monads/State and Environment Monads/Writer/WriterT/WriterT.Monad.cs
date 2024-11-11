@@ -4,11 +4,6 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
-/// <summary>
-/// `MonadStateT` trait implementation for `StateT` 
-/// </summary>
-/// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public partial class WriterT<W, M> : 
     MonadT<WriterT<W, M>, M>, 
     Choice<WriterT<W, M>>,

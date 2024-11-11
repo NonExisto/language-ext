@@ -102,8 +102,8 @@ public static class Expr
                                        from post in postfixP
                                        select post(pre(x));
 
-                           Func<T, Parser<T>> rassocP  = null;
-                           Func<T, Parser<T>> rassocP1 = null;
+                           Func<T, Parser<T>> rassocP  = null!;
+                           Func<T, Parser<T>> rassocP1 = null!;
 
                            rassocP1 = fun((T x) => either(rassocP(x), result(x)));
 
@@ -117,8 +117,8 @@ public static class Expr
                                                  ambigiousLeft,
                                                  ambigiousNon));
 
-                           Func<T, Parser<T>> lassocP  = null;
-                           Func<T, Parser<T>> lassocP1 = null;
+                           Func<T, Parser<T>> lassocP  = null!;
+                           Func<T, Parser<T>> lassocP1 = null!;
 
                            lassocP1 = fun((T x) => either(lassocP(x), result(x)));
 

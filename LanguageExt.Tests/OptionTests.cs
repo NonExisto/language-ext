@@ -123,9 +123,7 @@ namespace LanguageExt.Tests
         }
 
         [Fact]
-        public void NullableDenySomeNullTest()
-        {
-            Assert.Throws<ValueIsNullException>(
+        public void NullableDenySomeNullTest() => Assert.Throws<ValueIsNullException>(
                     () =>
                     {
                         var res = GetNullable(false)
@@ -133,7 +131,6 @@ namespace LanguageExt.Tests
                                     .None(() => 0);
                     }
                 );
-        }
 
         [Fact]
         public void BiIterSomeTest()

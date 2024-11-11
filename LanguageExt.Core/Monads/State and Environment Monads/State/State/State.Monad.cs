@@ -3,10 +3,6 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-/// <summary>
-/// Traits implementation for `State` 
-/// </summary>
-/// <typeparam name="S">State environment type</typeparam>
 public partial class State<S> : 
     Monad<State<S>>, 
     Choice<State<S>>,

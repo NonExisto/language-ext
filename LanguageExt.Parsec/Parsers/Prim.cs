@@ -62,8 +62,8 @@ namespace LanguageExt.Parsec
         public static Parser<T> getState<T>() =>
             inp =>
                 match(inp.UserState,
-                    Some: x => x is T
-                        ? ConsumedOK((T)x, inp)
+                    Some: x => x is T t
+                        ? ConsumedOK(t, inp)
                         : EmptyError<T>(ParserError.Message(inp.Pos, "User state type-mismatch")),
                     None: () => EmptyError<T>(ParserError.Message(inp.Pos, "No user state set")));
 
@@ -154,18 +154,18 @@ namespace LanguageExt.Parsec
                 var m = p(inp);
 
                 // meerr
-                if (m.Tag == ResultTag.Empty && m.Reply.Tag == ReplyTag.Error)
+                if (m.Tag == ResultTag.Empty && m.Reply.IsFaulted)
                 {
                     var n = q(inp);
 
                     // neok
-                    if (n.Tag == ResultTag.Empty && n.Reply.Tag == ReplyTag.OK)
+                    if (n.Tag == ResultTag.Empty && !n.Reply.IsFaulted)
                     {
                         return EmptyOK(n.Reply.Result, n.Reply.State, mergeError(m.Reply.Error, n.Reply.Error));
                     }
 
                     // nerr
-                    if (n.Tag == ResultTag.Empty && n.Reply.Tag == ReplyTag.Error)
+                    if (n.Tag == ResultTag.Empty && n.Reply.IsFaulted)
                     {
                         return EmptyError<T>(mergeError(m.Reply.Error, n.Reply.Error));
                     }
@@ -284,7 +284,7 @@ namespace LanguageExt.Parsec
             inp =>
             {
                 var res = p(inp);
-                if (res.Tag == ResultTag.Consumed && res.Reply.Tag == ReplyTag.Error)
+                if (res.Tag == ResultTag.Consumed && res.Reply.IsFaulted)
                 {
                     return EmptyError<T>(res.Reply.Error);
                 }
@@ -304,7 +304,7 @@ namespace LanguageExt.Parsec
             inp =>
             {
                 var res = p(inp);
-                if (res.Reply.Tag == ReplyTag.OK)
+                if (!res.Reply.IsFaulted)
                 {
                     return EmptyOK(res.Reply.Result, inp);
                 }
@@ -330,14 +330,14 @@ namespace LanguageExt.Parsec
             {
                 var current = inp;
                 var results = new List<T>();
-                ParserError error = null;
+                ParserError? error = null;
 
                 while(true)
                 {
                     var t = p(current);
 
                     // cok
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                    if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                     {
                         results.Add(t.Reply.Result);
                         current = t.Reply.State;
@@ -353,7 +353,7 @@ namespace LanguageExt.Parsec
                     }
 
                     // cerr
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                     {
                         return ConsumedError<Seq<T>>(mergeError(error, t.Reply.Error));
                     }
@@ -379,7 +379,7 @@ namespace LanguageExt.Parsec
             {
                 var current = inp;
                 var results = new List<T>();
-                ParserError error = null;
+                ParserError? error = null;
 
                 int count = 0;
 
@@ -389,7 +389,7 @@ namespace LanguageExt.Parsec
                     count++;
 
                     // cok
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                     {
                         results.Add(t.Reply.Result);
                         current = t.Reply.State;
@@ -409,7 +409,7 @@ namespace LanguageExt.Parsec
                     }
 
                     // cerr
-                    if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                     {
                         return ConsumedError<Seq<T>>(mergeError(error, t.Reply.Error));
                     }
@@ -437,7 +437,7 @@ namespace LanguageExt.Parsec
                 {
                     var current = inp;
                     var results = new List<T>();
-                    ParserError error = null;
+                    ParserError? error = null;
 
                     int count = 0;
 
@@ -447,7 +447,7 @@ namespace LanguageExt.Parsec
                         count++;
 
                         // cok
-                        if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                        if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                         {
                             results.Add(t.Reply.Result);
                             current = t.Reply.State;
@@ -468,7 +468,7 @@ namespace LanguageExt.Parsec
                         }
 
                         // cerr
-                        if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                        if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                         {
                             return ConsumedError<Seq<T>>(mergeError(error, t.Reply.Error));
                         }
@@ -707,7 +707,7 @@ namespace LanguageExt.Parsec
         /// </returns>
         public static Parser<T> chainr1<T>(Parser<T> p, Parser<Func<T, T, T>> op)
         {
-            Parser<T> scan = null;
+            Parser<T> scan = null!;
 
             var rest = fun((T x) => either(from f in op
                                            from y in scan
@@ -730,7 +730,7 @@ namespace LanguageExt.Parsec
         /// </returns>
         public static Parser<T> chainl1<T>(Parser<T> p, Parser<Func<T, T, T>> op)
         {
-            Func<T, Parser<T>> rest = null;
+            Func<T, Parser<T>> rest = null!;
 
             rest = fun((T x) => either(from f in op
                                        from y in p
@@ -770,7 +770,7 @@ namespace LanguageExt.Parsec
                 either(from c in attempt(from l in getPos
                                          from r in p
                                          select (Pos: l, Value: r))
-                       from u in unexpected<Unit>(c.Pos, label ?? c.Value.ToString())
+                       from u in unexpected<Unit>(c.Pos, label ?? c.Value.ToString() ?? string.Empty)
                        select u,
                        result(unit)));
 
@@ -806,7 +806,7 @@ namespace LanguageExt.Parsec
 
         public static Parser<Seq<T>> manyUntil<T, U>(Parser<T> p, Parser<U> end)
         {
-            Parser<Seq<T>> scan = null;
+            Parser<Seq<T>> scan = null!;
 
             scan = either(
                 from _ in end

@@ -144,14 +144,11 @@ public class ArrayTests
     }
 
     [Fact]
-    public void itemLensGetShouldThrowExceptionForNonExistingValue()
-    {
-        Assert.Throws<IndexOutOfRangeException>(() =>
-                                                {
-                                                    var array  = Array("0", "1", "2", "3", "4", "5");
-                                                    var actual = Arr<string>.item(10).Get(array);
-                                                });
-    }
+    public void itemLensGetShouldThrowExceptionForNonExistingValue() => Assert.Throws<IndexOutOfRangeException>(() =>
+                                                                                                                     {
+                                                                                                                         var array = Array("0", "1", "2", "3", "4", "5");
+                                                                                                                         var actual = Arr<string>.item(10).Get(array);
+                                                                                                                     });
 
     [Fact]
     public void itemOrNoneLensGetShouldGetExistingValue()

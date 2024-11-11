@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using LanguageExt.UnsafeValueAccess;
 using static LanguageExt.UnitsOfMeasure;
@@ -383,7 +382,7 @@ public sealed class ScheduleTests
         Assert.True(res.Length == 5);
         Assert.True(res.Zip(noJitter)
                        .AsIterable()
-                       .Filter(p => p.Item1 > p.Item2 && p.Item1 - p.Item2 <= 100)
+                       .Filter(p => p.First > p.Second && p.First - p.Second <= 100)
                        .Any());
     }
 
@@ -402,7 +401,7 @@ public sealed class ScheduleTests
         Assert.True(res.Length == 5);
         Assert.True(res.Zip(noJitter)
                        .AsIterable()
-                       .Filter(p => p.Item1 > p.Item2 && p.Item1 - p.Item2 <= p.Item2 * 1.5)
+                       .Filter(p => p.First > p.Second && p.First - p.Second <= p.Second * 1.5)
                        .Any());
     }
 

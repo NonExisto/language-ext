@@ -13,10 +13,10 @@ namespace LanguageExt.Sys.Test.Implementations;
 public record ConsoleIO(MemoryConsole mem) : Sys.Traits.ConsoleIO
 {
     public IO<Option<ConsoleKeyInfo>> ReadKey() =>
-        lift(() => mem.ReadKey());
+        lift(mem.ReadKey);
 
     public IO<Unit> Clear() =>
-        lift(() => mem.Clear());
+        lift(mem.Clear);
 
     public IO<Unit> SetBgColor(ConsoleColor color) =>
         lift(() => mem.SetBgColor(color));
@@ -25,7 +25,7 @@ public record ConsoleIO(MemoryConsole mem) : Sys.Traits.ConsoleIO
         lift(() => mem.SetColor(color));
 
     public IO<Unit> ResetColor() =>
-        lift(() => mem.ResetColor());
+        lift(mem.ResetColor);
 
     public IO<ConsoleColor> BgColor => 
         lift(() => mem.BgColor);
@@ -34,13 +34,13 @@ public record ConsoleIO(MemoryConsole mem) : Sys.Traits.ConsoleIO
         lift(() => mem.Color);
         
     public IO<Option<int>> Read() =>
-        lift(() => mem.Read());
+        lift(mem.Read);
         
     public IO<Option<string>> ReadLine() =>
-        lift(() => mem.ReadLine());
+        lift(mem.ReadLine);
 
     public IO<Unit> WriteLine() =>
-        lift(() => mem.WriteLine());
+        lift(mem.WriteLine);
 
     public IO<Unit> WriteLine(string value) =>
         lift(() => mem.WriteLine(value));

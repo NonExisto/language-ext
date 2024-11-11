@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Tests;
 
@@ -27,21 +26,15 @@ public class CompositionTests
     }
 
     [Fact]
-    public void BackComposeFuncWithNoArgFunc()
-    {
-        Assert.Equal(g.BackCompose(f)(), g(f()));
-    }
+    public void BackComposeFuncWithNoArgFunc() => Assert.Equal(g.BackCompose(f)(), g(f()));
 
     [Fact]
-    public void ComposeNoArgFuncWithFunc()
-    {
-        Assert.Equal(f.Compose(g)(), g(f()));
-    }
+    public void ComposeNoArgFuncWithFunc() => Assert.Equal(f.Compose(g)(), g(f()));
 
     [Fact]
     public void BackComposeActionWithNoArgFunc()
     {
-        string result;
+        string? result;
         var    g = act((string name) => { result = this.g(name); });
 
         result = null;
@@ -52,7 +45,7 @@ public class CompositionTests
     [Fact]
     public void ComposeNoArgFuncWithAction()
     {
-        string result;
+        string? result;
         var    g = act((string name) => { result = this.g(name); });
 
         result = null;
@@ -61,16 +54,10 @@ public class CompositionTests
     }
 
     [Fact]
-    public void BackComposeFuncWithFunc()
-    {
-        Assert.Equal(h.BackCompose(g)(f()), h(g(f())));
-    }
+    public void BackComposeFuncWithFunc() => Assert.Equal(h.BackCompose(g)(f()), h(g(f())));
 
     [Fact]
-    public void ComposeFuncWithFunc()
-    {
-        Assert.Equal(g.Compose(h)(f()), h(g(f())));
-    }
+    public void ComposeFuncWithFunc() => Assert.Equal(g.Compose(h)(f()), h(g(f())));
 
     [Fact]
     public void BackComposeActionWithFunc()

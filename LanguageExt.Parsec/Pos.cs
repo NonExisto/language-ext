@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LanguageExt.Parsec
 {
@@ -20,14 +16,15 @@ namespace LanguageExt.Parsec
             Column = column;
         }
 
-        public static readonly Pos Zero = new Pos(0, 0);
+        public static readonly Pos Zero = new(0, 0);
 
-        public bool Equals(Pos other) =>
+        public bool Equals(Pos? other) =>
+            other is not null &&
             Line == other.Line &&
             Column == other.Column;
 
-        public override bool Equals(object obj) =>
-            ((obj as Pos)?.Equals(this)).GetValueOrDefault();
+        public override bool Equals(object? obj) =>
+            obj is Pos other && Equals(other);
 
         public override int GetHashCode() =>
             Tuple.Create(Line, Column).GetHashCode();
@@ -35,12 +32,11 @@ namespace LanguageExt.Parsec
         public override string ToString() =>
             $"(line {Line + 1}, column {Column + 1})";
 
-        public int CompareTo(Pos other) =>
-            Line < other.Line
-                ? -1
-                : Line > other.Line
-                    ? 1
-                    : Column.CompareTo(other.Column);
+        public int CompareTo(Pos? other) =>
+            other is null ? 1 :
+            Line.CompareTo(other.Line) switch { 
+                    0 => Column.CompareTo(other.Column),
+                    var v => v };
 
         public static bool operator ==(Pos lhs, Pos rhs) =>
             lhs.Equals(rhs);
@@ -69,15 +65,12 @@ namespace LanguageExt.Parsec
             )
         {
             var res = lhs.CompareTo(rhs);
-            if( res < 0)
+            return res switch
             {
-                return LT();
-            }
-            if (res > 0)
-            {
-                return GT();
-            }
-            return EQ();
+                < 0 => LT(),
+                > 0 => GT(),
+                _ => EQ()
+            };
         }
     }
 }

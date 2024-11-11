@@ -31,7 +31,8 @@ public static class ObjectExt
     internal static bool IsDefault<A>(A value) =>
         EqDefault<A>.Equals(value, default!);
 
-    internal static T require<T>(this T? value, string reason, [CallerArgumentExpression(nameof(value))] string? paramName = null)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T require<T>(this T? value, string reason, [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
         if(value is null) throw new ArgumentNullException(paramName, reason);
         return value;

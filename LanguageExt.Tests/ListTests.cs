@@ -571,14 +571,11 @@ public class ListTests
     }
 
     [Fact]
-    public void itemLensGetShouldThrowExceptionForNonExistingValue()
-    {
-        Assert.Throws<IndexOutOfRangeException>(() =>
-                                                {
-                                                    var list   = List("0", "1", "2", "3", "4", "5");
-                                                    var actual = Lst<string>.item(10).Get(list);
-                                                });
-    }
+    public void itemLensGetShouldThrowExceptionForNonExistingValue() => Assert.Throws<IndexOutOfRangeException>(() =>
+                                                                                                                     {
+                                                                                                                         var list = List("0", "1", "2", "3", "4", "5");
+                                                                                                                         var actual = Lst<string>.item(10).Get(list);
+                                                                                                                     });
 
     [Fact]
     public void itemOrNoneLensGetShouldGetExistingValue()

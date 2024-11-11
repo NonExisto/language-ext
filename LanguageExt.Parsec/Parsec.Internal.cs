@@ -42,8 +42,8 @@ static class Internal
             ? unexpected<T>("choice parser with no choices")
             : inp =>
               {
-                  List<T>     results = new List<T>();
-                  ParserError error   = null;
+                  List<T>     results = [];
+                  ParserError error   = null!;
 
                   foreach (var p in ps)
                   {
@@ -56,13 +56,13 @@ static class Internal
                       }
 
                       // eok
-                      if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
+                      if (t.Tag == ResultTag.Empty && !t.Reply.IsFaulted)
                       {
                           return EmptyOK(t.Reply.Result, t.Reply.State, mergeError(error, t.Reply.Error));
                       }
 
                       // cerr
-                      if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                      if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                       {
                           return ConsumedError<T>(mergeError(error, t.Reply.Error));
                       }
@@ -93,9 +93,9 @@ static class Internal
                   }
 
                   var             current = inp;
-                  List<T>         results = new List<T>();
-                  ParserError     error   = null;
-                  ParserResult<T> last    = null;
+                  List<T>         results = [];
+                  ParserError?    error   = null;
+                  ParserResult<T>? last   = null;
                   int             count   = ps.Count;
 
                   foreach (var p in ps)
@@ -106,17 +106,17 @@ static class Internal
                       if( last == null)
                       {
                           // cerr
-                          if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                          if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                           {
                               return ConsumedError<Seq<T>>(t.Reply.Error);
                           }
                           // eerr
-                          else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                          else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                           {
                               return EmptyError<Seq<T>>(t.Reply.Error);
                           }
                           // cok
-                          else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                          else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                           {
                               results.Add(t.Reply.Result);
                               last    = t;
@@ -126,7 +126,7 @@ static class Internal
                           // eok
                           else //if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
                           {
-                              results.Add(t.Reply.Result);
+                              results.Add(t.Reply.Result!);
                               last  = t;
                               error = t.Reply.Error;
                           }
@@ -136,17 +136,17 @@ static class Internal
                           if (last.Tag == ResultTag.Consumed)
                           {
                               // cok, cerr
-                              if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                              if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                               {
                                   return ConsumedError<Seq<T>>(t.Reply.Error);
                               }
                               // cok, eerr
-                              else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                              else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                               {
                                   return ConsumedError<Seq<T>>(mergeError(error, t.Reply.Error));
                               }
                               // cok, cok
-                              else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                              else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                               {
                                   if (count == 0)
                                   {
@@ -167,12 +167,12 @@ static class Internal
                                   if (count == 0)
                                   {
                                       // cok, eok -> cok  (not a typo, this should be -> cok)
-                                      results.Add(t.Reply.Result);
+                                      results.Add(t.Reply.Result!);
                                       return ConsumedOK(toSeq(results), t.Reply.State, mergeError(error, t.Reply.Error));
                                   }
                                   else
                                   {
-                                      results.Add(t.Reply.Result);
+                                      results.Add(t.Reply.Result!);
                                       last  = t;
                                       error = mergeError(error, t.Reply.Error);
                                   }
@@ -181,17 +181,17 @@ static class Internal
                           else if (last.Tag == ResultTag.Empty)
                           {
                               // eok, cerr
-                              if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                              if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                               {
                                   return ConsumedError<Seq<T>>(t.Reply.Error);
                               }
                               // eok, eerr
-                              else if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.Error)
+                              else if (t.Tag == ResultTag.Empty && t.Reply.IsFaulted)
                               {
                                   return EmptyError<Seq<T>>(mergeError(error, t.Reply.Error));
                               }
                               // eok, cok
-                              else if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                              else if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                               {
                                   if (count == 0)
                                   {
@@ -211,12 +211,12 @@ static class Internal
                               {
                                   if (count == 0)
                                   {
-                                      results.Add(t.Reply.Result);
+                                      results.Add(t.Reply.Result!);
                                       return EmptyOK(toSeq(results), t.Reply.State, mergeError(error, t.Reply.Error));
                                   }
                                   else
                                   {
-                                      results.Add(t.Reply.Result);
+                                      results.Add(t.Reply.Result!);
                                       last  = t;
                                       error = mergeError(error, t.Reply.Error);
                                   }

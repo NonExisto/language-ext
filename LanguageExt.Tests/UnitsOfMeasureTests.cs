@@ -14,28 +14,16 @@ public class UnitsOfMeasureTests
     }
 
     [Fact]
-    public void PreludeLengthEqualityTest3()
-    {
-        Assert.True(1 *yard == 3 *feet);
-    }
+    public void PreludeLengthEqualityTest3() => Assert.True(1 * yard == 3 * feet);
 
     [Fact]
-    public void PreludeLengthEqualityTest4()
-    {
-        Assert.True(12 *inches == 1 *feet);
-    }
+    public void PreludeLengthEqualityTest4() => Assert.True(12 * inches == 1 * feet);
 
     [Fact]
-    public void PreludeLengthCompareTest1()
-    {
-        Assert.True(1 *mile > 1 *km);
-    }
+    public void PreludeLengthCompareTest1() => Assert.True(1 * mile > 1 * km);
 
     [Fact]
-    public void PreludeLengthScalarTest2()
-    {
-        Assert.True(1 *km / 500 == 2 *metres);
-    }
+    public void PreludeLengthScalarTest2() => Assert.True(1 * km / 500 == 2 * metres);
 
     [Fact]
     public void LengthEqualityTest()
@@ -54,34 +42,19 @@ public class UnitsOfMeasureTests
     }
 
     [Fact]
-    public void LengthEqualityTest3()
-    {
-        Assert.True(1.Yards() == 3.Feet());
-    }
+    public void LengthEqualityTest3() => Assert.True(1.Yards() == 3.Feet());
 
     [Fact]
-    public void LengthEqualityTest4()
-    {
-        Assert.True(12.Inches() == 1.Feet());
-    }
+    public void LengthEqualityTest4() => Assert.True(12.Inches() == 1.Feet());
 
     [Fact]
-    public void LengthCompareTest1()
-    {
-        Assert.True(1.Miles() > 1.Kilometres());
-    }
+    public void LengthCompareTest1() => Assert.True(1.Miles() > 1.Kilometres());
 
     [Fact]
-    public void LengthScalarTest1()
-    {
-        Assert.True(1.Miles() * 10 == 10.Miles());
-    }
+    public void LengthScalarTest1() => Assert.True(1.Miles() * 10 == 10.Miles());
 
     [Fact]
-    public void LengthScalarTest2()
-    {
-        Assert.True(1.Kilometres() / 500 == 2.Metres());
-    }
+    public void LengthScalarTest2() => Assert.True(1.Kilometres() / 500 == 2.Metres());
 
     [Fact]
     public void OperatorTests()
@@ -98,10 +71,7 @@ public class UnitsOfMeasureTests
     }
 
     [Fact]
-    public void LengthCompareTest2()
-    {
-        Assert.True(100 *mm < 2 *m);
-    }
+    public void LengthCompareTest2() => Assert.True(100 * mm < 2 * m);
 
     [Fact]
     public void LengthArithmetic1()
@@ -363,10 +333,7 @@ public class UnitsOfMeasureTests
     }
 
     [Fact]
-    public void CtorThrowsBelowAbsZeroTest()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => -300 * degC);
-    }
+    public void CtorThrowsBelowAbsZeroTest() => Assert.Throws<ArgumentOutOfRangeException>(() => -300 * degC);
 
     [Fact]
     public void RetrieveKValueTest()
@@ -414,10 +381,7 @@ public class UnitsOfMeasureTests
     }
 
     [Fact]
-    public void PreludeMassCompareTest1()
-    {
-        Assert.True(1 * tonne > 1 * kg);
-    }
+    public void PreludeMassCompareTest1() => Assert.True(1 * tonne > 1 * kg);
 
     [Fact]
     public void PreludeMassScalarTest2()

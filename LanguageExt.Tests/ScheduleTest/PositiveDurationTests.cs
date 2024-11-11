@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace LanguageExt.Tests.ScheduleTest;

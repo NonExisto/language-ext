@@ -35,11 +35,11 @@ public static class ParserIOExtensions
             {
                 return res;
             }
-            if (res.Reply.Tag == ReplyTag.Error)
+            if (res.Reply.IsFaulted)
             {
                 return EmptyError<I, O>(ParserError.Expect(inp.Pos, res.Reply.Error.Msg, expected), inp.TokenPos);
             }
-            if (res.Reply.Error == null || res.Reply.Error.Tag == ParserErrorTag.Unknown)
+            if (res.Reply.Error is null || res.Reply.Error.Tag == ParserErrorTag.Unknown)
             {
                 return res;
             }
@@ -88,25 +88,25 @@ public static class ParserIOExtensions
             var t = self(inp);
 
             // cok
-            if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+            if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
             {
                 return f(t.Reply.Result)(t.Reply.State);
             }
 
             // eok
-            if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
+            if (t.Tag == ResultTag.Empty && !t.Reply.IsFaulted)
             {
                 return f(t.Reply.Result)(t.Reply.State);
             }
 
             // cerr
-            if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+            if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
             {
                 return ConsumedError<I, B>(t.Reply.Error, inp.TokenPos);
             }
 
             // eerr
-            return EmptyError<I, B>(t.Reply.Error, inp.TokenPos);
+            return EmptyError<I, B>(t.Reply.Error!, inp.TokenPos);
         };    
 
     public static Parser<I, V> SelectMany<I, O, U, V>(
@@ -120,24 +120,24 @@ public static class ParserIOExtensions
                 var t = self(inp);
 
                 // cok
-                if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.OK)
+                if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                 {
                     var u = bind(t.Reply.Result)(t.Reply.State);
 
-                    if (u.Tag == ResultTag.Consumed && u.Reply.Tag == ReplyTag.OK)
+                    if (u.Tag == ResultTag.Consumed && !u.Reply.IsFaulted)
                     {
                         // cok, cok -> cok
                         var v = project(t.Reply.Result, u.Reply.Result);
                         return ConsumedOK(v, u.Reply.State, u.Reply.Error);
                     }
 
-                    if (u.Tag == ResultTag.Consumed && u.Reply.Tag == ReplyTag.Error)
+                    if (u.Tag == ResultTag.Consumed && u.Reply.IsFaulted)
                     {
                         // cok, cerr -> cerr
                         return ConsumedError<I, V>(u.Reply.Error, inp.TokenPos);
                     }
 
-                    if (u.Tag == ResultTag.Empty && u.Reply.Tag == ReplyTag.OK)
+                    if (u.Tag == ResultTag.Empty && !u.Reply.IsFaulted)
                     {
                         // cok, eok -> cok  (not a typo, this should be -> cok)
                         var v = project(t.Reply.Result, u.Reply.Result);
@@ -149,25 +149,25 @@ public static class ParserIOExtensions
                 }
 
                 // eok
-                if (t.Tag == ResultTag.Empty && t.Reply.Tag == ReplyTag.OK)
+                if (t.Tag == ResultTag.Empty && !t.Reply.IsFaulted)
                 {
                     var u = bind(t.Reply.Result)(t.Reply.State);
 
-                    if (u.Tag == ResultTag.Consumed && u.Reply.Tag == ReplyTag.OK)
+                    if (u.Tag == ResultTag.Consumed && !u.Reply.IsFaulted)
                     {
                         // eok, cok -> cok
                         var v = project(t.Reply.Result, u.Reply.Result);
                         return ConsumedOK(v, u.Reply.State, u.Reply.Error);
                     }
 
-                    if (u.Tag == ResultTag.Empty && u.Reply.Tag == ReplyTag.OK)
+                    if (u.Tag == ResultTag.Empty && !u.Reply.IsFaulted)
                     {
                         // eok, eok -> eok
                         var v = project(t.Reply.Result, u.Reply.Result);
                         return EmptyOK(v, u.Reply.State, mergeError(t.Reply.Error, u.Reply.Error));
                     }
 
-                    if (u.Tag == ResultTag.Consumed && u.Reply.Tag == ReplyTag.Error)
+                    if (u.Tag == ResultTag.Consumed && u.Reply.IsFaulted)
                     {
                         // eok, cerr -> cerr
                         return ConsumedError<I, V>(u.Reply.Error, inp.TokenPos);
@@ -178,13 +178,13 @@ public static class ParserIOExtensions
                 }
 
                 // cerr
-                if (t.Tag == ResultTag.Consumed && t.Reply.Tag == ReplyTag.Error)
+                if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
                 {
                     return ConsumedError<I, V>(t.Reply.Error, inp.TokenPos);
                 }
 
                 // eerr
-                return EmptyError<I, V>(t.Reply.Error, inp.TokenPos);
+                return EmptyError<I, V>(t.Reply.Error!, inp.TokenPos);
             };
     
     public static Parser<I, A> Flatten<I, A>(this Parser<I, Parser<I, A>> mma) =>

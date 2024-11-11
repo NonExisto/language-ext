@@ -43,12 +43,12 @@ public static class Token
     /// </summary>
     public static GenTokenParser makeTokenParser(GenLanguageDef def)
     {
-        var simpleSpace = skipMany1(satisfy(System.Char.IsWhiteSpace));
+        var simpleSpace = skipMany1(satisfy(char.IsWhiteSpace));
 
-        Parser<Unit>       multiLineComment = null;
-        Parser<Unit>       inCommentMulti   = null;
-        Parser<Unit>       inCommentSingle  = null;
-        Func<string, bool> isReservedName   = null;
+        Parser<Unit>       multiLineComment = null!;
+        Parser<Unit>       inCommentMulti   = null!;
+        Parser<Unit>       inCommentSingle  = null!;
+        Func<string, bool> isReservedName   = null!;
 
         var startEnd = List.append(def.CommentEnd.ToArray(), def.CommentStart.ToArray()).Distinct().ToArray();
 
@@ -166,7 +166,7 @@ public static class Token
         var charEsc = choice(escMap.Map(pair => parseEsc(pair.Item1, pair.Item2)));
 
         var charNum = choice(dec, hexadecimal, octal)
-                     .Map(System.Char.ConvertFromUtf32)
+                     .Map(char.ConvertFromUtf32)
                      .Map(x => x[0]);
 
         var charControl = from _ in ch('^')

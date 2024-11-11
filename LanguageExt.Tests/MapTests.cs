@@ -609,14 +609,11 @@ public class MapTests
     }
 
     [Fact]
-    public void itemLensGetShouldThrowExceptionForNonExistingValue()
-    {
-        Assert.Throws<Exception>(() =>
-                                 {
-                                     var map    = Map((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"));
-                                     var actual = Map<int, string>.item(10).Get(map);
-                                 });
-    }
+    public void itemLensGetShouldThrowExceptionForNonExistingValue() => Assert.Throws<Exception>(() =>
+                                                                                                      {
+                                                                                                          var map = Map((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5"));
+                                                                                                          var actual = Map<int, string>.item(10).Get(map);
+                                                                                                      });
 
     [Fact]
     public void itemOrNoneLensGetShouldGetExistingValue()
