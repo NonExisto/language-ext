@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using LanguageExt.Common;
 using LanguageExt.Traits;
+using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
@@ -210,5 +213,4 @@ public static partial class EffExtensions
         Func<A, (K<Eff<RT>, B> First, K<Eff<RT>, C> Second, K<Eff<RT>, D> Third)> bind,
         Func<A, (B First, C Second, D Third), E> project) =>
         self.As().Bind(a => bind(a).ZipIO().Map(cd => project(a, cd)));
-
 }
