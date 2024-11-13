@@ -10,9 +10,6 @@ namespace TestBed;
 
 public class IssueTests
 {
-    
-    private HttpClient client;
-
     record Download
     {
         public static Task<Download<System.IO.Stream>> CreateDownloadStream(string url, HttpResponseMessage response) =>

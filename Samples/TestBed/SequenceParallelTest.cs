@@ -19,7 +19,7 @@ public class SequenceParallelTest
         var input = Seq(1, 2, 3, 2, 5, 1, 1, 2, 3, 2, 1, 2, 4, 2, 1, 5, 6, 1, 3, 6, 2);
 	
         var eitherIO = input.Map(DoDelay).Traverse(x => x).As();
-        var either = eitherIO.Run().As().Run();
+        var either = await eitherIO.Run().As().RunAsync();
         
         Debug.Assert(either.IsRight);
         either.IfRight(right => Debug.Assert(right == input));

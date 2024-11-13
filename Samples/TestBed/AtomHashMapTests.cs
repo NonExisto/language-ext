@@ -23,8 +23,8 @@ public class AtomHashMapTests
 
         xs.OnEntryChange().Subscribe(pair => Console.WriteLine(pair));
             
-        xs.Add("Hello", 456);
-        xs.SetItem("Hello", 123);
+        xs.Add("Hello", 456, null);
+        xs.SetItem("Hello", 123, null);
         xs.Remove("Hello");
         xs.Remove("Hello");
 
