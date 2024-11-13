@@ -389,7 +389,7 @@ namespace LanguageExt.Parsec
                     count++;
 
                     // cok
-                    if (t.Tag == ResultTag.Consumed && t.Reply.IsFaulted)
+                    if (t.Tag == ResultTag.Consumed && !t.Reply.IsFaulted)
                     {
                         results.Add(t.Reply.Result);
                         current = t.Reply.State;

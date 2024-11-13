@@ -28,7 +28,7 @@ namespace LanguageExt.Parsec
                       LT: () => err2
                       );
         public static Reply<T> mergeErrorReply<T>(ParserError err, Reply<T> reply) =>
-            reply.Tag == ReplyTag.OK
+            !reply.IsFaulted
                 ? Reply.OK(reply.Result, reply.State, mergeError(err, reply.Error))
                 : Reply.Error<T>(mergeError(err, reply.Error));
     }

@@ -25,7 +25,7 @@ namespace LanguageExt.Parsec
         /// </summary>
         /// <returns>
         /// The character that is actually parsed.</returns>
-        public static Parser<A, A> satisfy<A>(Func<A, bool> pred) =>
+        public static Parser<A, A> satisfy<A>(Func<A?, bool> pred) =>
             inp =>
             {
                 if (inp.Index >= inp.EndIndex)
