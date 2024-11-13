@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -39,10 +40,9 @@ namespace LanguageExt.Benchmarks
             return hashSet;
         }
 
-        public static HashSet<TEq, T> LangExtHashSetSetup<T, TEq>(T[] values)
-            where TEq : Eq<T>
+        public static HashSet<T> LangExtHashSetSetup<T>(T[] values)
         {
-            var hashSet = HashSet<TEq, T>();
+            var hashSet = HashSet<T>(EqualityComparer<T>.Default);
             foreach (var value in values)
             {
                 hashSet = hashSet.Add(value);
@@ -51,10 +51,9 @@ namespace LanguageExt.Benchmarks
             return hashSet;
         }
 
-        public static Set<TOrd, T> LangExtSetSetup<T, TOrd>(T[] values)
-            where TOrd : Ord<T>
+        public static Set<T> LangExtSetSetup<T>(T[] values)
         {
-            var set = Set<TOrd, T>();
+            var set = Set<T>(Comparer<T>.Default);
             foreach (var value in values)
             {
                 set = set.Add(value);

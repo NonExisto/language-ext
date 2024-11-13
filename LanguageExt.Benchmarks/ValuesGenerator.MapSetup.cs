@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using LanguageExt.Traits;
 using Sasa.Collections;
 using static LanguageExt.Prelude;
 
@@ -51,10 +50,9 @@ namespace LanguageExt.Benchmarks
             return dictionary;
         }
 
-        public static HashMap<TEq, T, T> LangExtHashMapSetup<T, TEq>(Dictionary<T, T> values)
-            where TEq : Eq<T>
+        public static HashMap<T, T> LangExtHashMapSetup<T>(Dictionary<T, T> values)
         {
-            var hashMap = HashMap<TEq, T, T>();
+            var hashMap = HashMap<T, T>(EqualityComparer<T>.Default);
             foreach (var kvp in values)
             {
                 hashMap = hashMap.Add(kvp.Key, kvp.Value);
@@ -63,10 +61,9 @@ namespace LanguageExt.Benchmarks
             return hashMap;
         }
 
-        public static Map<TOrd, T, T> LangExtMapSetup<T, TOrd>(Dictionary<T, T> values)
-            where TOrd : Ord<T>
+        public static Map<T, T> LangExtMapSetup<T>(Dictionary<T, T> values)
         {
-            var hashMap = Map<TOrd, T, T>();
+            var hashMap = Map<T, T>(Comparer<T>.Default);
             foreach (var kvp in values)
             {
                 hashMap = hashMap.Add(kvp.Key, kvp.Value);

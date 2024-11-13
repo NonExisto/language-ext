@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using BenchmarkDotNet.Attributes;
-using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 using Sasa.Collections;
 
 namespace LanguageExt.Benchmarks
 {
     [RPlotExporter, RankColumn]
-    [GenericTypeArguments(typeof(int), typeof(OrdInt))]
-    [GenericTypeArguments(typeof(string), typeof(OrdString))]
-    public class HashMapIterateBenchmarks<T, TOrd>
-        where TOrd : Ord<T>
+    [GenericTypeArguments(typeof(int))]
+    [GenericTypeArguments(typeof(string))]
+    public class HashMapIterateBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
         public int N;
@@ -19,8 +16,8 @@ namespace LanguageExt.Benchmarks
         ImmutableDictionary<T, T> immutableMap;
         ImmutableSortedDictionary<T, T> immutableSortedMap;
         Dictionary<T, T> dictionary;
-        HashMap<TOrd, T, T> hashMap;
-        Map<TOrd, T, T> map;
+        HashMap<T, T> hashMap;
+        Map<T, T> map;
         Trie<T, T> sasaTrie;
 
         [GlobalSetup]
@@ -32,8 +29,8 @@ namespace LanguageExt.Benchmarks
             immutableMap = ValuesGenerator.SysColImmutableDictionarySetup(values);
             immutableSortedMap = ValuesGenerator.SysColImmutableSortedDictionarySetup(values);
             dictionary = ValuesGenerator.SysColDictionarySetup(values);
-            hashMap = ValuesGenerator.LangExtHashMapSetup<T, TOrd>(values);
-            map = ValuesGenerator.LangExtMapSetup<T, TOrd>(values);
+            hashMap = ValuesGenerator.LangExtHashMapSetup(values);
+            map = ValuesGenerator.LangExtMapSetup(values);
         }
 
         [Benchmark]

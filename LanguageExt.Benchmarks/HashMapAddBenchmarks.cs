@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using BenchmarkDotNet.Attributes;
-using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 using Sasa.Collections;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt.Benchmarks
 {
     [RPlotExporter, RankColumn]
-    [GenericTypeArguments(typeof(int), typeof(OrdInt))]
-    [GenericTypeArguments(typeof(string), typeof(OrdString))]
-    public class HashMapAddBenchmarks<T, TOrd>
-        where TOrd : Ord<T>
+    [GenericTypeArguments(typeof(int))]
+    [GenericTypeArguments(typeof(string))]
+    public class HashMapAddBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
         public int N;
@@ -74,9 +71,9 @@ namespace LanguageExt.Benchmarks
         }
 
         [Benchmark]
-        public HashMap<TOrd, T, T> LangExtHashMap()
+        public HashMap<T, T> LangExtHashMap()
         {
-            var map = HashMap<TOrd, T, T>();
+            var map = HashMap<T, T>(EqualityComparer<T>.Default);
             foreach (var kvp in values)
             {
                 map = map.Add(kvp.Key, kvp.Value);
@@ -86,9 +83,9 @@ namespace LanguageExt.Benchmarks
         }
 
         [Benchmark]
-        public Map<TOrd, T, T> LangExtMap()
+        public Map<T, T> LangExtMap()
         {
-            var map = Map<TOrd, T, T>();
+            var map = Map<T, T>(Comparer<T>.Default);
             foreach (var kvp in values)
             {
                 map = map.Add(kvp.Key, kvp.Value);

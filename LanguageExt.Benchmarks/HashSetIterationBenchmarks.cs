@@ -1,15 +1,12 @@
 ﻿using System.Collections.Immutable;
 using BenchmarkDotNet.Attributes;
-using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 
 namespace LanguageExt.Benchmarks
 {
     [RPlotExporter, RankColumn]
-    [GenericTypeArguments(typeof(int), typeof(OrdInt))]
-    [GenericTypeArguments(typeof(string), typeof(OrdString))]
-    public class HashSetIterationBenchmarks<T, TOrd>
-        where TOrd : Ord<T>
+    [GenericTypeArguments(typeof(int))]
+    [GenericTypeArguments(typeof(string))]
+    public class HashSetIterationBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
         public int N;
@@ -19,8 +16,8 @@ namespace LanguageExt.Benchmarks
         ImmutableHashSet<T> immutableHashSet;
         ImmutableSortedSet<T> immutableSortedSet;
         System.Collections.Generic.HashSet<T> sysHashSet;
-        HashSet<TOrd, T> hashSet;
-        Set<TOrd, T> set;
+        HashSet<T> hashSet;
+        Set<T> set;
 
         [GlobalSetup]
         public void Setup()
@@ -30,8 +27,8 @@ namespace LanguageExt.Benchmarks
             immutableHashSet = ValuesGenerator.SysColImmutableHashSetSetup(values);
             immutableSortedSet = ValuesGenerator.SysColImmutableSortedSetSetup(values);
             sysHashSet = ValuesGenerator.SysColHashSetSetup(values);
-            hashSet = ValuesGenerator.LangExtHashSetSetup<T, TOrd>(values);
-            set = ValuesGenerator.LangExtSetSetup<T, TOrd>(values);
+            hashSet = ValuesGenerator.LangExtHashSetSetup(values);
+            set = ValuesGenerator.LangExtSetSetup(values);
         }
 
         [Benchmark]
