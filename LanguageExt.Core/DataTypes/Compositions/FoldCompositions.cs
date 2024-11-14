@@ -2,9 +2,9 @@
 using LanguageExt.Traits;
 using System;
 
-namespace LanguageExt.ClassInstances;
+namespace LanguageExt;
 
-public struct FoldCompositions<A>
+public readonly struct FoldCompositions<A>
     where A : Monoid<A>
 {
     static S FoldNode<S>(S state, Func<S, A, S> f, Compositions<A>.Node node)
@@ -18,15 +18,6 @@ public struct FoldCompositions<A>
 
     static S FoldNodes<S>(S state, Func<S, A, S> f, Seq<Compositions<A>.Node> nodes) =>
         nodes.Fold(state, (s, n) => FoldNode(s, f, n));
-
-    static S FoldNodeBack<S>(S state, Func<S, A, S> f, Compositions<A>.Node node)
-    {
-        if (node.Children.IsNone) return f(state, node.Value);
-        var (l, r) = ((Compositions<A>.Node, Compositions<A>.Node))node.Children;
-        state      = FoldNode(state, f, r);
-        state      = FoldNode(state, f, l);
-        return state;
-    }
 
     static S FoldNodesBack<S>(S state, Func<S, A, S> f, Seq<Compositions<A>.Node> nodes) =>
         nodes.FoldBack(state, (s, n) => FoldNode(s, f, n));

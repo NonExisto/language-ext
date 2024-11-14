@@ -49,7 +49,7 @@ public static class Compositions
     public static Compositions<A> skip<A>(int amount, Compositions<A> compositions)
         where A : Monoid<A>
     {
-        Seq<Compositions<A>.Node> go(int n, Seq<Compositions<A>.Node> nodes)
+        static Seq<Compositions<A>.Node> go(int n, Seq<Compositions<A>.Node> nodes)
         {
             if (nodes.IsEmpty) return nodes;
             if (n <= 0) return nodes;
@@ -78,7 +78,7 @@ public static class Compositions
     /// </summary>
     public static Compositions<A> take<A>(int amount, Compositions<A> compositions) where A : Monoid<A>
     {
-        Seq<Compositions<A>.Node> go(int n, Seq<Compositions<A>.Node> nodes)
+        static Seq<Compositions<A>.Node> go(int n, Seq<Compositions<A>.Node> nodes)
         {
             if (nodes.IsEmpty) return nodes;
             if (n <= 0) return Seq<Compositions<A>.Node>();
@@ -108,7 +108,7 @@ public static class Compositions
     /// </summary>
     public static A takeComposed<A>(int amount, Compositions<A> compositions) where A : Monoid<A>
     {
-        A go(int n, Seq<Compositions<A>.Node> nodes)
+        static A go(int n, Seq<Compositions<A>.Node> nodes)
         {
             if (nodes.IsEmpty) return A.Empty;
             if (n <= 0) return A.Empty;

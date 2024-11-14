@@ -73,7 +73,7 @@ public readonly struct SpanArray<A> : IEnumerable<A>
 
     public SpanArray<A> Slice(int index, int count)
     {
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         var newIndex = Index + index;
         if (newIndex > Index + Count) throw new ArgumentOutOfRangeException(nameof(index));
         if (newIndex         + count > Index + Count) throw new ArgumentOutOfRangeException(nameof(count));

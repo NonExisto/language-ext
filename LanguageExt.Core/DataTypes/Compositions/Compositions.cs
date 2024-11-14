@@ -38,10 +38,11 @@ public struct Compositions<A> :
         Tree = tree;
     }
 
-    public Compositions<A> Combine(Compositions<A> compy)
+    public readonly Compositions<A> Combine(Compositions<A> compy)
     {
         var compx = this;
-        Seq<Node> go(Seq<Node> mx, Seq<Node> my)
+
+        static Seq<Node> go(Seq<Node> mx, Seq<Node> my)
         {
             if (mx.IsEmpty) return my;
             if (my.IsEmpty) return go(mx.Tail, [mx.Head.Value!]);
@@ -75,14 +76,14 @@ public struct Compositions<A> :
     /// <summary>
     /// Returns true if the given tree is appropriately right-biased.
     /// </summary>
-    public bool WellFormed<EqA>() 
+    public readonly bool WellFormed<EqA>() 
         where EqA : Eq<A> =>
         Compositions.wellFormed<EqA, A>(this);
 
     /// <summary>
     /// Return the compositions list with the first `k` elements removed, in `O(log k)` time.
     /// </summary>
-    public Compositions<A> Skip(int amount) =>
+    public readonly Compositions<A> Skip(int amount) =>
         Compositions.skip(amount, this);
 
     /// <summary>
@@ -91,26 +92,26 @@ public struct Compositions<A> :
     /// in order to maintain the right-associative bias.  If you wish to run `composed`
     /// on the result of `take`, use `takeComposed` for better performance.
     /// </summary>
-    public Compositions<A> Take(int amount) =>
+    public readonly Compositions<A> Take(int amount) =>
         Compositions.take(amount, this);
 
     /// <summary>
     /// Returns the composition of the first `k` elements of the compositions list, doing only `O(log k)` compositions.
     /// Faster than simply using `take` and then `composed` separately.
     /// </summary>
-    public A TakeComposed(int amount) =>
+    public readonly A TakeComposed(int amount) =>
         Compositions.takeComposed(amount, this);
 
     /// <summary>
     /// A convenience alias for 'take' and 'skip'
     /// </summary>
-    public (Compositions<A> taken, Compositions<A> skipped) SplitAt(int i) =>
+    public readonly (Compositions<A> taken, Compositions<A> skipped) SplitAt(int i) =>
         Compositions.splitAt(i, this);
 
     /// <summary>
     /// Compose every element in the compositions list. Performs only `O(log n)` compositions.
     /// </summary>
-    public A Composed() =>
+    public readonly A Composed() =>
         Compositions.composed(this);
 
     /// <summary>
@@ -122,7 +123,7 @@ public struct Compositions<A> :
     /// <summary>
     /// Get the number of elements in the compositions list, in `O(log n)` time.
     /// </summary>
-    public int Count() =>
+    public readonly int Count() =>
         Compositions.count(this);
 
     /// <summary>
@@ -135,13 +136,13 @@ public struct Compositions<A> :
     /// <summary>
     /// Equality operator
     /// </summary>
-    public bool Equals(Compositions<A> b) =>
+    public readonly bool Equals(Compositions<A> b) =>
         EqEnumerable<A>.Equals(this, b);
 
     /// <summary>
     /// Equality operator
     /// </summary>
-    public override bool Equals(object? obj) =>
+    public override readonly bool Equals(object? obj) =>
         obj is Compositions<A> b && Equals(b);
 
     /// <summary>
@@ -166,26 +167,26 @@ public struct Compositions<A> :
     /// <summary>
     /// Convert to a sequence
     /// </summary>
-    public Seq<A> ToSeq() =>
+    public readonly Seq<A> ToSeq() =>
         FoldCompositions<A>.Fold(this, Seq<A>(), (s, x) => x.Cons(s))(unit);
 
     /// <summary>
     /// Convert to an enumerable
     /// </summary>
-    public Iterable<A> AsIterable() =>
+    public readonly Iterable<A> AsIterable() =>
         FoldCompositions<A>.Fold(this, Seq<A>(), (s, x) => x.Cons(s))(unit).AsIterable();
 
     /// <summary>
     /// Get enumerator
     /// </summary>
-    public IEnumerator<A> GetEnumerator() =>
+    public readonly IEnumerator<A> GetEnumerator() =>
         // ReSharper disable once NotDisposedResourceIsReturned
         AsIterable().GetEnumerator();
 
     /// <summary>
     /// Get enumerator
     /// </summary>
-    IEnumerator IEnumerable.GetEnumerator() =>
+    readonly IEnumerator IEnumerable.GetEnumerator() =>
         // ReSharper disable once NotDisposedResourceIsReturned
         AsIterable().GetEnumerator();
 
