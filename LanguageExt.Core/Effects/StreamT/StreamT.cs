@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using static LanguageExt.Prelude;
-using LanguageExt.Common;
 using LanguageExt.Traits;
 
 namespace LanguageExt;

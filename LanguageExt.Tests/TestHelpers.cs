@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using LanguageExt.Common;
 using LanguageExt.Sys.Test;
 using Xunit;
@@ -24,16 +25,16 @@ public static class AssertExt
     public static void AssertRight<L, R>(this Either<L, R> ma, string userMessage) =>
         Assert.True(ma.IsRight, userMessage);
     
-    public static void AssertLeft<L, R>(this Either<L, R> ma, L expected) =>
+    public static void AssertLeft<L, R>(this Either<L, R> ma, [DisallowNull]L expected) =>
         AssertLeft(ma, expected, $"Expected to be in a Left state with a value of {expected}");
 
-    public static void AssertLeft<L, R>(this Either<L, R> ma, L expected, string userMessage) =>
+    public static void AssertLeft<L, R>(this Either<L, R> ma, [DisallowNull]L expected, string userMessage) =>
         Assert.True(ma.IsLeft && expected.Equals((L)ma), userMessage);
 
     public static void AssertRight<L, R>(this Either<L, R> ma, R expected) =>
         AssertRight(ma, expected, $"Expected to be in a Right state with a value of {expected}");
 
-    public static void AssertRight<L, R>(this Either<L, R> ma, R expected, string userMessage) =>
+    public static void AssertRight<L, R>(this Either<L, R> ma, [DisallowNull]R expected, string userMessage) =>
         Assert.True(ma.IsRight && expected.Equals((R)ma), userMessage);
     
     public static void AssertLeft<L, R>(this Either<L, R> ma, Func<L, bool> predicate) =>

@@ -23,12 +23,11 @@ abstract class Sub<A> : IDisposable
 /// </summary>
 /// <typeparam name="M">Monad type lifted in the stream</typeparam>
 /// <typeparam name="A">Stream value type</typeparam>
-class Sub<M, A> : Sub<A>
+sealed class Sub<M, A> : Sub<A>
     where M : Monad<M>
 {
-    readonly ConcurrentQueue<A> queue;
-    readonly AutoResetEvent wait;
-    readonly IEnumerator<A> enumerator; 
+    readonly ConcurrentQueue<A> queue = new();
+    readonly AutoResetEvent wait = new(false);
     readonly Action unsubscribe;
     long active;
 
@@ -40,10 +39,7 @@ class Sub<M, A> : Sub<A>
     internal Sub(Action unsubscribe)
     {
         this.unsubscribe = unsubscribe;
-        queue = new ConcurrentQueue<A>();
-        wait = new AutoResetEvent(false);
-        enumerator = ToEnumerable().GetEnumerator();
-        Stream = StreamT<M, A>.Lift(enumerator);
+        Stream = StreamT<M, A>.Lift(CreateStream());
     }
 
     public override void Post(A value)
@@ -54,7 +50,7 @@ class Sub<M, A> : Sub<A>
 
     public override void Complete()
     {
-        if (Interlocked.CompareExchange(ref active, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref active, Statuses.Completing, Statuses.Running) == Statuses.Running)
         {
             wait.Set();
 
@@ -70,25 +66,25 @@ class Sub<M, A> : Sub<A>
         }
     }
 
-    IEnumerable<A> ToEnumerable()
+    IEnumerable<A> CreateStream()
     {
         while (true)
         {
             switch (Interlocked.Read(ref active))
             {
-                case 0:
+                case Statuses.Running:
                     while (queue.TryDequeue(out var e))
                     {
                         yield return e;
                     }
                     break;
                     
-                case 1:
+                case Statuses.Completing:
                     while (queue.TryDequeue(out var e))
                     {
                         yield return e;
                     }
-                    Interlocked.Exchange(ref active, 2);
+                    Interlocked.Exchange(ref active, Statuses.Disposed);
                     yield break;
                     
                 default:
@@ -98,9 +94,5 @@ class Sub<M, A> : Sub<A>
         }
     }
 
-    public override void Dispose()
-    {
-        enumerator.Dispose();
-        wait.Dispose();
-    }
+    public override void Dispose() => wait.Dispose();
 }

@@ -134,11 +134,7 @@ public static partial class Prelude
         where M : Monad<M>
         where A : IDisposable =>
         acquire.Bind(
-            val => IO.lift(env =>
-                           {
-                               env.Resources.Acquire(val);
-                               return val;
-                           }));
+            val => IO.lift(env => env.Resources.Acquire(val).Return(val)));
 
     /// <summary>
     /// Acquire a resource and have it tracked by the IO environment.  The resource

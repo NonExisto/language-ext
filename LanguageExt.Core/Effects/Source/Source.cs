@@ -22,21 +22,20 @@ namespace LanguageExt;
 public class Source<A> : IDisposable
 {
     readonly CancellationTokenRegistration cancelReg;
-    readonly AutoResetEvent wait;
-    readonly ConcurrentQueue<Event> queue;
-    readonly ConcurrentDictionary<long, Sub<A>> subscriptions;
+    readonly AutoResetEvent wait = new(false);
+    readonly ConcurrentQueue<Event> queue = new();
+    readonly ConcurrentDictionary<long, Sub<A>> subscriptions = new();
     readonly Task stream;
     readonly EnvIO envIO;
     long identifier;
     long completed;
 
+    
+
     Source(EnvIO envIO)
     {
         this.envIO = envIO;
-        wait = new AutoResetEvent (false);
-        queue = new ConcurrentQueue<Event>();
         cancelReg = envIO.Token.Register(() => Complete());
-        subscriptions = new ConcurrentDictionary<long, Sub<A>>();
         stream = Task.Factory.StartNew(Dequeue, TaskCreationOptions.LongRunning);
     }
 
@@ -69,19 +68,19 @@ public class Source<A> : IDisposable
 
     void Dequeue()
     {
-        while (Interlocked.Read(ref completed) != 2)
+        while (Interlocked.Read(ref completed) != Statuses.Disposed)
         {
             while (queue.TryDequeue(out var e))
             {
                 switch (e)
                 {
-                    case ValueEvent ve:
+                    case ValueEvent<A> ve:
                         foreach (var sub in subscriptions) sub.Value.Post(ve.Value);
                         break;
                     
                     case CompleteEvent:
                         foreach (var sub in subscriptions) sub.Value.Complete();
-                        break;
+                        return;
                 }
             }
             wait.WaitOne();
@@ -96,9 +95,9 @@ public class Source<A> : IDisposable
     public IO<Unit> Post(A value) =>
         IO.lift(() =>
                 {
-                    if (Interlocked.Read(ref completed) == 0)
+                    if (Interlocked.Read(ref completed) == Statuses.Running)
                     {
-                        queue.Enqueue(new ValueEvent(value));
+                        queue.Enqueue(new ValueEvent<A>(value));
                         wait.Set();
                     }
                     else
@@ -114,7 +113,7 @@ public class Source<A> : IDisposable
     public IO<Unit> Complete() =>
         IO.lift(() =>
                 {
-                    if (Interlocked.CompareExchange(ref completed, 1, 0) == 0)
+                    if (Interlocked.CompareExchange(ref completed, Statuses.Completing, Statuses.Running) == Statuses.Running)
                     {
                         // Queue the completion event
                         queue.Enqueue(CompleteEvent.Default);
@@ -126,7 +125,7 @@ public class Source<A> : IDisposable
                         {
                             sw.SpinOnce();
                         }
-                        completed = 2;
+                        completed = Statuses.Disposed;
 
                         try { cancelReg.Dispose(); } catch { /* ignore */ }
                         try { envIO.Dispose(); } catch { /* ignore */ }
@@ -145,10 +144,19 @@ public class Source<A> : IDisposable
     public void Dispose() =>
         Complete().Run(envIO);
 
-    record Event;
-    record ValueEvent(A Value) : Event;
-    record CompleteEvent : Event
-    {
-        public static Event Default = new CompleteEvent();
-    }
+    
+}
+
+static class Statuses
+{
+    public const long Running = 0;
+    public const long Completing = 1;
+    public const long Disposed = 2;
+}
+
+abstract record Event;
+sealed record ValueEvent<A>(A Value) : Event;
+sealed record CompleteEvent : Event
+{
+    public static Event Default = new CompleteEvent();
 }
