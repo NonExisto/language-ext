@@ -242,5 +242,5 @@ public class RefValidationFailedException : Exception
 [Serializable]
 public class DeadlockException : Exception
 {
-    public DeadlockException() : base("Deadlock occured during atomic update") { }
+    public DeadlockException() : base("Deadlock occurred during atomic update") { }
 }
