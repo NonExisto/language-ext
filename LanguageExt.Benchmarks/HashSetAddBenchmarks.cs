@@ -8,6 +8,7 @@ namespace LanguageExt.Benchmarks
     [RPlotExporter, RankColumn]
     [GenericTypeArguments(typeof(int))]
     [GenericTypeArguments(typeof(string))]
+    [MemoryDiagnoser(false)]
     public class HashSetAddBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
@@ -34,6 +35,18 @@ namespace LanguageExt.Benchmarks
         }
 
         [Benchmark]
+        public ImmutableHashSet<T> SysColImmutableHashSetWithBuilder()
+        {
+            var set = ImmutableHashSet.CreateBuilder<T>();
+            foreach (var value in values)
+            {
+                set.Add(value);
+            }
+
+            return set.ToImmutable();
+        }
+
+        [Benchmark]
         public ImmutableSortedSet<T> SysColImmutableSortedSet()
         {
             var set = ImmutableSortedSet.Create<T>();
@@ -43,6 +56,18 @@ namespace LanguageExt.Benchmarks
             }
 
             return set;
+        }
+
+        [Benchmark]
+        public ImmutableSortedSet<T> SysColImmutableSortedSetWithBuilder()
+        {
+            var set = ImmutableSortedSet.CreateBuilder<T>();
+            foreach (var value in values)
+            {
+                set.Add(value);
+            }
+
+            return set.ToImmutable();
         }
 
         [Benchmark]

@@ -8,6 +8,7 @@ namespace LanguageExt.Benchmarks
     [RPlotExporter, RankColumn]
     [GenericTypeArguments(typeof(int))]
     [GenericTypeArguments(typeof(string))]
+    [MemoryDiagnoser(false)]
     public class HashMapIterateBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
@@ -95,9 +96,9 @@ namespace LanguageExt.Benchmarks
             T result = default;
 
             var collection = hashMap;
-            foreach (var item in collection)
+            foreach (var (Key, Value) in collection)
             {
-                result = item.Value;
+                result = Value;
             }
 
             return result;
@@ -109,9 +110,9 @@ namespace LanguageExt.Benchmarks
             T result = default;
 
             var collection = map;
-            foreach (var item in collection)
+            foreach (var (Key, Value) in collection)
             {
-                result = item.Value;
+                result = Value;
             }
 
             return result;

@@ -7,6 +7,7 @@ namespace LanguageExt.Benchmarks
     [RPlotExporter, RankColumn]
     [GenericTypeArguments(typeof(int))]
     [GenericTypeArguments(typeof(string))]
+    [MemoryDiagnoser(false)]
     public class ListIterationBenchmarks<T>
     {
         [Params(100, 1000, 10000, 100000)]
