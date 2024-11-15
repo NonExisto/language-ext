@@ -31,7 +31,7 @@ public static class AssertExt
     public static void AssertLeft<L, R>(this Either<L, R> ma, [DisallowNull]L expected, string userMessage) =>
         Assert.True(ma.IsLeft && expected.Equals((L)ma), userMessage);
 
-    public static void AssertRight<L, R>(this Either<L, R> ma, R expected) =>
+    public static void AssertRight<L, R>(this Either<L, R> ma, [DisallowNull]R expected) =>
         AssertRight(ma, expected, $"Expected to be in a Right state with a value of {expected}");
 
     public static void AssertRight<L, R>(this Either<L, R> ma, [DisallowNull]R expected, string userMessage) =>
@@ -66,10 +66,10 @@ public static class AssertExt
     public static void AssertSome<A>(this Option<A> ma, string userMessage) =>
         Assert.True(ma.IsSome, userMessage);
     
-    public static void AssertSome<A>(this Option<A> ma, A expected) =>
+    public static void AssertSome<A>(this Option<A> ma, [DisallowNull]A expected) =>
         AssertSome(ma, expected, $"Expected to be in a Some state with a value of {expected}");
 
-    public static void AssertSome<A>(this Option<A> ma, A expected, string userMessage) =>
+    public static void AssertSome<A>(this Option<A> ma, [DisallowNull]A expected, string userMessage) =>
         Assert.True(ma.IsSome && expected.Equals((A)ma), userMessage);
     
     public static void AssertSome<A>(this Option<A> ma, Func<A, bool> predicate) =>
@@ -101,10 +101,10 @@ public static class AssertExt
     public static void AssertFail<A>(this Fin<A> ma, Error expected, string userMessage) =>
         Assert.True(ma.IsFail && expected.Is((Error)ma), userMessage);
 
-    public static void AssertSucc<A>(this Fin<A> ma, A expected) =>
+    public static void AssertSucc<A>(this Fin<A> ma, [DisallowNull]A expected) =>
         AssertSucc(ma, expected, $"Expected to be in a Succ state with a value of {expected}");
 
-    public static void AssertSucc<A>(this Fin<A> ma, A expected, string userMessage) =>
+    public static void AssertSucc<A>(this Fin<A> ma, [DisallowNull]A expected, string userMessage) =>
         Assert.True(ma.IsSucc && expected.Equals((A)ma), userMessage);
     
     public static void AssertFail<A>(this Fin<A> ma, Func<Error, bool> predicate) =>
@@ -160,13 +160,13 @@ public static class AssertExt
         ma.Run(rt, EnvIO.New()).AssertFail(expected, userMessage);
     }
 
-    public static void AssertSucc<A>(this Eff<Runtime, A> ma, A expected)
+    public static void AssertSucc<A>(this Eff<Runtime, A> ma, [DisallowNull]A expected)
     {
         using var rt = Runtime.New();
         ma.Run(rt, EnvIO.New()).AssertSucc(expected);
     }
 
-    public static void AssertSucc<A>(this Eff<Runtime, A> ma, A expected, string userMessage)
+    public static void AssertSucc<A>(this Eff<Runtime, A> ma, [DisallowNull]A expected, string userMessage)
     {
         using var rt = Runtime.New();
         ma.Run(rt, EnvIO.New()).AssertSucc(expected, userMessage);
@@ -219,10 +219,10 @@ public static class AssertExt
     public static void AssertFail<A>(this Eff<A> ma, Error expected, string userMessage) =>
         ma.Run().AssertFail(expected, userMessage);
 
-    public static void AssertSucc<A>(this Eff<A> ma, A expected) =>
+    public static void AssertSucc<A>(this Eff<A> ma, [DisallowNull]A expected) =>
         ma.Run().AssertSucc(expected);
 
-    public static void AssertSucc<A>(this Eff<A> ma, A expected, string userMessage) =>
+    public static void AssertSucc<A>(this Eff<A> ma, [DisallowNull]A expected, string userMessage) =>
         ma.Run().AssertSucc(expected, userMessage);
     
     public static void AssertFail<A>(this Eff<A> ma, Func<Error, bool> predicate) =>
