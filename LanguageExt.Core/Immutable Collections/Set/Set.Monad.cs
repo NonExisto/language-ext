@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class Set : Monad<Set>, Alternative<Set>, Traversable<Set>
+public sealed partial class Set : Monad<Set>, Alternative<Set>, Traversable<Set>
 {
     static K<Set, B> Monad<Set>.Bind<A, B>(K<Set, A> ma, Func<A, K<Set, B>> f)
     {

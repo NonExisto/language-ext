@@ -8,7 +8,7 @@ namespace LanguageExt;
 /// Trait implementation for `TryT` 
 /// </summary>
 /// <typeparam name="M">Given monad trait</typeparam>
-public partial class TryT<M> : 
+public sealed partial class TryT<M> : 
     Fallible<TryT<M>>, 
     MonadT<TryT<M>, M>, 
     Alternative<TryT<M>>

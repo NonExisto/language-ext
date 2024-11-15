@@ -11,7 +11,7 @@ namespace LanguageExt;
 /// <typeparam name="W">Writer output type</typeparam>
 /// <typeparam name="S">State type</typeparam>
 /// <typeparam name="M">Lifted monad type</typeparam>
-public class RWST<R, W, S, M> :
+public sealed class RWST<R, W, S, M> :
     MonadT<RWST<R, W, S, M>, M>, 
     Choice<RWST<R, W, S, M>>,
     Readable<RWST<R, W, S, M>, R>,

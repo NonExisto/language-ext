@@ -240,7 +240,7 @@ public static class GeneralIO<M>
 //  Maybe test
 //
 
-public class Maybe : Monad<Maybe>
+public sealed class Maybe : Monad<Maybe>
 {
     public static Maybe<A> Just<A>(A value) =>
         new Just<A>(value);

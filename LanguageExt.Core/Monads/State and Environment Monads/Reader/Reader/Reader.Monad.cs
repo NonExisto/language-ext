@@ -7,7 +7,7 @@ namespace LanguageExt;
 /// Trait implementation for `Reader` 
 /// </summary>
 /// <typeparam name="Env">Reader environment type</typeparam>
-public partial class Reader<Env> : 
+public sealed partial class Reader<Env> : 
     Monad<Reader<Env>>,
     Choice<Reader<Env>>,
     Readable<Reader<Env>, Env> 

@@ -3,7 +3,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class State<S> : 
+public sealed partial class State<S> : 
     Monad<State<S>>, 
     Choice<State<S>>,
     Stateful<State<S>, S>

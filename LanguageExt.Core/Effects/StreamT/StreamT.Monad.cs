@@ -7,7 +7,7 @@ namespace LanguageExt;
 /// <summary>
 /// StreamT trait implementations
 /// </summary>
-public class StreamT<M> :
+public sealed class StreamT<M> :
     MonadT<StreamT<M>, M>,
     MonoidK<StreamT<M>>
     where M : Monad<M>

@@ -6,7 +6,7 @@ namespace LanguageExt;
 /// <summary>
 /// Free monad makes any functor into a monad 
 /// </summary>
-public class Free<F> : 
+public sealed class Free<F> : 
     Monad<Free<F>>, 
     Choice<Free<F>>
     where F : Functor<F>

@@ -94,7 +94,7 @@ public static class AppExtensions
     public static App<C> SelectMany<B, C>(this Guard<YourError, Unit> ma, Func<Unit, K<App, B>> b, Func<Unit, B, C> p) => App.lift(ma).SelectMany(b, p);
 }
 
-public partial class App : 
+public sealed partial class App : 
     Monad<App>,
     Fallible<YourError, App>,
     Readable<App, AppEnv>

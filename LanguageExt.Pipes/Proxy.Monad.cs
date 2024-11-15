@@ -8,7 +8,7 @@ namespace LanguageExt.Pipes;
 /// <summary>
 /// Monad transformer trait implementation for `Proxy`
 /// </summary>
-public class Proxy<UOut, UIn, DIn, DOut, M> : 
+public sealed class Proxy<UOut, UIn, DIn, DOut, M> : 
     MonadT<Proxy<UOut, UIn, DIn, DOut, M>, M>
     where M : Monad<M>
 {

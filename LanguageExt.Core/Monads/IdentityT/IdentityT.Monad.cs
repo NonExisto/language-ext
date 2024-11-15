@@ -6,7 +6,7 @@ namespace LanguageExt;
 /// <summary>
 /// Identity module
 /// </summary>
-public class IdentityT<M> : 
+public sealed class IdentityT<M> : 
     MonadT<IdentityT<M>, M>, 
     Choice<IdentityT<M>> 
     where M : Monad<M>, Choice<M>

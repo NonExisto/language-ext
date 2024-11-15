@@ -3,7 +3,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class ReaderT<Env, M> :
+public sealed partial class ReaderT<Env, M> :
     MonadT<ReaderT<Env, M>, M>,
     Readable<ReaderT<Env, M>, Env>, 
     Choice<ReaderT<Env, M>>

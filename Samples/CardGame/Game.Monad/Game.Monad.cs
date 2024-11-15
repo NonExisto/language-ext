@@ -2,7 +2,7 @@ using LanguageExt;
 using LanguageExt.Traits;
 namespace CardGame;
 
-public partial class Game : 
+public sealed partial class Game : 
     Monad<Game>, 
     SemigroupK<Game>,
     Stateful<Game, GameState>

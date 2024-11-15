@@ -9,7 +9,7 @@ namespace LanguageExt;
 /// </summary>
 /// <typeparam name="S">State environment type</typeparam>
 /// <typeparam name="M">Given monad trait</typeparam>
-public partial class Writer<W> : 
+public sealed partial class Writer<W> : 
     Monad<Writer<W>>, 
     Writable<Writer<W>, W>,
     Choice<Writer<W>>

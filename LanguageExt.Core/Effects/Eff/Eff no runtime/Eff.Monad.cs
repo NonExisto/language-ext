@@ -7,7 +7,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public class Eff : 
+public sealed class Eff : 
     Monad<Eff>,
     Fallible<Eff>,
     Readable<Eff, MinRT>,

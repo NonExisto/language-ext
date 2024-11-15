@@ -7,7 +7,7 @@ namespace LanguageExt;
 /// <summary>
 /// Trait implementation for `Try` 
 /// </summary>
-public partial class Try : 
+public sealed partial class Try : 
     Monad<Try>,
     Fallible<Try>, 
     Alternative<Try>

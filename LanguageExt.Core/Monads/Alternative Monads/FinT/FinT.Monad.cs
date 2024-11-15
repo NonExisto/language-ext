@@ -8,7 +8,7 @@ namespace LanguageExt;
 /// Trait implementation for `FinT` 
 /// </summary>
 /// <typeparam name="M">Given monad trait</typeparam>
-public partial class FinT<M> : 
+public sealed partial class FinT<M> : 
     MonadT<FinT<M>, M>, 
     Fallible<FinT<M>>,
     Alternative<FinT<M>>

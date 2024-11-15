@@ -4,7 +4,7 @@ using static LanguageExt.Prelude;
 
 namespace LanguageExt;
 
-public partial class WriterT<W, M> : 
+public sealed partial class WriterT<W, M> : 
     MonadT<WriterT<W, M>, M>, 
     Choice<WriterT<W, M>>,
     Writable<WriterT<W, M>, W>

@@ -6,7 +6,7 @@ using LanguageExt.Traits;
 
 namespace LanguageExt;
 
-public partial class IO : 
+public sealed partial class IO : 
     Monad<IO>, 
     Fallible<IO>,
     Alternative<IO>

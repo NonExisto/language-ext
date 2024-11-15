@@ -6,7 +6,7 @@ namespace LanguageExt;
 /// <summary>
 /// Identity trait implementation
 /// </summary>
-public class Identity : 
+public sealed class Identity : 
     Monad<Identity>, 
     Traversable<Identity>,
     Choice<Identity>

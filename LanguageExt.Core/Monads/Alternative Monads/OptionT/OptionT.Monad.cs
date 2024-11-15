@@ -7,7 +7,7 @@ namespace LanguageExt;
 /// Trait implementation for `OptionT` 
 /// </summary>
 /// <typeparam name="M">Given monad trait</typeparam>
-public partial class OptionT<M> : 
+public sealed partial class OptionT<M> : 
     MonadT<OptionT<M>, M>,
     Alternative<OptionT<M>>,
     Fallible<Unit, OptionT<M>>
