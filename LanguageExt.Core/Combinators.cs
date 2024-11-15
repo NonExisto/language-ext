@@ -1,5 +1,4 @@
 ﻿using System;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt
 {

@@ -1,5 +1,4 @@
-﻿using LanguageExt;
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using static LanguageExt.Prelude;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using LanguageExt.Common;
 using LanguageExt.Traits;
 
 namespace LanguageExt;

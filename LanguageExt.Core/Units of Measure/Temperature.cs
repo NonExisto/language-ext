@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using static LanguageExt.Prelude;
 
 public readonly struct Temperature :
     IComparable<Temperature>,

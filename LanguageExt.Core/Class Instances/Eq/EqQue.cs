@@ -1,6 +1,5 @@
 ﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 
 namespace LanguageExt.ClassInstances;
 

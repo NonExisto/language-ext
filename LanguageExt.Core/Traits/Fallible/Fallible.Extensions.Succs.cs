@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using LanguageExt.Common;
 
 namespace LanguageExt.Traits;
 

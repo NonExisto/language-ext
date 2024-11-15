@@ -1,8 +1,4 @@
 using System;
-using System.Text;
-using LanguageExt;
-using LanguageExt.ClassInstances;
-using static LanguageExt.Prelude;
 
 namespace LanguageExt.Pretty
 {

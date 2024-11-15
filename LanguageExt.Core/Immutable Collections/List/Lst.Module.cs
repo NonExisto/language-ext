@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using static LanguageExt.Prelude;
-using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 using LanguageExt.ClassInstances;

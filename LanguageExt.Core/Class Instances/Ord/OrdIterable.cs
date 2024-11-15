@@ -1,7 +1,5 @@
 ﻿using LanguageExt.Traits;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt.ClassInstances;

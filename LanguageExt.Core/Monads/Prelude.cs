@@ -1,5 +1,4 @@
-﻿using LanguageExt.Common;
-using LanguageExt.Traits;
+﻿using LanguageExt.Traits;
 
 namespace LanguageExt;
 

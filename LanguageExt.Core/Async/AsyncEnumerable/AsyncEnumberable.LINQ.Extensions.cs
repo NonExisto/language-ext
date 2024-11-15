@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using LanguageExt.Traits;
 
 namespace LanguageExt.Async.Linq;
 

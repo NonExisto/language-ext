@@ -1,7 +1,6 @@
 ﻿using static LanguageExt.Prelude;
 using LanguageExt.Traits;
 using System.Collections.Generic;
-using LanguageExt.ClassInstances;
 
 namespace LanguageExt;
 

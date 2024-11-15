@@ -1,4 +1,1 @@
-﻿using System;
-using LanguageExt.Traits;
-
-namespace LanguageExt;
+﻿namespace LanguageExt;

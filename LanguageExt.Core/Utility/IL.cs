@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.Serialization;
-using System.Text;
-using LanguageExt.Traits.Resolve;
 using static LanguageExt.Prelude;
 using static LanguageExt.Reflect;
 

@@ -5,7 +5,6 @@ using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 
 namespace LanguageExt;

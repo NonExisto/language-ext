@@ -5,7 +5,6 @@ using System.Linq;
 using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using LanguageExt.Traits;
 using LanguageExt.ClassInstances;
 using System.Runtime.CompilerServices;
 
