@@ -393,10 +393,10 @@ public abstract record IO<A> :
         Lift(_ => error.Throw<IOResponse<A>>());
 
     public static implicit operator IO<A>(Fail<Error> ma) =>
-        Lift(() => ma.Value.Throw<A>());
+        Lift(ma.Value.Throw<A>);
 
     public static implicit operator IO<A>(Fail<Exception> ma) =>
-        Lift(() => ma.Value.Rethrow<A>());
+        Lift(ma.Value.Rethrow<A>);
 
     public static implicit operator IO<A>(Lift<EnvIO, A> ma) =>
         Lift(ma.Function);

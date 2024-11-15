@@ -40,7 +40,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<B> Map<B>(Func<A, B> f) =>
         new IOSync<B>(e =>
             {
-                if (e.Token.IsCancellationRequested) throw new TaskCanceledException();
+                e.Token.ThrowIfCancellationRequested();
                 return IOResponse.Complete(f(Run(e)));
             });
     
@@ -77,7 +77,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<B> Bind<B>(Func<A, IO<B>> f) =>
         new IOSync<B>(e =>
             {
-                if (e.Token.IsCancellationRequested) throw new TaskCanceledException();
+                e.Token.ThrowIfCancellationRequested();
                 return IOResponse.Recurse(f(Run(e)));
             });
 
@@ -137,7 +137,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<A> Local() =>
         new IOSync<A>(env =>
             {
-                if (env.Token.IsCancellationRequested) throw new TaskCanceledException();
+                env.Token.ThrowIfCancellationRequested();
 
                 // Create a new local token-source with its own cancellation token
                 using var tsrc = new CancellationTokenSource();
@@ -165,7 +165,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
         IO<ForkIO<A>>.Lift(
             env =>
             {
-                if (env.Token.IsCancellationRequested) throw new TaskCanceledException();
+                env.Token.ThrowIfCancellationRequested();
                 
                 // Create a new local token-source with its own cancellation token
                 var tsrc  = timeout.Match(Some: to => new CancellationTokenSource(to), 
@@ -229,14 +229,15 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     /// <exception cref="BottomException">Throws if any lifted task fails without a value `Exception` value.</exception>
     public override async ValueTask<A> RunAsync(EnvIO? envIO = null)
     {
-        if(envIO?.Token.IsCancellationRequested ?? false) throw new TaskCanceledException();
+        envIO?.Token.ThrowIfCancellationRequested();
         var envRequiresDisposal = envIO is null;
         envIO ??= EnvIO.New();
         try
         {
             var response = runIO(envIO);
-            while (!envIO.Token.IsCancellationRequested)
+            while (true)
             {
+                envIO.Token.ThrowIfCancellationRequested();
                 switch (response)
                 {
                     case CompleteIO<A> (var x):
@@ -260,8 +261,6 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
                         throw new NotSupportedException();
                 }
             }
-
-            throw new TaskCanceledException();
         }
         finally
         {
@@ -287,14 +286,15 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     /// <exception cref="BottomException">Throws if any lifted task fails without a value `Exception` value.</exception>
     public override A Run(EnvIO? envIO = null)
     {
-        if(envIO?.Token.IsCancellationRequested ?? false) throw new TaskCanceledException();
+        envIO?.Token.ThrowIfCancellationRequested();
         var envRequiresDisposal = envIO is null;
         envIO ??= EnvIO.New();
         try
         {
             var response = runIO(envIO);
-            while (!envIO.Token.IsCancellationRequested)
+            while (true)
             {
+                envIO.Token.ThrowIfCancellationRequested();
                 switch (response)
                 {
                     case CompleteIO<A> (var x):
@@ -318,8 +318,6 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
                         throw new NotSupportedException();
                 }
             }
-
-            throw new TaskCanceledException();
         }
         finally
         {
@@ -360,12 +358,13 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<A> RepeatUntil(Func<A, bool> predicate) =>
         new IOSync<A>(env =>
             {
-                if (env.Token.IsCancellationRequested) throw new TaskCanceledException();
+                env.Token.ThrowIfCancellationRequested();
                 var lenv = env.LocalResources;
                 try
                 {
-                    while(!env.Token.IsCancellationRequested)
+                    while(true)
                     {
+                        env.Token.ThrowIfCancellationRequested();
                         var result = Run(lenv);
                         
                         // free any resources acquired during a repeat
@@ -373,7 +372,6 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
                         
                         if (predicate(result)) return IOResponse.Complete(result);
                     }
-                    throw new TaskCanceledException();
                 }
                 finally
                 {
@@ -419,11 +417,12 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<A> RetryUntil(Func<Error, bool> predicate) =>
         new IOSync<A>(env =>
             {
-                if (env.Token.IsCancellationRequested) throw new TaskCanceledException();
+                env.Token.ThrowIfCancellationRequested();
                 var lenv = env.LocalResources;
 
-                while(!env.Token.IsCancellationRequested)
+                while(true)
                 {
+                    env.Token.ThrowIfCancellationRequested();
                     try
                     {
                         var r = Run(lenv);
@@ -441,7 +440,6 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
                         if (predicate(Error.New(e))) throw;
                     }
                 }
-                throw new TaskCanceledException();
             });    
 
     /// <summary>
@@ -454,7 +452,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override IO<A> Catch(Func<Error, bool> Predicate, Func<Error, K<IO, A>> Fail) =>
         new IOSync<A>(env =>
                   {
-                      if (env.Token.IsCancellationRequested) throw new TaskCanceledException();
+                      env.Token.ThrowIfCancellationRequested();
                       var lenv = env.LocalResources; 
                       try
                       {
@@ -476,8 +474,8 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
 
     async Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
     {
-        if (envIO.Token.IsCancellationRequested) throw new TaskCanceledException();
-        if (token.IsCancellationRequested) throw new TaskCanceledException();
+        envIO.Token.ThrowIfCancellationRequested();
+        token.ThrowIfCancellationRequested();
         await using var reg = envIO.Token.Register(source.Cancel);
         return await t;        
     }
