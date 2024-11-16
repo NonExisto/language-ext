@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
+using System.Linq;
 
 namespace LanguageExt;
 
@@ -137,9 +138,8 @@ public static partial class Prelude
     public static T? append<T>(T? lhs, T? rhs)
         where T : struct, Semigroup<T>
     {
-        if (!lhs.HasValue && !rhs.HasValue) return lhs; // None  + None  = None
-        if (!rhs.HasValue) return lhs;                  // Value + None  = Value
-        if (!lhs.HasValue) return rhs;                  // None  + Value = Value
+        if (rhs is null) return lhs;                  // Value + None  = Value
+        if (lhs is null) return rhs;                  // None  + Value = Value
         return lhs.Value.Combine(rhs.Value);
     }
 
@@ -159,8 +159,8 @@ public static partial class Prelude
         where T : struct
         where NUM : Arithmetic<T>
     {
-        if (!lhs.HasValue) return rhs;
-        if (!rhs.HasValue) return lhs;
+        if (lhs is null) return rhs;
+        if (rhs is null) return lhs;
         return NUM.Add(lhs.Value, rhs.Value);
     }
 
@@ -180,8 +180,8 @@ public static partial class Prelude
         where T : struct
         where NUM : Arithmetic<T>
     {
-        if (!lhs.HasValue) return rhs;
-        if (!rhs.HasValue) return lhs;
+        if (lhs is null) return rhs;
+        if (rhs is null) return lhs;
         return NUM.Subtract(lhs.Value, rhs.Value);
     }
 
@@ -201,8 +201,8 @@ public static partial class Prelude
         where T : struct
         where NUM : Arithmetic<T>
     {
-        if (!lhs.HasValue) return lhs; // zero * rhs = zero
-        if (!rhs.HasValue) return rhs; // lhs * zero = zero
+        if (lhs is null) return lhs; // zero * rhs = zero
+        if (rhs is null) return rhs; // lhs * zero = zero
         return NUM.Multiply(lhs.Value, rhs.Value);
     }
 
@@ -222,8 +222,8 @@ public static partial class Prelude
         where T : struct
         where NUM : Num<T>
     {
-        if (!lhs.HasValue) return lhs; // zero / rhs  = zero
-        if (!rhs.HasValue) return rhs; // lhs  / zero = undefined: zero
+        if (lhs is null) return lhs; // zero / rhs  = zero
+        if (rhs is null) return rhs; // lhs  / zero = undefined: zero
         return NUM.Divide(lhs.Value, rhs.Value);
     }
 
@@ -234,13 +234,7 @@ public static partial class Prelude
     [Pure]
     public static IEnumerable<T> somes<T>(IEnumerable<T?> self) where T : struct
     {
-        foreach (var item in self)
-        {
-            if (item.HasValue)
-            {
-                yield return item.Value;
-            }
-        }
+        return (IEnumerable<T>)self.Where(x => x is not null);
     }
 
     /// <summary>
