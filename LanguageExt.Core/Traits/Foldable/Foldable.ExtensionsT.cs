@@ -515,11 +515,7 @@ public static partial class FoldableExtensions
         where U : Foldable<U>
         where OrdA : Ord<A> =>
         Foldable.fold(
-            ua => s => s switch
-                       {
-                           { IsSome: true, Value: A value } => Foldable.min<OrdA, U, A>(ua, value),
-                           _                                => Foldable.min<OrdA, U, A>(ua)
-                       },
+            ua => s => s.Match(value => Foldable.min<OrdA, U, A>(ua, value), () => Foldable.min<OrdA, U, A>(ua)),
             Option<A>.None,
             tua);
 
@@ -531,11 +527,7 @@ public static partial class FoldableExtensions
         where U : Foldable<U>
         where A : IComparable<A> =>
         Foldable.fold(
-            ua => s => s switch
-                       {
-                           { IsSome: true, Value: A value } => Foldable.min(ua, value),
-                           _                                => Foldable.min(ua)
-                       },
+            ua => s => s.Match(value => Foldable.min(ua, value), () => Foldable.min(ua)),
             Option<A>.None,
             tua);
 
@@ -547,11 +539,7 @@ public static partial class FoldableExtensions
         where U : Foldable<U>
         where OrdA : Ord<A> =>
         Foldable.fold(
-            ua => s => s switch
-                       {
-                           { IsSome: true, Value: A value } => Foldable.max<OrdA, U, A>(ua, value),
-                           _                                => Foldable.max<OrdA, U, A>(ua)
-                       },
+            ua => s => s.Match(value => Foldable.max<OrdA, U, A>(ua, value), () => Foldable.max<OrdA, U, A>(ua)),
             Option<A>.None,
             tua);
     
@@ -563,11 +551,7 @@ public static partial class FoldableExtensions
         where U : Foldable<U>
         where A : IComparable<A> =>
         Foldable.fold(
-            ua => s => s switch
-                       {
-                           { IsSome: true, Value: A value } => Foldable.max(ua, value),
-                           _                                => Foldable.max(ua)
-                       },
+            ua => s => s.Match(value => Foldable.max(ua, value), () => Foldable.max(ua)),
             Option<A>.None,
             tua);
         

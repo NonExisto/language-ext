@@ -48,11 +48,7 @@ public sealed class Option :
         None<A>();
 
     static K<Option, A> Choice<Option>.Choose<A>(K<Option, A> ma, K<Option, A> mb) =>
-        ma.As() switch
-        {
-            { IsSome: true } => ma,
-            _                => mb
-        };
+        ma.As().Match(_ => ma, () => mb);
 
     static K<Option, X> Some<X>(X value) =>
         Option<X>.Some(value);

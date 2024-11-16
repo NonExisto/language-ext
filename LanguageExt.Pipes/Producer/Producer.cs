@@ -249,7 +249,7 @@ public static class Producer
         var queue    = new ConcurrentQueue<OUT>();
         var effects  = ms.Traverse(runEffect);
 
-        return from t in liftIO<OUT, M, CancellationToken>(cancelToken)
+        return from t in liftIO<OUT, M, CancellationToken>(IO.token)
                from _ in effects
                from r in yieldAll<M, OUT>(dequeue(t))
                select unit;

@@ -179,7 +179,7 @@ public abstract class Fin<A> :
         {
             Either.Right<Error, A> (var r) => new Fin.Succ<A>(r),
             Either.Left<Error, A> (var l)  => new Fin.Fail<A>(l),
-            _                              => throw new InvalidCastException()
+            _                              => Fin<A>.Fail(Errors.Bottom)
         };
         
     [Pure, MethodImpl(Opt.Default)]

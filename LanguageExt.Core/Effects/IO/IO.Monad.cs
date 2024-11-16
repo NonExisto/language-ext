@@ -38,7 +38,7 @@ public sealed partial class IO :
             (IO<Func<A, B>> mf1, IO<A> ma1) =>
                 ApplySyncSync(mf1, ma1),
             
-            _ => throw new NotSupportedException()
+            _ => IO<B>.Fail(Errors.Bottom)
         };
 
     static K<IO, B> Applicative<IO>.ApplyLazy<A, B>(K<IO, Func<A, B>> mf, Func<K<IO, A>> ma) =>
@@ -121,7 +121,7 @@ public sealed partial class IO :
                            (Fin.Succ<Func<A, B>> (var f), Fin.Succ<A> (var a)) =>
                                IOResponse.Complete(f(a)),
                            
-                           _ => throw new NotSupportedException()
+                           _ => Errors.Bottom.Throw<IOResponse<B>>()
                        };
             });
 
@@ -164,7 +164,7 @@ public sealed partial class IO :
                            (Fin.Succ<Func<A, B>> (var f), Fin.Succ<A> (var a)) =>
                                IOResponse.Complete(f(a)),
                            
-                           _ => throw new NotSupportedException()
+                           _ => Errors.Bottom.Throw<IOResponse<B>>()
                        };
             });
 
@@ -207,7 +207,7 @@ public sealed partial class IO :
                            (Fin.Succ<Func<A, B>> (var f), Fin.Succ<A> (var a)) =>
                                IOResponse.Complete(f(a)),
                            
-                           _ => throw new NotSupportedException()
+                           _ => Errors.Bottom.Throw<IOResponse<B>>()
                        };
             });
 

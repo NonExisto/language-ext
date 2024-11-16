@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt.Common;
 using LanguageExt.Traits;
@@ -11,13 +10,6 @@ namespace LanguageExt;
 
 public static partial class Prelude
 {
-    /// <summary>
-    /// Access the cancellation-token from the IO environment
-    /// </summary>
-    /// <returns>CancellationToken</returns>
-    public static readonly IO<CancellationToken> cancelToken =
-        IO.lift(e => e.Token);
-
     /// <summary>
     /// Request a cancellation of the IO expression
     /// </summary>

@@ -315,11 +315,7 @@ public static partial class Prelude
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IO<Atom<A>> atomIO<A>(A value, Func<A, bool> validator) =>
-        lift(() => Atom(value, validator) switch
-                   {
-                       { IsSome: true } atom => (Atom<A>)atom,
-                       _                     => throw Exceptions.ValidationFailed
-                   });
+        lift(() => Atom(value, validator).Match(a => a, () => throw Exceptions.ValidationFailed));
 
     /// <summary>
     /// Atoms provide a way to manage shared, synchronous, independent state without 
@@ -380,11 +376,7 @@ public static partial class Prelude
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IO<Atom<M, A>> atomIO<M, A>(M metadata, A value, Func<A, bool> validator) =>
-        lift(() => Atom(metadata, value, validator) switch
-                   {
-                       { IsSome: true } atom => (Atom<M, A>)atom,
-                       _                     => throw Exceptions.ValidationFailed
-                   });
+        lift(() => Atom(metadata, value, validator).Match(a => a, () => throw Exceptions.ValidationFailed) );
         
     /// <summary>
     /// Atomically updates the value by passing the old value to `f` and updating

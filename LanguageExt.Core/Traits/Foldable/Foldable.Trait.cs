@@ -52,11 +52,7 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
         S initialState,
         K<T, A> ta) =>
         T.FoldWhile<A, (bool IsSome, S Value)>(
-            a => s => f(s.Value)(a) switch
-                      {
-                          { IsSome: true, Case: S value } => (true, value),
-                          _                               => (false, s.Value)
-                      },
+            a => s => f(s.Value)(a).Match(value => (true, value), () => (false, s.Value)),
             s => s.State.IsSome,
             (true, initialState), 
             ta).Value;
@@ -75,11 +71,7 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
         S initialState,
         K<T, A> ta) =>
         T.FoldBackWhile<A, (bool IsSome, S Value)>(
-            s => a => f(a)(s.Value) switch
-                      {
-                          { IsSome: true, Case: S value } => (true, value),
-                          _                               => (false, s.Value)
-                      },
+            s => a => f(a)(s.Value).Match(value => (true, value), () => (false, s.Value)),
             s => s.State.IsSome,
             (true, initialState),
             ta).Value;
