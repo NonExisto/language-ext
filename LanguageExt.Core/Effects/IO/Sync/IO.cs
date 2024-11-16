@@ -472,7 +472,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override string ToString() => 
         "IO";
 
-    async Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
+    async static Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
     {
         envIO.Token.ThrowIfCancellationRequested();
         token.ThrowIfCancellationRequested();

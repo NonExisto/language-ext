@@ -6,7 +6,7 @@ namespace LanguageExt;
 /// <summary>
 /// Environment for the IO monad 
 /// </summary>
-public class EnvIO : IDisposable
+public sealed class EnvIO : IDisposable
 {
     public readonly Resources Resources;
     public readonly CancellationToken Token;

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using static LanguageExt.Prelude;
 
@@ -27,9 +28,9 @@ public class Resources : IDisposable
     
     public Unit DisposeU(EnvIO envIO)
     {
-        foreach (var item in resources)
+        foreach (var (_, Value) in resources)
         {
-            item.Value.Release().Run(envIO);
+            Value.Release().Run(envIO);
         }
         return default;
     }
@@ -43,35 +44,31 @@ public class Resources : IDisposable
     public IO<Unit> DisposeIO() =>
         IO.lift(_ => DisposeU());
 
-    public Unit Acquire<A>(A value) where A : IDisposable
+    public Unit Acquire<A>([DisallowNull]A value) where A : IDisposable
     {
-        var obj = (object?)value;
-        if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceDisposable<A>(value), null);
+        ArgumentNullException.ThrowIfNull(value);
+        return resources.TryAdd(value, new TrackedResourceDisposable<A>(value), null);
     }
 
-    public Unit AcquireAsync<A>(A value) where A : IAsyncDisposable
+    public Unit AcquireAsync<A>([DisallowNull]A value) where A : IAsyncDisposable
     {
-        var obj = (object?)value;
-        if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceAsyncDisposable<A>(value), null);
+        ArgumentNullException.ThrowIfNull(value);
+        return resources.TryAdd(value, new TrackedResourceAsyncDisposable<A>(value), null);
     }
 
-    public Unit Acquire<A>(A value, Func<A, IO<Unit>> release) 
+    public Unit Acquire<A>([DisallowNull]A value, Func<A, IO<Unit>> release) 
     {
-        var obj = (object?)value;
-        if (obj is null) throw new InvalidCastException();
-        return resources.TryAdd(obj, new TrackedResourceWithFree<A>(value, release), null);
+        ArgumentNullException.ThrowIfNull(value);
+        return resources.TryAdd(value, new TrackedResourceWithFree<A>(value, release), null);
     }
 
-    public IO<Unit> Release<A>(A value)
+    public IO<Unit> Release<A>([DisallowNull]A value)
     {
-        var obj = (object?)value;
-        if (obj is null) throw new InvalidCastException();
-        return resources.Find(obj)
+        ArgumentNullException.ThrowIfNull(value);
+        return resources.Find(value)
                         .Match(Some: f =>
                                      {
-                                         resources.Remove(obj);
+                                         resources.Remove(value);
                                          return f.Release();
                                      },
                                None: () => parent is null 
@@ -81,18 +78,16 @@ public class Resources : IDisposable
 
     public IO<Unit> ReleaseAll() =>
         IO.lift(envIO =>
-                {
-                    resources.Swap(
+                resources.Swap(
                         r =>
                         {
-                            foreach (var kv in r)
+                            foreach (var (Key, Value) in r)
                             {
-                                kv.Value.Release().Run(envIO);
+                                Value.Release().Run(envIO);
                             }
                             return [];
-                        });
-                    return unit;
-                });
+                        })
+                );
     
     internal Unit Merge(Resources rhs) =>
         resources.Swap(r => r.AddRange(rhs.resources.AsIterable()));
@@ -106,7 +101,7 @@ abstract record TrackedResource
 /// <summary>
 /// Holds a resource with its disposal function
 /// </summary>
-record TrackedResourceWithFree<A>(A Value, Func<A, IO<Unit>> Dispose) : TrackedResource
+sealed record TrackedResourceWithFree<A>(A Value, Func<A, IO<Unit>> Dispose) : TrackedResource
 {
     public override IO<Unit> Release() => 
         Dispose(Value);
@@ -115,7 +110,7 @@ record TrackedResourceWithFree<A>(A Value, Func<A, IO<Unit>> Dispose) : TrackedR
 /// <summary>
 /// Holds a resource with its disposal function
 /// </summary>
-record TrackedResourceDisposable<A>(A Value) : TrackedResource
+sealed record TrackedResourceDisposable<A>(A Value) : TrackedResource
     where A : IDisposable
 {
     public override IO<Unit> Release() =>
@@ -140,7 +135,7 @@ record TrackedResourceDisposable<A>(A Value) : TrackedResource
 /// <summary>
 /// Holds a resource with its disposal function
 /// </summary>
-record TrackedResourceAsyncDisposable<A>(A Value) : TrackedResource
+sealed record TrackedResourceAsyncDisposable<A>(A Value) : TrackedResource
     where A : IAsyncDisposable
 {
     public override IO<Unit> Release() =>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
 namespace LanguageExt;
@@ -57,6 +58,7 @@ public readonly struct Unit : IEquatable<Unit>, IComparable<Unit>, Monoid<Unit>
     /// <param name="anything">Alternative value</param>
     /// <returns>Alternative value</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Return<T>(T anything) => anything;
 
     /// <summary>

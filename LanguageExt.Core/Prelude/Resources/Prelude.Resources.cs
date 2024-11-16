@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using LanguageExt.Common;
@@ -26,7 +27,6 @@ public static partial class Prelude
                 () =>
                 {
                     release(x);
-                    return unit;
                 }));
 
     /// <summary>
@@ -72,11 +72,7 @@ public static partial class Prelude
         where M : Monad<M> =>
         acquire.Bind(
             val => IO.lift(
-                env =>
-                {
-                    env.Resources.Acquire(val, release);
-                    return val;
-                }));
+                env => env.Resources.Acquire(val!, release).Return(val)));
 
     /// <summary>
     /// Acquire a resource and have it tracked by the IO environment.  The resource
@@ -150,11 +146,7 @@ public static partial class Prelude
         where M : Monad<M>
         where A : IAsyncDisposable =>
         acquire.Bind(
-            val => IO.lift(env =>
-                           {
-                               env.Resources.AcquireAsync(val);
-                               return val;
-                           }));
+            val => IO.lift(env => env.Resources.AcquireAsync(val).Return(val)));
 
     /// <summary>
     /// Release the resource from the tracked IO environment
@@ -164,7 +156,7 @@ public static partial class Prelude
     /// <returns>Unit</returns>
     [Pure]
     [MethodImpl(Opt.Default)]
-    public static IO<Unit> release<A>(A value) =>
+    public static IO<Unit> release<A>([DisallowNull]A value) =>
         IO.lift(env => env.Resources.Release(value).Run(env));
 
     /// <summary>
