@@ -187,7 +187,7 @@ public readonly struct Option<A> :
     {
         var opExplicit = ma.IsSome
                              ? ma.Value
-                             : throw new InvalidCastException("Option is not in a Some state");
+                             : throw new InvalidOperationException("Option is not in a Some state");
         
         return opExplicit!;
     }
@@ -342,6 +342,20 @@ public readonly struct Option<A> :
     [Pure, MethodImpl(Opt.Default)]
     public static Option<A> operator |(Option<A> ma, CatchM<Unit, Option, A> mb) =>
         (ma.Kind() | mb).As(); 
+
+    /// <summary>
+    /// And check operator
+    /// </summary>
+    /// <remarks>Used together with false operator in if, while, do.. operators in test conditions like <c>op1 && op2</c>. 
+    /// Such practice allows step by step condition evaluation, meaning if op1 is false there is no reason to evaluate op2 </remarks>
+    /// <param name="lhs">Left hand side of the operation</param>
+    /// <param name="rhs">Right hand side of the operation</param>
+    /// <returns>if lhs is Some and rhs is Some then lhs, else None</returns>
+    [Pure, MethodImpl(Opt.Default)]
+    public static Option<A> operator &(Option<A> lhs, Option<A> rhs) =>
+        lhs.IsSome && rhs.isSome
+            ? lhs
+            : None;
 
     /// <summary>
     /// Truth operator
@@ -651,7 +665,7 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Fin<A> ToFin(Error Fail) =>
         isSome
-            ? FinSucc<A>(Value!)
+            ? FinSucc(Value!)
             : FinFail<A>(Fail);
 
     /// <summary>

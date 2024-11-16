@@ -124,9 +124,7 @@ namespace LanguageExt.Tests
         public void NullableDenySomeNullTest() => Assert.Throws<ValueIsNullException>(
                     () =>
                     {
-                        var res = GetNullable(false)
-                                    .Some(v => v)
-                                    .None(() => 0);
+                        GetNullable(false);
                     }
                 );
 
@@ -191,37 +189,66 @@ namespace LanguageExt.Tests
             Assert.True(me.IsFail);
         }
 
-        private Option<string?> GetStringNone()
+        [Fact]
+        public void OptionShouldBeTrue()
         {
-            string? nullStr = null;
-            return Some(nullStr);
+            var some = Some(0);
+            var none = Option<int>.None;
+            if(some || none)
+            {
+                Assert.True(true);
+            }
+            else
+            {
+                Assert.False(true);
+            }
+
+            
+            if(none)
+            {
+                Assert.True(false);
+            }
+            else
+            {
+                Assert.False(false);
+            }
+
         }
 
-        private Option<int> GetNullable(bool select) =>
+        [Fact]
+        public void OptionShouldBeFalse()
+        {
+            var some = Some(0);
+            var none = Option<int>.None;
+            if(none && some)
+            {
+                Assert.True(false);
+            }
+            else
+            {
+                Assert.False(false);
+            }
+
+            
+            if(some && none)
+            {
+                Assert.True(false);
+            }
+            else
+            {
+                Assert.False(false);
+            }
+
+        }
+
+        private static Option<int> GetNullable(bool select) =>
             select
                 ? Some((int?)1000)
                 : Some((int?)null);
 
-        private Option<int> GetValue(bool select) =>
+        private static Option<int> GetValue(bool select) =>
             select
                 ? Some(1000)
                 : None;
-
-        private Option<Option<int>> GetSomeOptionValue(bool select) =>
-            select
-                ? Some(Some(1000))
-                : Some(Option<int>.None);
-
-        private Option<int> ImplicitConversion() => 1000;
-
-        private Option<int> ImplicitNoneConversion() => None;
-
-        private void InferenceTest1()
-        {
-            Action<int> actionint = v => v = v * 2;
-            Option<int> optional1 = Some(123);
-            optional1.Some(actionint) //Compiler tries to call:  public static Option<T> Some(T value)
-                     .None(() => { });
-        }
     }
 }
