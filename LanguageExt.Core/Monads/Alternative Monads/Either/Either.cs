@@ -686,8 +686,10 @@ public abstract record Either<L, R> :
     /// Equality override
     /// </summary>
     [Pure]
+#pragma warning disable CS8851 // Record defines 'Equals' but not 'GetHashCode'. Reason: overridden in concrete classes
     public virtual bool Equals(Either<L, R>? other) =>
-        Equals<EqDefault<L>, EqDefault<R>>(other);
+        other is not null && Equals<EqDefault<L>, EqDefault<R>>(other);
+#pragma warning restore CS8851 // Record defines 'Equals' but not 'GetHashCode'.
 
     /// <summary>
     /// Equality override

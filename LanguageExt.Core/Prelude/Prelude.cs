@@ -154,10 +154,8 @@ public static partial class Prelude
     /// default value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    #nullable disable
     public static bool isDefault<A>(A value) =>
         ObjectExt.IsDefault(value);
-    #nullable restore
 
     /// <summary>
     /// Returns true if the value is not equal to this type's
@@ -171,10 +169,8 @@ public static partial class Prelude
     /// default value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    #nullable disable
     public static bool notDefault<A>(A value) =>
         !ObjectExt.IsDefault(value);
-    #nullable restore
 
     /// <summary>
     /// Returns true if the value is null, and does so without
