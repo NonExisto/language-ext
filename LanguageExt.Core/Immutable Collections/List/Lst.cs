@@ -131,7 +131,7 @@ public readonly struct Lst<A> :
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Lens<Lst<A>, Option<A>>.New(
-            Get: la => la.Count == 0 ? None : Some(la[0]),
+            Get: la => la.Count == 0 ? None : Optional(la[0]),
             Set: a => la => la.Count == 0 || a.IsNone ? la : la.SetItem(0, a.Value!));
     }
 
@@ -155,7 +155,7 @@ public readonly struct Lst<A> :
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Lens<Lst<A>, Option<A>>.New(
-            Get: la => la.Count == 0 ? None : Some(la[la.Count - 1]),
+            Get: la => la.Count == 0 ? None : Optional(la[la.Count - 1]),
             Set: a => la => la.Count == 0 || a.IsNone ? la : la.SetItem(la.Count - 1, a.Value!));
     }
 
@@ -175,7 +175,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<Lst<A>, Option<A>> itemOrNone(int index) => Lens<Lst<A>, Option<A>>.New(
-        Get: la => la.Count < index - 1 ? None : Some(la[index]),
+        Get: la => la.Count < index - 1 ? None : Optional(la[index]),
         Set: a => la => la.Count < index - 1 || a.IsSome ? la : la.SetItem(index, a.Value!)
     );
 

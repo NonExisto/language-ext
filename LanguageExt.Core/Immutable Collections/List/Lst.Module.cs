@@ -155,9 +155,7 @@ public static class List
     /// <returns>Optional head item</returns>
     [Pure]
     public static Option<A> headOrNone<A>(IEnumerable<A> list) =>
-        list.Select(Option<A>.Some)
-            .DefaultIfEmpty(Option<A>.None)
-            .FirstOrDefault();
+        new(list);
 
     /// <summary>
     /// Get the item at the head (first) of the list or Left if the list is empty
@@ -210,7 +208,7 @@ public static class List
     /// <returns>Last item</returns>
     [Pure]
     public static Option<A> lastOrNone<A>(IEnumerable<A> list) =>
-        list.Select(Option<A>.Some)
+        list.Select(Prelude.Optional)
             .DefaultIfEmpty(Option<A>.None)
             .LastOrDefault();
 
@@ -706,7 +704,7 @@ public static class List
     public static Option<A> reduceOrNone<A>(IEnumerable<A> list, Func<A, A, A> reducer) =>
         list.Match(
             ()      => None,
-            (x, xs) => Some(fold(xs, x, reducer)));
+            (x, xs) => Optional(fold(xs, x, reducer)));
 
     /// <summary>
     /// Applies a function to each element of the collection, threading an accumulator argument 
@@ -740,7 +738,7 @@ public static class List
     public static Option<A> reduceBackOrNone<A>(IEnumerable<A> list, Func<A, A, A> reducer) =>
         list.Match(
             ()      => None,
-            (x, xs) => Some(foldBack(xs, x, reducer)));
+            (x, xs) => Optional(foldBack(xs, x, reducer)));
 
     /// <summary>
     /// Applies a function to each element of the collection, threading an accumulator argument 
@@ -797,7 +795,7 @@ public static class List
     {
         foreach (var item in list)
         {
-            if (pred(item)) return Some(item);
+            if (pred(item)) return Optional(item);
         }
         return None;
     }

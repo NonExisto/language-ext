@@ -106,7 +106,7 @@ public static partial class Optional
     public static Either<L, A> toEither<OPT, OA, L, A>(OA ma, L defaultLeftValue)
         where OPT : Optional<OA, A> =>
         OPT.Match(ma,
-                  Some: r => Right<L, A>(r),
+                  Some: Right<L, A>,
                   None: () => Left<L, A>(defaultLeftValue));
 
     /// <summary>
@@ -116,7 +116,7 @@ public static partial class Optional
     public static Either<L, A> toEither<OPT, OA, L, A>(OA ma, Func<L> Left)
         where OPT : Optional<OA, A> =>
         OPT.Match(ma,
-                  Some: r => Right<L, A>(r),
+                  Some: Right<L, A>,
                   None: () => Left<L, A>(Left()));
 
     /// <summary>
@@ -126,6 +126,6 @@ public static partial class Optional
     public static Option<A> toOption<OPT, OA, A>(OA ma)
         where OPT : Optional<OA, A> =>
         OPT.Match(ma,
-                  Some: Some,
+                  Some: Prelude.Optional,
                   None: () => Option<A>.None);
 }

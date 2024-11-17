@@ -261,7 +261,7 @@ internal sealed class TrieSet<K> :
     {
         var (found, newKey) = FindInternal(key);
         return found
-                   ? Some(newKey)
+                   ? Optional(newKey)
                    : default;
     }
 

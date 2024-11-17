@@ -239,7 +239,7 @@ public static partial class Prelude
         Parse<M, TEnum>(Enum.TryParse, value);
 
     [Pure]
-    public static Option<TEnum> parseEnumIgnoreCase<TEnum>(string value)
+    public static Option<TEnum> parseEnumIgnoreCase<TEnum>(string? value)
         where TEnum : struct =>
         ParseIgnoreCase<TEnum>(Enum.TryParse, value);
 
@@ -260,7 +260,7 @@ public static partial class Prelude
 
     delegate bool TryParse<T>(string? value, [NotNullWhen(true)] out T? result);
 
-    delegate bool TryParseIgnoreCase<T>(string value, bool ignoreCase, [NotNullWhen(true)] out T? result);
+    delegate bool TryParseIgnoreCase<T>(string? value, bool ignoreCase, [NotNullWhen(true)] out T? result);
 
     static Option<A> Parse<A>(TryParse<A> tryParse, string? value) =>
         tryParse(value, out var result)
@@ -273,7 +273,7 @@ public static partial class Prelude
             ? M.Pure(result)
             : M.Empty<A>();
     
-    static Option<A> ParseIgnoreCase<A>(TryParseIgnoreCase<A> tryParse, string value) =>
+    static Option<A> ParseIgnoreCase<A>(TryParseIgnoreCase<A> tryParse, string? value) =>
         tryParse(value, true, out var result)
             ? Some(result)
             : None;

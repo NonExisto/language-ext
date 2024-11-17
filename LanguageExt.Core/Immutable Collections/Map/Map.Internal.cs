@@ -556,8 +556,8 @@ internal sealed class MapInternal<K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public (MapInternal<K, V>, Option<V> Value) FindOrMaybeAdd(K key, Func<Option<V>> value) =>
         Find(key).Match(
-            Some: x => (this, Some(x)),
-            None: () => value().Map(v => (Add(key, v), Some(v)))
+            Some: x => (this, Optional(x)),
+            None: () => value().Map(v => (Add(key, v), Optional(v)))
                                .IfNone((this, None)));
 
     /// <summary>
@@ -571,8 +571,8 @@ internal sealed class MapInternal<K, V> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public (MapInternal<K, V>, Option<V> Value) FindOrMaybeAdd(K key, Option<V> value) =>
         Find(key).Match(
-            Some: x => (this, Some(x)),
-            None: () => value.Map(v => (Add(key, v), Some(v)))
+            Some: x => (this, Optional(x)),
+            None: () => value.Map(v => (Add(key, v), Optional(v)))
                              .IfNone((this, None)));
 
     /// <summary>
@@ -1748,7 +1748,7 @@ static class MapModule
         {
             < 0 => TryFind(node.Left, key, comparer),
             > 0 => TryFind(node.Right, key, comparer),
-            _ => Some(node.KeyValue.Value)
+            _ => Optional(node.KeyValue.Value)
         };
     }
 

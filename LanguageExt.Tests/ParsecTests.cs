@@ -755,7 +755,7 @@ namespace LanguageExt.Tests
             };
 
             // Null because it will be not null later and can be used by the lazyp parser
-            Parser<Expr> expr = null; 
+            Parser<Expr> expr = null!; 
 
             // Build up the expression term
             var term = either(

@@ -325,7 +325,7 @@ You only need to do that when you 'realise the concrete type'.  Because the trai
 
 ```c#
 Option<int> mx = AddOne(Option<int>.Some(10))
-                     .Bind(x => Option<int>.Some(x + 10))
+                     .Bind(x => Some(x + 10))
                      .Map(x => x + 20)
                      .As();
 

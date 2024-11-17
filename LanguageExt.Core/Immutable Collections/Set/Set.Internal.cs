@@ -1022,7 +1022,7 @@ internal static class SetModule
         {
             < 0 => TryFind(node.Left, key, comparer),
             > 0 => TryFind(node.Right, key, comparer),
-            _ => Some(node.Key)
+            _ => Optional(node.Key)
         };
     }
 

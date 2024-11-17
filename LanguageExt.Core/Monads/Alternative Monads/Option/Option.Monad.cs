@@ -16,7 +16,7 @@ public sealed class Option :
         ma.As().Map(f);
 
     static K<Option, A> Applicative<Option>.Pure<A>(A value) =>
-        Option<A>.Some(value);
+        Prelude.Optional(value);
 
     static K<Option, B> Applicative<Option>.Apply<A, B>(K<Option, Func<A, B>> mf, K<Option, A> ma) =>
         mf.As().Bind(ma.As().Map);
@@ -51,7 +51,7 @@ public sealed class Option :
         ma.As().Match(_ => ma, () => mb);
 
     static K<Option, X> Some<X>(X value) =>
-        Option<X>.Some(value);
+        Prelude.Optional(value);
 
     static K<Option, X> None<X>() =>
         Option<X>.None;
@@ -61,8 +61,8 @@ public sealed class Option :
 
     static K<Option, A> Fallible<Unit, Option>.Catch<A>(
         K<Option, A> fa, 
-        Func<Unit, bool> Predicate, 
+        Func<Unit, bool> Predicate,
         Func<Unit, K<Option, A>> Fail) => 
-        fa.As().Match(Some: Option<A>.Some, 
+        fa.As().Match(Some: Prelude.Optional, 
                       None: () => Predicate(default) ? Fail(default).As() : Option<A>.None);
 }

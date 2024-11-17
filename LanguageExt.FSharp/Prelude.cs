@@ -12,7 +12,7 @@ public static class FSharp
     /// </summary>
     public static Option<T> fs<T>(FSharpOption<T> fsOption) =>
         FSharpOption<T>.get_IsSome(fsOption)
-            ? Some(fsOption.Value)
+            ? Optional(fsOption.Value)
             : None;
 
     /// <summary>

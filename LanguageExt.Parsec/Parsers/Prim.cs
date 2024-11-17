@@ -532,7 +532,7 @@ namespace LanguageExt.Parsec
         public static Parser<Option<T>> optional<T>(Parser<T> p) =>
             inp =>
             {
-                var r = p.Map(x => Option<T>.Some(x))(inp);
+                var r = p.Map(x => Optional(x))(inp);
                 return r.Reply.Tag == ReplyTag.OK
                     ? r
                     : EmptyOK(Option<T>.None, inp);

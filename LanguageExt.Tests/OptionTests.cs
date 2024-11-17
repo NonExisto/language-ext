@@ -154,7 +154,7 @@ namespace LanguageExt.Tests
 
             Action sideEffectNone = () => sideEffectResult += 1;
 
-            Assert.Equal(0, Option<string>.Some("test").IfNone(sideEffectNone).Return(sideEffectResult));
+            Assert.Equal(0, Some("test").IfNone(sideEffectNone).Return(sideEffectResult));
             Assert.Equal(1, Option<string>.None.IfNone(sideEffectNone).Return(sideEffectResult));
         }
 
@@ -166,7 +166,7 @@ namespace LanguageExt.Tests
             Action<string> sideEffectSome = _ => sideEffectResult += 2;
 
             Assert.Equal(0, Option<string>.None.IfSome(sideEffectSome).Return(sideEffectResult));
-            Assert.Equal(2, Option<string>.Some("test").IfSome(sideEffectSome).Return(sideEffectResult));
+            Assert.Equal(2, Some("test").IfSome(sideEffectSome).Return(sideEffectResult));
         }
 
         [Fact]
@@ -227,10 +227,12 @@ namespace LanguageExt.Tests
 
         private static Option<int> Fail() => throw new InvalidOperationException("Should not happen");
 
+#pragma warning disable CS8607 // A possible null value may not be used for a type marked with [NotNull] or [DisallowNull]
         private static Option<int> GetNullable(bool select) =>
             select
                 ? Some((int?)1000)
-                : Some((int?)null);
+                : Some((int?)null); // <== throws
+#pragma warning restore CS8607 // A possible null value may not be used for a type marked with [NotNull] or [DisallowNull]
 
         private static Option<int> GetValue(bool select) =>
             select

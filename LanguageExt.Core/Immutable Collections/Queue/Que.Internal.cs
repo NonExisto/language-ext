@@ -86,7 +86,7 @@ internal sealed class QueInternal<A> : IEnumerable<A>
     [Pure]
     public (QueInternal<A>, Option<A>) TryDequeue() =>
         forward.TryPeek().Match(
-            Some: x => (Dequeue(), Some(x)),
+            Some: x => (Dequeue(), Optional(x)),
             None: () => (this, Option<A>.None)
         );
 

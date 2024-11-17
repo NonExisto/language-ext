@@ -146,7 +146,7 @@ public class FunctorLawTests
     [Fact]
     public void Option()
     {
-        var fa = Option<int>.Some(1);
+        var fa = Some(1);
         var fx = Option<int>.None;
         FunctorLaw<Option>.assert(fa);
         FunctorLaw<Option>.assert(fx);

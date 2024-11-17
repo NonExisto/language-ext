@@ -9,6 +9,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using LanguageExt.Common;
 using LanguageExt.Traits;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LanguageExt;
 
@@ -55,7 +56,7 @@ public readonly struct Option<A> :
     /// <returns>Option of A</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<A> Some(A value) =>
+    internal static Option<A> Some([DisallowNull]A value) =>
         new (value);
 
     /// <summary>
@@ -73,24 +74,22 @@ public readonly struct Option<A> :
     /// <param name="option">None or Some A.</param>
     public Option(IEnumerable<A> option)
     {
-        var first = option.Take(1).ToArray();
-        isSome = first.Length == 1;
+        var first = option.FirstOrDefault();
+        isSome = first is not null;
         Value = isSome
-                    ? first[0]
+                    ? first
                     : default;
     }
 
     Option(SerializationInfo info, StreamingContext context)
     {
-        isSome = info.GetValue("IsSome", typeof(bool)) is true;
-        if(isSome)
+        Value = default;
+        var some = info.GetValue("IsSome", typeof(bool)) is true;
+        if(some)
         {
-            Value = info.GetValue("Value", typeof(A)) is A x ? x : throw new SerializationException();
+            Value = info.GetValue("Value", typeof(A)) is A x ? x : default;
         }
-        else
-        {
-            Value = default;
-        }
+        isSome = Value is not null;
     }
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -141,9 +140,9 @@ public readonly struct Option<A> :
     public bool Equals<EqA>(Option<A> other) where EqA : Eq<A>
     {
         var yIsSome = other.IsSome;
-        var xIsNone = !isSome;
+        var xIsNone = !IsSome;
         var yIsNone = !yIsSome;
-        return xIsNone && yIsNone || isSome && yIsSome && EqA.Equals(Value!, other.Value!);
+        return xIsNone && yIsNone || IsSome && other.IsSome && EqA.Equals(Value, other.Value);
     }
 
     /// <summary>
@@ -167,11 +166,11 @@ public readonly struct Option<A> :
     public int CompareTo<OrdA>(Option<A> other) where OrdA : Ord<A>
     {
         var yIsSome = other.IsSome;
-        var xIsNone = !isSome;
+        var xIsNone = !IsSome;
         var yIsNone = !yIsSome;
 
         if (xIsNone && yIsNone) return 0;
-        if (isSome  && yIsNone) return 1;
+        if (IsSome  && yIsNone) return 1;
         if (xIsNone) return -1;
 
         return OrdA.Compare(Value!, other.Value!);
@@ -189,7 +188,7 @@ public readonly struct Option<A> :
                              ? ma.Value
                              : throw new InvalidOperationException("Option is not in a Some state");
         
-        return opExplicit!;
+        return opExplicit;
     }
 
     /// <summary>
@@ -294,14 +293,14 @@ public readonly struct Option<A> :
     /// This uses the EqDefault instance for comparison of the A value.  
     /// The EqDefault trait wraps up the .NET EqualityComparer.Default 
     /// behaviour.  For more control over equality you can call:
-    /// 
+    /// <code>
     ///     !equals<EQ, A>(lhs, rhs);
-    ///     
+    /// </code>    
     /// Where EQ is a struct derived from Eq<A>.  For example: 
-    /// 
+    /// <code>
     ///     !equals<EqString, string>(lhs, rhs);
     ///     !equals<EqArray<int>, int[]>(lhs, rhs);
-    ///     
+    /// </code>    
     /// </remarks>
     /// <param name="lhs">Left hand side of the operation</param>
     /// <param name="rhs">Right hand side of the operation</param>
@@ -353,7 +352,7 @@ public readonly struct Option<A> :
     /// <returns>if lhs is Some and rhs is Some then lhs, else None</returns>
     [Pure, MethodImpl(Opt.Default)]
     public static Option<A> operator &(Option<A> lhs, Option<A> rhs) =>
-        lhs.IsSome && rhs.isSome
+        lhs.IsSome && rhs.IsSome
             ? lhs
             : None;
 
@@ -389,8 +388,8 @@ public readonly struct Option<A> :
     /// state, in which case the hash-code will be 0</returns>
     [Pure]
     public override int GetHashCode() =>
-        isSome 
-            ? Value?.GetHashCode() ?? 0 
+        IsSome 
+            ? Value.GetHashCode()
             : 0;
         
     [Pure]
@@ -404,14 +403,15 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() =>
-        isSome
-            ? $"Some({Value?.ToString() ?? ""})"
+        IsSome
+            ? $"Some({Value})"
             : "None";
 
     /// <summary>
     /// Is the option in a Some state
     /// </summary>
     [Pure]
+    [MemberNotNullWhen(true, nameof(Value))]
     public bool IsSome =>
         isSome;
 
@@ -419,6 +419,7 @@ public readonly struct Option<A> :
     /// Is the option in a None state
     /// </summary>
     [Pure]
+    [MemberNotNullWhen(false, nameof(Value))]
     public bool IsNone =>
         !isSome;
 
@@ -444,8 +445,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> Select<B>(Func<A, B> f) =>
-        isSome
-            ? Option<B>.Some(f(Value!))
+        IsSome
+            ? Optional(f(Value))
             : default;
 
     /// <summary>
@@ -457,8 +458,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> Map<B>(Func<A, B> f) =>
-        isSome
-            ? Option<B>.Some(f(Value!))
+        IsSome
+            ? Option<B>.Some(f(Value)!)
             : default;
     
     /// <summary>
@@ -493,8 +494,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> Bind<B>(Func<A, Option<B>> f) =>
-        isSome
-            ? f(Value!)
+        IsSome
+            ? f(Value)
             : default;
 
     /// <summary>
@@ -503,8 +504,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> Bind<B>(Func<A, K<Option, B>> f) =>
-        isSome
-            ? f(Value!).As()
+        IsSome
+            ? f(Value).As()
             : default;
 
     /// <summary>
@@ -513,8 +514,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> BiBind<B>(Func<A, Option<B>> Some, Func<Option<B>> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None();
 
     /// <summary>
@@ -527,9 +528,9 @@ public readonly struct Option<A> :
         Func<A, B, C> project)
     {
         if (IsNone) return default;
-        var mb = bind(Value!);
+        var mb = bind(Value);
         if (mb.IsNone) return default;
-        return project(Value!, mb.Value!);
+        return project(Value, mb.Value);
     }
 
     /// <summary>
@@ -540,7 +541,7 @@ public readonly struct Option<A> :
     public Option<C> SelectMany<C>(
         Func<A, Fail<Unit>> bind,
         Func<A, Unit, C> project) =>
-        Option<C>.None;
+        default;
 
     /// <summary>
     /// Match operation with an untyped value for Some. This can be
@@ -573,8 +574,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Arr<A> ToArray() =>
-        isSome
-            ? Arr.create(Value!)
+        IsSome
+            ? Arr.create(Value)
             : [];
 
     /// <summary>
@@ -584,8 +585,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lst<A> ToList() =>
-        isSome
-            ? List.create(Value!)
+        IsSome
+            ? List.create(Value)
             : [];
 
     /// <summary>
@@ -595,8 +596,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Seq<A> ToSeq() =>
-        isSome
-            ? [Value!]
+        IsSome
+            ? [Value]
             : [];
 
     /// <summary>
@@ -631,8 +632,8 @@ public readonly struct Option<A> :
     [Pure]
     public StreamT<M, A> ToStream<M>() 
         where M : Monad<M> =>
-        isSome 
-            ? StreamT<M, A>.Pure(Value!) 
+        IsSome 
+            ? StreamT<M, A>.Pure(Value) 
             : StreamT<M, A>.Empty;
     
     /// <summary>
@@ -643,8 +644,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Eff<A> ToEff(Error Fail) =>
-        isSome
-            ? Pure(Value!)
+        IsSome
+            ? Pure(Value)
             : Prelude.Fail(Fail);
 
     /// <summary>
@@ -664,8 +665,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Fin<A> ToFin(Error Fail) =>
-        isSome
-            ? FinSucc(Value!)
+        IsSome
+            ? FinSucc(Value)
             : FinFail<A>(Fail);
 
     /// <summary>
@@ -676,8 +677,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Either<L, A> ToEither<L>(L defaultLeftValue) =>
-        isSome
-            ? Right<L, A>(Value!)
+        IsSome
+            ? Right<L, A>(Value)
             : Left<L, A>(defaultLeftValue);
 
     /// <summary>
@@ -686,8 +687,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Either<L, A> ToEither<L>() where L : Monoid<L> =>
-        isSome
-            ? Right<L, A>(Value!)
+        IsSome
+            ? Right<L, A>(Value)
             : Left<L, A>(L.Empty);
     
     /// <summary>
@@ -699,8 +700,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Either<L, A> ToEither<L>(Func<L> Left) =>
-        isSome
-            ? Right<L, A>(Value!)
+        IsSome
+            ? Right<L, A>(Value)
             : Left<L, A>(Left());
     
     /// <summary>
@@ -712,8 +713,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Validation<L, A> ToValidation<L>(Func<L> Fail) where L : Monoid<L> =>
-        isSome
-            ? Success<L, A>(Value!)
+        IsSome
+            ? Success<L, A>(Value)
             : Fail<L, A>(Fail());
     
     /// <summary>
@@ -724,8 +725,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Validation<L, A> ToValidation<L>(L Fail) where L : Monoid<L> =>
-        isSome
-            ? Success<L, A>(Value!)
+        IsSome
+            ? Success<L, A>(Value)
             : Fail<L, A>(Fail);
     
     /// <summary>
@@ -735,8 +736,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Validation<L, A> ToValidation<L>() where L : Monoid<L> =>
-        isSome
-            ? Success<L, A>(Value!)
+        IsSome
+            ? Success<L, A>(Value)
             : Fail<L, A>(L.Empty);
 
     /// <summary>
@@ -775,8 +776,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public B Match<B>(Func<A, B> Some, Func<B> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None();
 
     /// <summary>
@@ -789,8 +790,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public B Match<B>(Func<A, B> Some, B None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None;
 
     /// <summary>
@@ -801,9 +802,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit Match(Action<A> Some, Action None)
     {
-        if(isSome)
+        if(IsSome)
         {
-            Some(Value!);
+            Some(Value);
         }
         else
         {
@@ -819,9 +820,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit IfSome(Action<A> f)
     {
-        if(isSome)
+        if(IsSome)
         {
-            f(Value!);
+            f(Value);
         }
         return default;
     }
@@ -834,9 +835,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit IfSome(Func<A, Unit> f)
     {
-        if (isSome)
+        if (IsSome)
         {
-            f(Value!);
+            f(Value);
         }
         return default;
     }
@@ -852,8 +853,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public A IfNone(Func<A> None) =>
-        isSome
-            ? Value!
+        IsSome
+            ? Value
             : None();
 
     /// <summary>
@@ -877,8 +878,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public A IfNone(A noneValue) =>
-        isSome
-            ? Value!
+        IsSome
+            ? Value
             : noneValue;
 
     /// <summary>
@@ -904,8 +905,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public S Fold<S>(S state, Func<S, A, S> folder) =>
-        isSome
-            ? folder(state, Value!)
+        IsSome
+            ? folder(state, Value)
             : state;
 
     /// <summary>
@@ -931,8 +932,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public S FoldBack<S>(S state, Func<S, A, S> folder) =>
-        isSome
-            ? folder(state, Value!)
+        IsSome
+            ? folder(state, Value)
             : state;
 
     /// <summary>
@@ -959,8 +960,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public S BiFold<S>(S state, Func<S, A, S> Some, Func<S, Unit, S> None) =>
-        isSome
-            ? Some(state, Value!)
+        IsSome
+            ? Some(state, Value)
             : None(state, unit);
 
     /// <summary>
@@ -987,8 +988,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public S BiFold<S>(S state, Func<S, A, S> Some, Func<S, S> None) =>
-        isSome
-            ? Some(state, Value!)
+        IsSome
+            ? Some(state, Value)
             : None(state);
 
     /// <summary>
@@ -1002,8 +1003,8 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> BiMap<B>(Func<A, B> Some, Func<Unit, B> None) =>
         Check.NullReturn(
-            isSome
-                ? Some(Value!)
+            IsSome
+                ? Some(Value)
                 : None(unit));
 
     /// <summary>
@@ -1016,8 +1017,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> BiMap<B>(Func<A, B> Some, Func<B> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None();
 
     /// <summary>
@@ -1051,7 +1052,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ForAll(Func<A, bool> pred) =>
-        !isSome || pred(Value!);
+        !IsSome || pred(Value);
 
     /// <summary>
     /// Apply a predicate to the bound value.  If the Option is in a None state
@@ -1068,8 +1069,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool BiForAll(Func<A, bool> Some, Func<Unit, bool> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None(unit);
 
     /// <summary>
@@ -1087,8 +1088,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool BiForAll(Func<A, bool> Some, Func<bool> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None();
 
     /// <summary>
@@ -1104,7 +1105,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Exists(Func<A, bool> pred) =>
-        isSome && pred(Value!);
+        IsSome && pred(Value);
 
     /// <summary>
     /// Apply a predicate to the bound value.  If the Option is in a None state
@@ -1120,8 +1121,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool BiExists(Func<A, bool> Some, Func<Unit, bool> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None(unit);
 
     /// <summary>
@@ -1138,8 +1139,8 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool BiExists(Func<A, bool> Some, Func<bool> None) =>
-        isSome
-            ? Some(Value!)
+        IsSome
+            ? Some(Value)
             : None();
 
     /// <summary>
@@ -1149,9 +1150,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit Iter(Action<A> Some)
     {
-        if(isSome)
+        if(IsSome)
         {
-            Some(Value!);
+            Some(Value);
         }
         return unit;
     }
@@ -1164,9 +1165,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit BiIter(Action<A> Some, Action<Unit> None)
     {
-        if (isSome)
+        if (IsSome)
         {
-            Some(Value!);
+            Some(Value);
         }
         else
         {
@@ -1183,9 +1184,9 @@ public readonly struct Option<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Unit BiIter(Action<A> Some, Action None)
     {
-        if (isSome)
+        if (IsSome)
         {
-            Some(Value!);
+            Some(Value);
         }
         else
         {
@@ -1203,7 +1204,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<A> Filter(Func<A, bool> pred) =>
-        isSome && pred(Value!)
+        IsSome && pred(Value)
             ? this
             : default;
 
@@ -1216,7 +1217,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<A> Where(Func<A, bool> pred) =>
-        isSome && pred(Value!)
+        IsSome && pred(Value)
             ? this
             : default;
 
@@ -1262,8 +1263,8 @@ public readonly struct Option<A> :
     [Pure]
     public Option<B> Bind<B>(Func<A, Pure<B>> f) =>
         IsSome  
-            ? f(Value!).ToOption()
-            : Option<B>.None;
+            ? f(Value).ToOption()
+            : default;
 
 
     /// <summary>
@@ -1272,7 +1273,7 @@ public readonly struct Option<A> :
     /// <param name="f">Bind function</param>
     [Pure]
     public Option<B> Bind<B>(Func<A, Fail<Unit>> f) =>
-        Option<B>.None;
+        default;
 
     /// <summary>
     /// Monadic bind and project
@@ -1282,12 +1283,12 @@ public readonly struct Option<A> :
     [Pure]
     public Option<C> SelectMany<B, C>(Func<A, Pure<B>> bind, Func<A, B, C> project) =>
         IsSome
-            ? Option<C>.Some(project(Value!, bind(Value!).Value))
-            : Option<C>.None;
+            ? Optional(project(Value, bind(Value).Value))
+            : default;
 
     [Pure]
     public static implicit operator Option<A>(Pure<A> mr) =>
-        mr.Value is null ? None : Some(mr.Value);
+        mr.Value is null ? default : Some(mr.Value);
 
     /// <summary>
     /// Semigroup combine

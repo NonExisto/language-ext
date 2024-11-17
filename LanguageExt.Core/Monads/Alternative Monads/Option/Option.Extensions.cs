@@ -20,9 +20,7 @@ public static partial class OptionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Validation<F, A> ToValidation<F, A>(Option<A> ma, F defaultFailureValue)
         where F : Monoid<F>
-        => ma.IsSome
-               ? Validation<F, A>.Success(ma.Value!)
-               : Validation<F, A>.Fail(defaultFailureValue);
+        => ma.Match(value => Validation<F, A>.Success(ma.Value!), Validation<F, A>.Fail(defaultFailureValue));
     
     /// <summary>
     /// Monadic join
@@ -44,7 +42,7 @@ public static partial class OptionExtensions
         {
             if (item.IsSome)
             {
-                yield return item.Value!;
+                yield return item.Value;
             }
         }
     }
@@ -57,7 +55,7 @@ public static partial class OptionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Seq<A> Somes<A>(this Seq<Option<A>> self)
     {
-        IEnumerable<A> ToSequence(Seq<Option<A>> items)
+        static IEnumerable<A> ToSequence(Seq<Option<A>> items)
         {
             foreach (var item in items)
             {

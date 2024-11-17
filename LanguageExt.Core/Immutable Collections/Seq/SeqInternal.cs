@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace LanguageExt;
@@ -22,6 +23,8 @@ internal abstract class SeqInternal<A> : IEnumerable<A>
     public abstract SeqInternal<A> Cons(A value);
     public abstract A Head { get; }
     public abstract SeqInternal<A> Tail { get; }
+    [MemberNotNullWhen(false, nameof(Head))]
+    [MemberNotNullWhen(false, nameof(Last))]
     public abstract bool IsEmpty { get; }
     public abstract SeqInternal<A> Init { get; }
     public abstract A Last { get; }

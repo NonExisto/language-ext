@@ -108,7 +108,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     public static Lens<Arr<A>, Option<A>> headOrNone => Lens<Arr<A>, Option<A>>.New(
-        Get: la => la.Count == 0 ? None : Some(la[0]),
+        Get: la => la.Count == 0 ? None : Optional(la[0]),
         Set: a => la => la.Count == 0 || a.IsNone ? la : la.SetItem(0, a.Value!));
 
     /// <summary>
@@ -124,7 +124,7 @@ public struct Arr<A> :
     /// </summary>
     [Pure]
     public static Lens<Arr<A>, Option<A>> lastOrNone => Lens<Arr<A>, Option<A>>.New(
-        Get: la => la.Count == 0 ? None : Some(la[^1]),
+        Get: la => la.Count == 0 ? None : Optional(la[^1]),
         Set: a => la => la.Count == 0 || a.IsNone ? la : la.SetItem(la.Count - 1, a.Value!));
 
     /// <summary>
@@ -142,7 +142,7 @@ public struct Arr<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Lens<Arr<A>, Option<A>> itemOrNone(int index) => Lens<Arr<A>, Option<A>>.New(
-        Get: la => la.Count < index - 1 ? None : Some(la[index]),
+        Get: la => la.Count < index - 1 ? None : Optional(la[index]),
         Set: a => la => la.Count < index - 1 || a.IsSome ? la : la.SetItem(index, a.Value!));
 
     /// <summary>

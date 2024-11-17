@@ -134,12 +134,12 @@ public class LinqTests
         Assert.True(res == Some(30));
     }
 
-    private Option<int> GetOptionValue(bool select) =>
+    private static Option<int> GetOptionValue(bool select) =>
         select
             ? Some(10)
             : None;
 
-    private Either<string, int> GetEitherValue(bool select)
+    private static Either<string, int> GetEitherValue(bool select)
     {
         if (select)
             return 10;

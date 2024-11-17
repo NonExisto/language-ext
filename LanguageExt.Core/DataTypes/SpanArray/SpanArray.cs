@@ -37,7 +37,7 @@ public readonly struct SpanArray<A> : IEnumerable<A>
     public Option<A> Elem(int index) =>
         index < 0 || index + Index >= EndIndex
             ? None
-            : Some(Data[index + Index]);
+            : Optional(Data[index + Index]);
 
     public IEnumerator<A> GetEnumerator()
     {

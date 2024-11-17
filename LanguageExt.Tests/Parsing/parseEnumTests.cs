@@ -4,7 +4,7 @@ namespace LanguageExt.Tests.Parsing
 {
     public class parseEnumTests : AbstractParseTTests<FooBarEnum>
     {
-        protected override Option<FooBarEnum> ParseT(string? value) => Prelude.parseEnum<FooBarEnum>(value);
+        protected override Option<FooBarEnum> ParseT(string? value) => parseEnum<FooBarEnum>(value);
 
         [Fact]
         public void parseEnum_ValidStringFromFoo_SomeFoo() =>
@@ -18,7 +18,7 @@ namespace LanguageExt.Tests.Parsing
 
     public class parseEnumIgnoreCaseTests : AbstractParseTTests<FooBarEnum>
     {
-        protected override Option<FooBarEnum> ParseT(string value) => Prelude.parseEnumIgnoreCase<FooBarEnum>(value);
+        protected override Option<FooBarEnum> ParseT(string? value) => parseEnumIgnoreCase<FooBarEnum>(value);
 
         [Fact]
         public void parseEnum_ValidStringFromFoo_SomeFoo() =>

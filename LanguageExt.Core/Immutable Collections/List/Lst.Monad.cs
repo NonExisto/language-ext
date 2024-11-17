@@ -127,8 +127,8 @@ public sealed class Lst:
     {
         var list = ta.As().Value;
         return index.Value >= 0 && index.Value < list.Count
-                   ? Some(list[index])
-                   : Option<A>.None;
+                   ? Optional(list[index])
+                   : default;
     }
         
     static Arr<A> Foldable<Lst>.ToArr<A>(K<Lst, A> ta) =>

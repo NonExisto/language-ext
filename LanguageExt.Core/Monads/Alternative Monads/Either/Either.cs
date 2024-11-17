@@ -273,7 +273,7 @@ public abstract record Either<L, R> :
     /// <returns>Some(Right) or None</returns>
     [Pure]
     public Option<R> ToOption() =>
-        Match(Left: _ => None, Right: Some);
+        Match(Left: _ => None, Right: Prelude.Optional);
 
     /// <summary>
     /// Convert to a stream

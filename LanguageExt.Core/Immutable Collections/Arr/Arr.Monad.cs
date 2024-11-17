@@ -91,8 +91,8 @@ public sealed partial class Arr : Monad<Arr>, Traversable<Arr>, Alternative<Arr>
     {
         var arr = ta.As().Value;
         return index.Value >= 0 && index.Value < arr.Length
-                   ? Some(arr[index])
-                   : Option<A>.None;
+                   ? Optional(arr[index])
+                   : default;
     }
 
     static Arr<A> Foldable<Arr>.ToArr<A>(K<Arr, A> ta) =>

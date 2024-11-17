@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LanguageExt;
 
@@ -87,22 +88,20 @@ public static partial class Prelude
     /// if `isnull(value)`.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<A> Some<A>(A value) =>
-        Option<A>.Some(value);
+    public static Option<A> Some<A>([DisallowNull]A value) =>
+        value is not null ? Option<A>.Some(value) : throw new ValueIsNullException();
 
     /// <summary>
-    /// Create a `Some` of `A` from a `Nullable<A>`
+    /// Create a `Some` of `A`
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="value">Non-null value to be made optional</param>
     /// <returns>`Option<A>` in a `Some` state or throws `ValueIsNullException`
-    /// if `isnull(value)`</returns>
+    /// if `isnull(value)`.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<A> Some<A>(A? value) where A : struct =>
-        value.HasValue
-            ? new Option<A>(value.Value)
-            : throw new ValueIsNullException();
+    public static Option<A> Some<A>([DisallowNull]A? value) where A : struct =>
+        value is not null ? Option<A>.Some(value.Value) : throw new ValueIsNullException();
 
     /// <summary>
     /// Create an `Option` of `A`

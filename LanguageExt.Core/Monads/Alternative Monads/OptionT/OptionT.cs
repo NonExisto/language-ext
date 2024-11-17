@@ -62,7 +62,7 @@ public record OptionT<M, A>(K<M, Option<A>> runOption) :
     /// <param name="monad">Monad to lift</param>
     /// <returns>`OptionT`</returns>
     public static OptionT<M, A> Lift(K<M, A> monad) =>
-        new(M.Map(Option<A>.Some, monad));
+        new(M.Map(Prelude.Optional, monad));
 
     /// <summary>
     /// Lifts a given monad into the transformer
@@ -197,7 +197,7 @@ public record OptionT<M, A>(K<M, Option<A>> runOption) :
     /// <param name="f">Mapping function</param>
     public OptionT<M, B> MapM<B>(Func<K<M, A>, K<M, B>> f) =>
         new(runOption.Bind(
-                fv => fv.Match(Some: v => f(M.Pure(v)).Map(Option<B>.Some),
+                fv => fv.Match(Some: v => f(M.Pure(v)).Map(Prelude.Optional),
                                None: () => M.Pure(Option<B>.None))));
 
     /// <summary>

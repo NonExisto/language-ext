@@ -49,8 +49,8 @@ public abstract class Change<A> :
     public Option<A> ToOption() =>
         this switch
         {
-            EntryAdded<A>(var v)    => Some(v),
-            EntryMappedTo<A>(var v) => Some(v),
+            EntryAdded<A>(var v)    => Optional(v),
+            EntryMappedTo<A>(var v) => Optional(v),
             _                       => Option<A>.None
         };
 

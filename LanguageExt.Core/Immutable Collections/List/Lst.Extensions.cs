@@ -387,9 +387,7 @@ public static partial class LstExtensions
     /// <param name="self">This</param>
     /// <returns>If enumerable is empty then return None, else Some(head)</returns>
     public static Option<A> ToOption<A>(this IEnumerable<A> self) =>
-        self.Match(
-            ()     => Option<A>.None,
-            (x, _) => Option<A>.Some(x));
+        new Option<A>(self);
     
     /// <summary>
     /// Convert to a queryable 

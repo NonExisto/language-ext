@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
+using Xunit;
 
 namespace LanguageExt.Tests.Parsing
 {
@@ -26,10 +27,10 @@ namespace LanguageExt.Tests.Parsing
         public void ParseT_ValidStringFromDefaultValue_SomeDefaultValue() =>
             ParseT_ValidStringFromGiven_SomeAsGiven(default);
 
-        protected void ParseT_ValidStringFromGiven_SomeAsGiven(T expected) =>
+        protected void ParseT_ValidStringFromGiven_SomeAsGiven([DisallowNull]T expected) =>
             ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString());
 
-        protected void ParseT_ValidStringFromGivenToLower_SomeAsGiven(T expected) =>
+        protected void ParseT_ValidStringFromGivenToLower_SomeAsGiven([DisallowNull]T expected) =>
             ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString().ToLower());
 
         private void ParseT_ValidStringFromGiven_SomeAsGiven(T expected, string value)

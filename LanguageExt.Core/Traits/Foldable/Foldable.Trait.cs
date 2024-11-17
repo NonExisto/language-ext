@@ -404,13 +404,13 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
     /// Find the first element that match the predicate
     /// </summary>
     public static virtual Option<A> Find<A>(Func<A, bool> predicate, K<T, A> ta) =>
-        T.FoldWhile(a => s => predicate(a) ? Some(a) : s, s => s.State.IsNone, Option<A>.None, ta);
+        T.FoldWhile(a => s => predicate(a) ? Optional(a) : s, s => s.State.IsNone, Option<A>.None, ta);
 
     /// <summary>
     /// Find the last element that match the predicate
     /// </summary>
     public static virtual Option<A> FindBack<A>(Func<A, bool> predicate, K<T, A> ta) =>
-        T.FoldBackWhile(s => a => predicate(a) ? Some(a) : s, s => s.State.IsNone, Option<A>.None, ta);
+        T.FoldBackWhile(s => a => predicate(a) ? Optional(a) : s, s => s.State.IsNone, Option<A>.None, ta);
 
     /// <summary>
     /// Find the the elements that match the predicate
@@ -442,13 +442,13 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
     /// Get the head item in the foldable or `None`
     /// </summary>
     public static virtual Option<A> Head<A>(K<T, A> ta) =>
-        T.FoldWhile(x => _ => Some(x), s => s.State.IsNone, Option<A>.None, ta);
+        T.FoldWhile(x => _ => Optional(x), s => s.State.IsNone, Option<A>.None, ta);
 
     /// <summary>
     /// Get the head item in the foldable or `None`
     /// </summary>
     public static virtual Option<A> Last<A>(K<T, A> ta) =>
-        T.FoldBackWhile(_ => Some, s => s.State.IsNone, Option<A>.None, ta);
+        T.FoldBackWhile(_ => Prelude.Optional, s => s.State.IsNone, Option<A>.None, ta);
     
     /// <summary>
     /// Map each element of a structure to an 'Applicative' action, evaluate these
@@ -486,9 +486,8 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
         where OrdA : Ord<A> =>
         T.Fold(x => s => s switch
                          {
-                             { IsNone: true }                                             => Some(x),
-                             { IsSome: true, Value: null }                                => s,
-                             { IsSome: true, Value: var s1 } when OrdA.Compare(x, s1) < 0 => Some(x),
+                             { IsNone: true }                                             => Optional(x),
+                             { IsSome: true, Value: var s1 } when OrdA.Compare(x, s1) < 0 => Optional(x),
                              _                                                            => s
                          },
                Option<A>.None,
@@ -515,9 +514,8 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
         where OrdA : Ord<A> =>
         T.Fold(x => s => s switch
                          {
-                             { IsNone: true }                                             => Some(x),
-                             { IsSome: true, Value: null }                                => Some(x),
-                             { IsSome: true, Value: var s1 } when OrdA.Compare(x, s1) > 0 => Some(x),
+                             { IsNone: true }                                             => Optional(x),
+                             { IsSome: true, Value: var s1 } when OrdA.Compare(x, s1) > 0 => Optional(x),
                              _                                                            => s
                          },
                Option<A>.None,
@@ -591,13 +589,13 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
     public static virtual Option<A> At<A>(K<T, A> ta, Index index) =>
         index.IsFromEnd
             ? T.FoldBackWhile(s => a => s.Index == index.Value
-                                            ? (s.Index + 1, Some(a))
+                                            ? (s.Index + 1, Optional(a))
                                             : (s.Index + 1, Option<A>.None),
                               s => s.State.Result.IsNone,
                               (Index: 0, Result: Option<A>.None),
                               ta).Result
             : T.FoldWhile(a => s => s.Index == index.Value
-                                        ? (s.Index + 1, Some(a))
+                                        ? (s.Index + 1, Optional(a))
                                         : (s.Index + 1, Option<A>.None),
                           s => s.State.Result.IsNone,
                           (Index: 0, Result: Option<A>.None),

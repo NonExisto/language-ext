@@ -215,13 +215,13 @@ public record VectorClock<OrdA, NumB, A, B>(Seq<(A, B)> Entries)
         Seq<Option<(A, B)>> go(Seq<(A, B)> es1, Seq<(A, B)> es2) =>
             (es1.IsEmpty, es2.IsEmpty) switch
             {
-                (true,  _) => es2.Map(xy => mk(xy.Item1, f(xy.Item1, None, Some(xy.Item2)))),
-                (_,  true) => es1.Map(xy => mk(xy.Item1, f(xy.Item1, Some(xy.Item2), None))),
+                (true,  _) => es2.Map(xy => mk(xy.Item1, f(xy.Item1, None, Optional(xy.Item2)))),
+                (_,  true) => es1.Map(xy => mk(xy.Item1, f(xy.Item1, Optional(xy.Item2), None))),
                 _ => compare<OrdA, A>(es1.Head.Value.Item1, es2.Head.Value.Item1) switch
                      {
-                         < 0 => mk(es1.Head.Value.Item1, f(es1.Head.Value.Item1, Some(es1.Head.Value.Item2), None)).Cons(go(es1.Tail, es2)),
-                         0   => mk(es1.Head.Value.Item1, f(es1.Head.Value.Item1, Some(es1.Head.Value.Item2), Some(es2.Head.Value.Item2))).Cons(go(es1.Tail, es2.Tail)),
-                         _   => mk(es2.Head.Value.Item1, f(es2.Head.Value.Item1, None, Some(es2.Head.Value.Item2))).Cons(go(es1, es2.Tail))
+                         < 0 => mk(es1.Head.Value.Item1, f(es1.Head.Value.Item1, Optional(es1.Head.Value.Item2), None)).Cons(go(es1.Tail, es2)),
+                         0   => mk(es1.Head.Value.Item1, f(es1.Head.Value.Item1, Optional(es1.Head.Value.Item2), Optional(es2.Head.Value.Item2))).Cons(go(es1.Tail, es2.Tail)),
+                         _   => mk(es2.Head.Value.Item1, f(es2.Head.Value.Item1, None, Optional(es2.Head.Value.Item2))).Cons(go(es1, es2.Tail))
                      }
             };
 
@@ -242,7 +242,7 @@ public record VectorClock<OrdA, NumB, A, B>(Seq<(A, B)> Entries)
                 (null, null) => None,
                 (B x, null)  => Some(x),
                 (null, B y)  => Some(y),
-                (B x, B y)   => Some(Ord.max<NumB, B>(x, y)),
+                (B x, B y)   => Optional(Ord.max<NumB, B>(x, y)),
                 _            => None
             };
     }

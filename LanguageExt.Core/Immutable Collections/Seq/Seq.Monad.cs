@@ -80,8 +80,8 @@ public sealed partial class Seq :
     {
         var list = ta.As();
         return index.Value >= 0 && index.Value < list.Count
-                   ? Some(list[index])
-                   : Option<A>.None;
+                   ? Optional(list[index])
+                   : default;
     }
 
     static Option<A> Foldable<Seq>.Head<A>(K<Seq, A> ta) =>

@@ -605,7 +605,7 @@ public abstract class Fin<A> :
     [Pure, MethodImpl(Opt.Default)]
     public Option<A> ToOption() =>
         IsSucc
-            ? Option<A>.Some(SuccValue)
+            ? Optional(SuccValue)
             : Option<A>.None;
 
     /// <summary>

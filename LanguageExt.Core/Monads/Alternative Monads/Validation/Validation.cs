@@ -339,7 +339,7 @@ public abstract record Validation<F, A> :
     public Option<A> ToOption() =>
         this switch
         {
-            Validation.Success<F, A> (var x) => Option<A>.Some(x),
+            Validation.Success<F, A> (var x) => Optional(x),
             Validation.Fail<F, A>            => Option<A>.None,
             _                                => throw new NotSupportedException()
         };
