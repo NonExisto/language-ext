@@ -207,7 +207,7 @@ public record StreamT<M, A>(Func<K<M, MList<A>>>  runListT) :
                           Option<(A Head, StreamT<M, A> Tail)>.None,
 
                       MCons<M, A>(var h, var t) =>
-                          Option<(A Head, StreamT<M, A> Tail)>.Some((h, new StreamT<M, A>(t))),
+                          Some((h, new StreamT<M, A>(t))),
 
                       _ => throw new NotSupportedException()
                   });
