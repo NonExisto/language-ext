@@ -89,13 +89,13 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Unsafe access to the right-value 
     /// </summary>
-    /// <exception cref="InvalidCastException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
     internal abstract A SuccessValue { get; }
 
     /// <summary>
     /// Unsafe access to the left-value 
     /// </summary>
-    /// <exception cref="InvalidCastException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
     internal abstract F FailValue { get; }
 
     /// <summary>
@@ -163,7 +163,7 @@ public abstract record Validation<F, A> :
     /// Explicit conversion operator from `` to `R`
     /// </summary>
     /// <param name="value">Value, must not be null.</param>
-    /// <exception cref="InvalidCastException">Value is not in a Right state</exception>
+    /// <exception cref="InvalidOperationException">Value is not in a Right state</exception>
     [Pure]
     public static explicit operator A(Validation<F, A> ma) =>
         ma.SuccessValue;
@@ -172,7 +172,7 @@ public abstract record Validation<F, A> :
     /// Explicit conversion operator from `Validation` to `L`
     /// </summary>
     /// <param name="value">Value, must not be null.</param>
-    /// <exception cref="InvalidCastException">Value is not in a Fail state</exception>
+    /// <exception cref="InvalidOperationException">Value is not in a Fail state</exception>
     [Pure]
     public static explicit operator F(Validation<F, A> ma) =>
         ma.FailValue;
@@ -272,11 +272,7 @@ public abstract record Validation<F, A> :
         obj is Validation<F, A> t ? CompareTo(t) : 1;
 
     [Pure]
-    public IEnumerator<A> GetEnumerator()
-    {
-        foreach (var x in SuccessSpan().ToArray()) 
-            yield return x;
-    }
+    public IEnumerator<A> GetEnumerator() => Match<IEnumerable<A>>(a => [a], _ => []).GetEnumerator();
 
     /// <summary>
     /// Project the value into a `Lst<F>`
@@ -736,56 +732,11 @@ public abstract record Validation<F, A> :
     /// all pass then the Success values are collected into a `Seq`.  
     /// </summary>
     [Pure]
-    public static Validation<F, Seq<A>> operator &(Validation<F, A> lhs, Validation<F, A> rhs) =>
+    public static Validation<F, A> operator &(Validation<F, A> lhs, Validation<F, A> rhs) =>
         (lhs, rhs) switch
         {
             ({ IsSuccess: true } , { IsSuccess: true }) => 
-                Validation<F, Seq<A>>.Success([lhs.SuccessValue, rhs.SuccessValue]),
-            
-            ({ IsFail: true } , {IsFail: true}) => 
-                lhs.FailValue.Combine(rhs.FailValue),
-            
-            ({ IsFail: true } , _) => 
-                lhs.FailValue,
-            
-            _ => 
-                rhs.FailValue
-        };
-    
-    /// <summary>
-    /// If any items are Fail then the errors are collected and returned.  If they
-    /// all pass then the Success values are collected into a `Seq`.  
-    /// </summary>
-    [Pure]
-    public static Validation<F, Seq<A>> operator &(Validation<F, Seq<A>> lhs, Validation<F, A> rhs) =>
-        (lhs, rhs) switch
-        {
-            ({ IsSuccess: true } , { IsSuccess: true }) => 
-                Validation<F, Seq<A>>.Success(lhs.SuccessValue.Add(rhs.SuccessValue)),
-            
-            ({ IsFail: true } , {IsFail: true}) => 
-                lhs.FailValue.Combine(rhs.FailValue),
-            
-            ({ IsFail: true } , _) => 
-                lhs.FailValue,
-            
-            _ => 
-                rhs.FailValue
-        };
-    
-    /// <summary>
-    /// If any items are Fail then the errors are collected and returned.  If they
-    /// all pass then the Success values are collected into a `Seq`.  
-    /// </summary>
-    [Pure]
-    public static Validation<F, Seq<A>> operator &(Validation<F, A> lhs, Validation<F, Seq<A>> rhs) =>
-        (lhs, rhs) switch
-        {
-            ({ IsSuccess: true } , { IsSuccess: true }) => 
-                Validation<F, Seq<A>>.Success(lhs.SuccessValue.Cons(rhs.SuccessValue)),
-            
-            ({ IsFail: true } , {IsFail: true}) => 
-                lhs.FailValue.Combine(rhs.FailValue),
+                lhs,
             
             ({ IsFail: true } , _) => 
                 lhs.FailValue,
@@ -879,8 +830,10 @@ public abstract record Validation<F, A> :
     /// Equality override
     /// </summary>
     [Pure]
+#pragma warning disable CS8851 // Record defines 'Equals' but not 'GetHashCode'. Reason: Those are in derived records
     public virtual bool Equals(Validation<F, A>? other) =>
         other is not null && Equals<EqDefault<F>, EqDefault<A>>(other);
+#pragma warning restore CS8851 // Record defines 'Equals' but not 'GetHashCode'.
 
     /// <summary>
     /// Equality override
@@ -1125,11 +1078,6 @@ public abstract record Validation<F, A> :
     [Pure]
     public static implicit operator Validation<F, A>(Fail<F> mr) =>
         Fail(mr.Value);
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(IsSuccess, IsFail, SuccessValue, FailValue);
-    }
 }
 
 /// <summary>

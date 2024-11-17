@@ -87,19 +87,13 @@ public static partial class Validation
                 _             => false
             };
 
-        /// <summary>
-        /// Unsafe access to the right-value 
-        /// </summary>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <inheritdoc/>
         internal override A SuccessValue =>
             Value;
 
-        /// <summary>
-        /// Unsafe access to the left-value 
-        /// </summary>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <inheritdoc/>
         internal override F FailValue =>
-            throw new InvalidCastException();
+            throw new InvalidOperationException();
 
         /// <summary>
         /// Maps the value in the Validation if it's in a Success state

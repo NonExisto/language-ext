@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using LanguageExt.Common;
 using Xunit;
 
@@ -112,6 +113,43 @@ public class ValidationTests
                   });
     }
 
+    [Fact]
+    public void ValidationShouldBeTrue()
+    {
+        var success = Success<Seq<string>, int>(42);
+        var failure = Fail<Seq<string>, int>(["something went wrong"]);
+        bool switched = false;
+        if(success || Fail())
+        {
+            switched = true;
+        }
+        switched.Should().BeTrue();
+
+        if(failure || success)
+        {
+            switched = false;
+        }
+        switched.Should().BeFalse();
+    }
+
+    [Fact]
+    public void OptionShouldBeFalse()
+    {
+        var success = Success<Seq<string>, int>(42);
+        var failure = Fail<Seq<string>, int>(["something went wrong"]);
+        if(failure && Fail())
+        {
+            Assert.Fail("none should be false");
+        }
+        
+        if(success && failure)
+        {
+            Assert.Fail("none should be false");
+        }
+    }
+
+    private static Validation<Seq<string>, int> Fail() => throw new InvalidOperationException("Should not happen");
+
     /// <summary>
     /// Validates the string has only ASCII characters
     /// </summary>
@@ -189,7 +227,7 @@ public class ValidationTests
     {
         var fakeDateTime = new DateTime(year: 2019, month: 1, day: 1);
         var cardHolderV  = ValidateCardHolder(cardHolder);
-        var numberV      = DigitsOnly(number) & MaxStrLength(16)(number);
+        var numberV      = DigitsOnly(number) + MaxStrLength(16)(number);
         var validToday   = ValidExpiration(fakeDateTime.Month, fakeDateTime.Year);
 
         // This falls back to monadic behaviour because validToday needs both
@@ -204,7 +242,7 @@ public class ValidationTests
         // the errors are collected.  If they have passed then the results are
         // passed to the lambda function allowing the creation of the
         // CreditCard object.
-        return (cardHolderV, numberV, monthYear).Apply((c, num, my) => new CreditCard(c, num[0], my.month, my.year)).As();
+        return (cardHolderV, numberV, monthYear).Apply((c, num, my) => new CreditCard(c, num, my.month, my.year)).As();
     }
 
     public class CreditCard
