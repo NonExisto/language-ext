@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using System;
+using FluentAssertions;
 
 namespace LanguageExt.Tests
 {
@@ -194,25 +195,18 @@ namespace LanguageExt.Tests
         {
             var some = Some(0);
             var none = Option<int>.None;
-            if(some || none)
+            bool switched = false;
+            if(some || Fail())
             {
-                Assert.True(true);
+                switched = true;
             }
-            else
-            {
-                Assert.False(true);
-            }
+            switched.Should().BeTrue();
 
-            
-            if(none)
+            if(none || some)
             {
-                Assert.True(false);
+                switched = false;
             }
-            else
-            {
-                Assert.False(false);
-            }
-
+            switched.Should().BeFalse();
         }
 
         [Fact]
@@ -220,26 +214,18 @@ namespace LanguageExt.Tests
         {
             var some = Some(0);
             var none = Option<int>.None;
-            if(none && some)
+            if(none && Fail())
             {
-                Assert.True(false);
+                Assert.Fail("none should be false");
             }
-            else
-            {
-                Assert.False(false);
-            }
-
             
             if(some && none)
             {
-                Assert.True(false);
+                Assert.Fail("none should be false");
             }
-            else
-            {
-                Assert.False(false);
-            }
-
         }
+
+        private static Option<int> Fail() => throw new InvalidOperationException("Should not happen");
 
         private static Option<int> GetNullable(bool select) =>
             select
