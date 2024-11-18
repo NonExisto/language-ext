@@ -207,6 +207,12 @@ namespace LanguageExt.Tests
                 switched = false;
             }
             switched.Should().BeFalse();
+
+            if(none || none)
+            {
+                switched = true;
+            }
+            switched.Should().BeFalse();
         }
 
         [Fact]
@@ -214,15 +220,24 @@ namespace LanguageExt.Tests
         {
             var some = Some(0);
             var none = Option<int>.None;
+            bool switched = false;
             if(none && Fail())
             {
-                Assert.Fail("none should be false");
+                switched = true;
             }
+            switched.Should().BeFalse();
             
             if(some && none)
             {
-                Assert.Fail("none should be false");
+                switched = true;
             }
+            switched.Should().BeFalse();
+
+            if(some && some)
+            {
+               switched = true;
+            }
+            switched.Should().BeTrue();
         }
 
         private static Option<int> Fail() => throw new InvalidOperationException("Should not happen");

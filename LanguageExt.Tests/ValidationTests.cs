@@ -130,6 +130,12 @@ public class ValidationTests
             switched = false;
         }
         switched.Should().BeFalse();
+
+        if(failure || failure)
+        {
+            switched = true;
+        }
+        switched.Should().BeFalse();
     }
 
     [Fact]
@@ -137,15 +143,24 @@ public class ValidationTests
     {
         var success = Success<Seq<string>, int>(42);
         var failure = Fail<Seq<string>, int>(["something went wrong"]);
+        bool switched = false;
         if(failure && Fail())
         {
-            Assert.Fail("none should be false");
+            switched = true;
         }
+        switched.Should().BeFalse();
         
         if(success && failure)
         {
-            Assert.Fail("none should be false");
+            switched = true;
         }
+        switched.Should().BeFalse();
+
+        if(success && success)
+        {
+            switched = true;
+        }
+        switched.Should().BeTrue();
     }
 
     private static Validation<Seq<string>, int> Fail() => throw new InvalidOperationException("Should not happen");
