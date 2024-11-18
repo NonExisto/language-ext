@@ -7,7 +7,7 @@ namespace LanguageExt.Tests;
 
 public class ValidationTests
 {
-    public Func<string, string> ToUpper => x => x.ToUpper();
+    public Func<string, string> ToUpper => static x => x.ToUpper();
 
     [Fact]
     public void ValidationSeq_MapFails_Failure()
@@ -70,14 +70,14 @@ public class ValidationTests
         var res = ValidateCreditCard("Paul", "1234567891012345", "10", "2020");
 
         res.Match(
-            Succ: cc =>
+            Succ: static cc =>
                   {
                       Assert.Equal("Paul", cc.CardHolder);
                       Assert.Equal(10, cc.Month);
                       Assert.Equal(2020, cc.Year);
                       Assert.Equal("1234567891012345", cc.Number);
                   },
-            Fail: err => Assert.Fail("should never get here"));
+            Fail: static err => Assert.Fail("should never get here"));
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class ValidationTests
         Assert.True(res.IsFail);
 
         res.Match(
-            Succ: _ => Assert.Fail("should never get here"),
-            Fail: errors =>
+            Succ: static _ => Assert.Fail("should never get here"),
+            Fail: static errors =>
                   {
                       Assert.Equal(2, errors.Count);
                       Assert.Equal("only numbers are allowed", errors.Head.Message);
@@ -103,8 +103,8 @@ public class ValidationTests
         Assert.True(res.IsFail);
 
         res.Match(
-            Succ: _ => Assert.Fail("should never get here"),
-            Fail: errors =>
+            Succ: static _ => Assert.Fail("should never get here"),
+            Fail: static errors =>
                   {
                       Assert.Equal(3, errors.Count);
                       Assert.Equal("only numbers are allowed", errors.Head.Message);
@@ -169,7 +169,7 @@ public class ValidationTests
     /// Validates the string has only ASCII characters
     /// </summary>
     public static Validation<Error, string> AsciiOnly(string str) =>
-        str.AsIterable().ForAll(c => c <= 0x7f)
+        str.AsIterable().ForAll(static c => c <= 0x7f)
             ? Success<Error, string>(str)
             : Fail<Error, string>(Error.New("only ascii characters are allowed"));
 

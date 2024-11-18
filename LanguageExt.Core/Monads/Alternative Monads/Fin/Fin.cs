@@ -257,6 +257,15 @@ public abstract class Fin<A> :
     [Pure, MethodImpl(Opt.Default)]
     public static bool operator false(Fin<A> ma) =>
         ma.IsFail;
+    
+    [Pure]
+    public static Fin<A> operator &(Fin<A> lhs, Fin<A> rhs) =>
+        (lhs, rhs) switch
+        {
+            ({ IsSucc: true } , { IsSucc: true }) => lhs,
+            ({ IsFail: true } , _)                => lhs,
+            _                                     => rhs
+        };
 
     [Pure, MethodImpl(Opt.Default)]
     public static bool operator ==(Fin<A> ma, Fin<A> mb) =>
@@ -443,40 +452,10 @@ public abstract class Fin<A> :
         !(lhs! == rhs);
 
     [Pure, MethodImpl(Opt.Default)]
-    static Option<T> convert<T>(in object? value)
-    {
-        if (value == null)
-        {
-            return None;
-        }
-
-        try
-        {
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
-        catch
-        {
-            return None;
-        }
-    }
-
-    [Pure, MethodImpl(Opt.Default)]
-    internal Fin<B> Cast<B>() =>
-        Bind(x => convert<B>(x)
-                    .Map(Fin<B>.Succ)
-                    .IfNone(() => Fin<B>.Fail(Error.New($"Can't cast success value of `{nameof(A)}` to `{nameof(B)}` "))));
-
-    [Pure, MethodImpl(Opt.Default)]
     public int CompareTo(Fin<A>? other) =>
         other is null
             ? 1
             : CompareTo<OrdDefault<A>>(other);
-
-    /*
-    [Pure, MethodImpl(Opt.Default)]
-    public virtual bool Equals(Fin<A>? other) =>
-        other is not null && Equals<EqDefault<A>>(other);
-        */
 
     [Pure, MethodImpl(Opt.Default)]
     public IEnumerator<A> GetEnumerator()

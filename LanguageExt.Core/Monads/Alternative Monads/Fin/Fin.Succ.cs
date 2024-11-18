@@ -87,18 +87,13 @@ public partial class Fin
                 _         => false
             };
 
-        /// <summary>
-        /// Unsafe access to the success value 
-        /// </summary>
+        ///<inheritdoc/>
         internal override A SuccValue =>
             Value;
 
-        /// <summary>
-        /// Unsafe access to the fail value 
-        /// </summary>
-        /// <exception cref="InvalidCastException"></exception>
+        ///<inheritdoc/>
         internal override Error FailValue =>
-            throw new InvalidCastException();
+            throw new InvalidOperationException();
 
         /// <summary>
         /// Maps the value in the structure

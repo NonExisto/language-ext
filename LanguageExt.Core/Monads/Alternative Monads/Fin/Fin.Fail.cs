@@ -79,16 +79,11 @@ public partial class Fin
         public override bool Equals<EqA>(Fin<A> other) =>
             other is Fail<A>;
 
-        /// <summary>
-        /// Unsafe access to the success value 
-        /// </summary>
+        ///<inheritdoc/>
         internal override A SuccValue =>
-            throw new InvalidCastException();
+            throw new InvalidOperationException();
 
-        /// <summary>
-        /// Unsafe access to the fail value 
-        /// </summary>
-        /// <exception cref="InvalidCastException"></exception>
+        ///<inheritdoc/>
         internal override Error FailValue =>
             Error;
 

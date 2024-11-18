@@ -128,8 +128,8 @@ public class FunctorLawTests
     [Fact]
     public void Fin()
     {
-        var fa = Fin<int>.Succ(1);
-        var fx = Fin<int>.Fail(Errors.TimedOut);
+        var fa = FinSucc(1);
+        var fx = FinFail<int>(Errors.TimedOut);
         FunctorLaw<Fin>.assert(fa);
         FunctorLaw<Fin>.assert(fx);
     }

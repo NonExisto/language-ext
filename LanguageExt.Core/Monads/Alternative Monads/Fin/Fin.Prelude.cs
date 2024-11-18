@@ -347,25 +347,8 @@ public static partial class Prelude
     /// <param name="xs">Fin list</param>
     /// <returns>A tuple containing the an enumerable of Erorr and an enumerable of Succ</returns>
     [Pure]
-    public static (IEnumerable<Error> Fails, IEnumerable<A> Succs) partition<A>(IEnumerable<Fin<A>> xs)
-    {
-        var fs = new List<Error>();
-        var rs = new List<A>();
-            
-        foreach(var x in xs)
-        {
-            if (x.IsSucc)
-            {
-                rs.Add(x.SuccValue);
-            }
-            if (x.IsFail)
-            {
-                fs.Add(x.FailValue);
-            }
-        }
-
-        return (fs, rs);
-    }
+    public static (IEnumerable<Error> Fails, IEnumerable<A> Succs) partition<A>(IEnumerable<Fin<A>> xs) => 
+        xs.Partition();
 
     /// <summary>
     /// Partitions a list of 'Fin' into two lists.
@@ -378,23 +361,6 @@ public static partial class Prelude
     /// <param name="xs">Fin list</param>
     /// <returns>A tuple containing the an enumerable of Erorr and an enumerable of Succ</returns>
     [Pure]
-    public static (Seq<Error> Fails, Seq<A> Succs) partition<A>(Seq<Fin<A>> xs)
-    {
-        var fs = Seq<Error>();
-        var rs = Seq<A>();
-            
-        foreach(var x in xs)
-        {
-            if (x.IsSucc)
-            {
-                rs = rs.Add(x.SuccValue);
-            }
-            if (x.IsFail)
-            {
-                fs = fs.Add(x.FailValue);
-            }
-        }
-
-        return (fs, rs);
-    }
+    public static (Seq<Error> Fails, Seq<A> Succs) partition<A>(Seq<Fin<A>> xs) => 
+        xs.Partition();
 }

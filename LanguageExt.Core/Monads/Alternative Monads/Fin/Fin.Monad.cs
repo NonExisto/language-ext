@@ -15,7 +15,7 @@ public sealed partial class Fin :
         {
             Succ<A> (var r) => f(r),
             Fail<A> (var l) => Fin<B>.Fail(l),
-            _               => throw new NotSupportedException()
+            _               => Fin<B>.Fail(Errors.Bottom)
         };
 
     static K<Fin, B> Functor<Fin>.Map<A, B>(Func<A, B> f, K<Fin, A> ma) =>
@@ -23,7 +23,7 @@ public sealed partial class Fin :
         {
             Succ<A> (var r) => Fin<B>.Succ(f(r)),
             Fail<A> (var l) => Fin<B>.Fail(l),
-            _               => throw new NotSupportedException()
+            _               => Fin<B>.Fail(Errors.Bottom)
         };
 
     static K<Fin, A> Applicative<Fin>.Pure<A>(A value) =>
@@ -36,7 +36,7 @@ public sealed partial class Fin :
             (Fail<Func<A, B>> (var e1), Fail<A> (var e2)) => Fin<B>.Fail(e1 + e2),
             (Fail<Func<A, B>> (var e1), _)                => Fin<B>.Fail(e1),
             (_, Fail<A> (var e2))                         => Fin<B>.Fail(e2),
-            _                                             => throw new NotSupportedException()
+            _                                             => Fin<B>.Fail(Errors.Bottom)
         };
 
     static K<Fin, B> Applicative<Fin>.Action<A, B>(K<Fin, A> ma, K<Fin, B> mb) =>

@@ -727,10 +727,6 @@ public abstract record Validation<F, A> :
     public static Validation<F, A> operator |(Validation<F, A> lhs, CatchM<F, Validation<F>, A> rhs) =>
         lhs.Catch(rhs).As();
     
-    /// <summary>
-    /// If any items are Fail then the errors are collected and returned.  If they
-    /// all pass then the Success values are collected into a `Seq`.  
-    /// </summary>
     [Pure]
     public static Validation<F, A> operator &(Validation<F, A> lhs, Validation<F, A> rhs) =>
         (lhs, rhs) switch
