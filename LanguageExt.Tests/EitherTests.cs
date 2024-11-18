@@ -1,4 +1,7 @@
-﻿using Xunit;
+﻿using System;
+using FluentAssertions;
+using LanguageExt.Common;
+using Xunit;
 
 namespace LanguageExt.Tests;
 
@@ -138,4 +141,56 @@ public class EitherTests
     private static Either<string, int> Two => 2;
     private static Either<string, int> Four => 4;
     private static Either<string, int> Six => 6;
+
+    [Fact]
+    public void EitherShouldBeTrue()
+    {
+        var success = Right<Error, int>(42);
+        var failure = Left<Error, int>(Errors.Cancelled);
+        bool switched = false;
+        if(success || Fail())
+        {
+            switched = true;
+        }
+        switched.Should().BeTrue();
+
+        if(failure || success)
+        {
+            switched = false;
+        }
+        switched.Should().BeFalse();
+
+        if(failure || failure)
+        {
+            switched = true;
+        }
+        switched.Should().BeFalse();
+    }
+
+    [Fact]
+    public void EitherShouldBeFalse()
+    {
+        var success = Right<Error, int>(42);
+        var failure = Left<Error, int>(Errors.Cancelled);
+        bool switched = false;
+        if(failure && Fail())
+        {
+            switched = true;
+        }
+        switched.Should().BeFalse();
+        
+        if(success && failure)
+        {
+            switched = true;
+        }
+        switched.Should().BeFalse();
+
+        if(success && success)
+        {
+            switched = true;
+        }
+        switched.Should().BeTrue();
+    }
+
+    private static Either<Error, int> Fail() => throw new InvalidOperationException("Should not happen");
 }

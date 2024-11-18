@@ -7,7 +7,7 @@ namespace LanguageExt.Tests;
 
 public class FinTests
 {
-		[Fact]
+	[Fact]
     public void FinShouldBeTrue()
     {
         var success = FinSucc(42);

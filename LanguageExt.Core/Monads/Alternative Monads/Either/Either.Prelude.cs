@@ -549,9 +549,6 @@ public static partial class Prelude
     /// <param name="self">Either list</param>
     /// <returns>A tuple containing the iterables of L and R</returns>
     [Pure]
-    public static (Seq<L> Lefts, Seq<R> Rights) partition<L, R>(Seq<Either<L, R>> self)
-    {
-        var (ls, rs) = partition(self.AsEnumerable());
-        return (ls.AsIterable().ToSeq(), rs.AsIterable().ToSeq());
-    }
+    public static (Seq<L> Lefts, Seq<R> Rights) partition<L, R>(Seq<Either<L, R>> self) => 
+        self.Partition();
 }

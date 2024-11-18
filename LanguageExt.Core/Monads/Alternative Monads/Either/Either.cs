@@ -609,6 +609,15 @@ public abstract record Either<L, R> :
     public static bool operator false(Either<L, R> value) =>
         value is Either.Left<L, R>;
 
+    [Pure]
+    public static Either<L, R> operator &(Either<L, R> lhs, Either<L, R> rhs) =>
+        (lhs, rhs) switch
+        {
+            ({ IsRight: true } , { IsRight: true }) => lhs,
+            ({ IsLeft: true } , _)                 => lhs,
+            _                                       => rhs
+        };
+
     /// <summary>
     /// CompareTo override
     /// </summary>

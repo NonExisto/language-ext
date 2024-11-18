@@ -129,7 +129,7 @@ public static partial class EitherExtensions
     [Pure]
     public static (Seq<L> Lefts, Seq<R> Rights) Partition<L, R>(this Seq<Either<L, R>> self)
     {
-        var (l, r) =self.AsEnumerable().Partition();
+        var (l, r) = self.AsEnumerable().Partition();
         return (l.AsIterable().ToSeq(), r.AsIterable().ToSeq());
     }
 
