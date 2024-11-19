@@ -29,4 +29,20 @@ internal static class Bit
         var c8 = (c4 + (c4                                >> 4)) & 0x0f0f0f0f;
         return (c8 * 0x01010101) >> 24;
     }
+
+    /// <summary>
+    /// Finds the number of 1-bits below the bit at `location`
+    /// This function is used to find where in the array of entries or nodes 
+    /// the item should be inserted
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Index(uint bitmap, uint location) =>
+        Count((int)bitmap & ((int)location - 1));
+
+    /// <summary>
+    /// Returns the value used to index into the bit vector
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint Mask(int index) =>
+        (uint)(1 << index);
 }

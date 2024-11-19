@@ -2057,12 +2057,12 @@ internal sealed class TrieMap<K, V> :
         public override (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var hashIndex = Bit.Get(hash, section);
-            var mask      = Mask(hashIndex);
+            var mask      = Bit.Mask(hashIndex);
 
             if (Bit.Get(EntryMap, mask))
             {
                 // If key belongs to an entry
-                var ind = Index(EntryMap, mask);
+                var ind = Bit.Index(EntryMap, mask);
                 if (equalityComparer.Equals(Items[ind].Key, key))
                 {
                     var v = Items[ind].Value;
@@ -2083,7 +2083,7 @@ internal sealed class TrieMap<K, V> :
             else if (Bit.Get(NodeMap, mask))
             {
                 //If key lies in a sub-node
-                var ind = Index(NodeMap, mask);
+                var ind = Bit.Index(NodeMap, mask);
                 var (cd, subNode, v) = Nodes[ind].Remove(key, hash, section.Next(), equalityComparer);
                 if (cd == 0) return (0, this, default);
 
@@ -2100,7 +2100,7 @@ internal sealed class TrieMap<K, V> :
                             {
                                 // Build a new Entries for this level with the sublevel mask fixed
                                 return (cd, new Entries(
-                                            Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0].Key!),
+                                            Bit.Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0].Key!),
                                                          section)),
                                             0,
                                             Clone(subEntries.Items),
@@ -2114,7 +2114,7 @@ internal sealed class TrieMap<K, V> :
                                         new Entries(
                                             Bit.Set(EntryMap, mask, true),
                                             Bit.Set(NodeMap, mask, false),
-                                            Insert(Items, Index(EntryMap, mask), subEntries.Items[0]),
+                                            Insert(Items, Bit.Index(EntryMap, mask), subEntries.Items[0]),
                                             RemoveAt(Nodes, ind)),
                                         v);
                             }
@@ -2143,15 +2143,13 @@ internal sealed class TrieMap<K, V> :
 
         public override (bool Found, K Key, V? Value) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {                                                                                         
-            // var hashIndex = Bit.Get(hash, section);
-            // Mask(hashIndex)
-            var mask = (uint)(1 << (int)((hash & (uint)(Sec.Mask << section.Offset)) >> section.Offset));
+            var hashIndex = Bit.Get(hash, section);
+            
+            var mask = Bit.Mask(hashIndex);
 
-            // if(Bit.Get(EntryMap, mask))
-            if ((EntryMap & mask) == mask)                                                        
+            if(Bit.Get(EntryMap, mask))
             {
-                // var entryIndex = Index(EntryMap, mask);
-                var entryIndex = Bit.Count((int)EntryMap & (((int)mask) - 1));                     
+                var entryIndex = Bit.Index(EntryMap, mask);
                 if (equalityComparer.Equals(Items[entryIndex].Key, key))
                 {
                     var (Key, Value) = Items[entryIndex];
@@ -2162,11 +2160,9 @@ internal sealed class TrieMap<K, V> :
                     return default;
                 }
             }
-            // else if (Bit.Get(NodeMap, mask))
-            else if ((NodeMap & mask) == mask)                                                   
+            else if (Bit.Get(NodeMap, mask))
             {
-                // var entryIndex = Index(NodeMap, mask);
-                var entryIndex = Bit.Count((int)NodeMap & ((int)mask - 1));                     
+                var entryIndex = Bit.Index(NodeMap, mask);
                 return Nodes[entryIndex].Read(key, hash, section.Next(), equalityComparer);
             }
             else
@@ -2177,15 +2173,13 @@ internal sealed class TrieMap<K, V> :
 
         public override (int CountDelta, Node Node, V? Old) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
-            // var hashIndex = Bit.Get(hash, section);
-            // var mask = Mask(hashIndex);
-            var mask = (uint)(1 << (int)((hash & (uint)(Sec.Mask << section.Offset)) >> section.Offset));
+            var hashIndex = Bit.Get(hash, section);
+            var mask = Bit.Mask(hashIndex);
 
-            //if (Bit.Get(EntryMap, mask))
-            if((EntryMap & mask) == mask)
+            if (Bit.Get(EntryMap, mask))
             {
-                //var entryIndex = Index(EntryMap, mask);
-                var entryIndex   = Bit.Count((int)EntryMap & ((int)mask - 1));
+                var entryIndex = Bit.Index(EntryMap, mask);
+                
                 var currentEntry = Items[entryIndex];
 
                 if (equalityComparer.Equals(currentEntry.Key, change.Key))
@@ -2232,15 +2226,11 @@ internal sealed class TrieMap<K, V> :
                         }
                     }
 
-                    //var newEntryMap = Bit.Set(EntryMap, mask, false);
-                    var newEntryMap = EntryMap & (~mask);
-
-                    // var newNodeMap = Bit.Set(NodeMap, mask, true);
-                    var newNodeMap = NodeMap | mask;
-
-                    // var nodeIndex = Index(NodeMap, mask);
-                    var nodeIndex = Bit.Count((int)NodeMap & ((int)mask - 1));
-
+                    var newEntryMap = Bit.Set(EntryMap, mask, false);
+                    var newNodeMap = Bit.Set(NodeMap, mask, true);
+                    
+                    var nodeIndex = Bit.Index(NodeMap, mask);
+                    
                     var newNodes = Insert(Nodes, nodeIndex, node);
 
                     return (1, new Entries(
@@ -2253,8 +2243,7 @@ internal sealed class TrieMap<K, V> :
             }
             else if (Bit.Get(NodeMap, mask))
             {
-                // var nodeIndex = Index(NodeMap, mask);
-                var nodeIndex = Bit.Count((int)NodeMap & ((int)mask - 1));
+                var nodeIndex = Bit.Index(NodeMap, mask);
 
                 var nodeToUpdate = Nodes[nodeIndex];
                 var (cd, newNode, ov) = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
@@ -2274,12 +2263,10 @@ internal sealed class TrieMap<K, V> :
                     return (0, this, default);
                 }
 
-                // var entryIndex = Index(EntryMap, mask);
-                var entryIndex = Bit.Count((int)EntryMap & ((int)mask - 1));
-
-                // var entries = Bit.Set(EntryMap, mask, true);
-                var entries = EntryMap | mask;
-
+                var entryIndex = Bit.Index(EntryMap, mask);
+                
+                var entries = Bit.Set(EntryMap, mask, true);
+                
                 var newItems = Insert(Items, entryIndex, change);
                 return (1, new Entries(entries, NodeMap, newItems, Nodes), default);
             }
@@ -2450,7 +2437,7 @@ internal sealed class TrieMap<K, V> :
                 return (0, this, default);
             }
 
-            var dataMap = Mask(Bit.Get(hash, section));
+            var dataMap = Bit.Mask(Bit.Get(hash, section));
             return (1, new Entries(dataMap, 0, [change], Array.Empty<Node>()), default);
         }
 
@@ -2477,13 +2464,13 @@ internal sealed class TrieMap<K, V> :
             if (pair1Index == pair2Index)
             {
                 var node    = Merge(pair1, pair2, pair1Hash, pair2Hash, nextLevel);
-                var nodeMap = Mask(pair1Index);
+                var nodeMap = Bit.Mask(pair1Index);
                 return new Entries(0, nodeMap, Array.Empty<(K, V)>(), [node]);
             }
             else
             {
-                var dataMap = Mask(pair1Index);
-                dataMap = Bit.Set(dataMap, Mask(pair2Index), true);
+                var dataMap = Bit.Mask(pair1Index);
+                dataMap = Bit.Set(dataMap, Bit.Mask(pair2Index), true);
                 return new Entries(dataMap, 0, pair1Index < pair2Index
                                                    ? [pair1, pair2]
                                                    : [pair2, pair1], Array.Empty<Node>());
@@ -2501,22 +2488,6 @@ internal sealed class TrieMap<K, V> :
     IEnumerator IEnumerable.GetEnumerator() =>
         // ReSharper disable once NotDisposedResourceIsReturned
         Root.GetEnumerator();
-
-    /// <summary>
-    /// Finds the number of 1-bits below the bit at `location`
-    /// This function is used to find where in the array of entries or nodes 
-    /// the item should be inserted
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static int Index(uint bitmap, uint location) =>
-        Bit.Count((int)bitmap & ((int)location - 1));
-
-    /// <summary>
-    /// Returns the value used to index into the bit vector
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static uint Mask(int index) =>
-        (uint)(1 << index);
 
     /// <summary>
     /// Sets the item at index. If mutate is true it sets the 
@@ -2606,20 +2577,6 @@ internal sealed class TrieMap<K, V> :
         AsIterable().Map(kv => kv.Value);
 }
 
-internal readonly struct Sec
-{
-    public const int Mask = 31;
-    public readonly int Offset;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Sec(int offset) =>
-        Offset = offset;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Sec Next() =>
-        new (Offset + 5);
-}
-
 internal static class TrieMapExtensions
 {
     public static TrieMap<K, V> Merge<K, V>(this TrieMap<K, V> lhs, TrieMap<K, V> rhs)
@@ -2628,14 +2585,14 @@ internal static class TrieMapExtensions
         var self = lhs;
         foreach (var (Key, Value) in rhs)
         {
-            var ix = self.Find(Key!);
+            var ix = self.Find(Key);
             if (ix.IsSome)
             {
-                self = self.SetItem(Key!, ix.Value!.Combine(Value));
+                self = self.SetItem(Key, ix.Value.Combine(Value));
             }
             else
             {
-                self = self.Add(Key!, Value);
+                self = self.Add(Key, Value);
             }
         }
         return self;
