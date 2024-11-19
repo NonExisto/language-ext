@@ -1055,15 +1055,15 @@ public class AtomHashMap<K, V> :
     public Unit AddRange(IEnumerable<KeyValuePair<K, V>> pairs, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
-        var      spairs = toSeq(pairs);
-        if (spairs.IsEmpty) return default;
+        var      seq = toSeq(pairs);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.AddRange(spairs), null)
-                                        : oitems.AddRangeWithLog(spairs, equalityComparer.require(Reason));
+                                        ? (oitems.AddRange(seq), null)
+                                        : oitems.AddRangeWithLog(seq, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1083,15 +1083,15 @@ public class AtomHashMap<K, V> :
     public Unit SetItems(IEnumerable<KeyValuePair<K, V>> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
-        var      sitems = toSeq(items);
-        if (sitems.IsEmpty) return default;
+        var      seq = toSeq(items);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.SetItems(sitems), null)
-                                        : oitems.SetItemsWithLog(sitems, equalityComparer.require(Reason));
+                                        ? (oitems.SetItems(seq), null)
+                                        : oitems.SetItemsWithLog(seq, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1111,15 +1111,15 @@ public class AtomHashMap<K, V> :
     public Unit SetItems(IEnumerable<(K Key, V Value)> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
-        var      sitems = toSeq(items);
-        if (sitems.IsEmpty) return default;
+        var      seq = toSeq(items);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.SetItems(sitems), null)
-                                        : oitems.SetItemsWithLog(sitems, equalityComparer.require(Reason));
+                                        ? (oitems.SetItems(seq), null)
+                                        : oitems.SetItemsWithLog(seq, equalityComparer.require(Reason));
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);
@@ -1139,15 +1139,15 @@ public class AtomHashMap<K, V> :
     public Unit TrySetItems(IEnumerable<KeyValuePair<K, V>> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
-        var      sitems = toSeq(items);
-        if (sitems.IsEmpty) return default;
+        var      seq = toSeq(items);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.TrySetItems(sitems), null)
-                                        : oitems.TrySetItemsWithLog(sitems, equalityComparer.require(Reason));
+                                        ? (oitems.TrySetItems(seq), null)
+                                        : oitems.TrySetItemsWithLog(seq, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1171,15 +1171,15 @@ public class AtomHashMap<K, V> :
     public Unit TrySetItems(IEnumerable<(K Key, V Value)> items, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw     = default;
-        var      sitems = toSeq(items);
-        if (sitems.IsEmpty) return default;
+        var      seq = toSeq(items);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.TrySetItems(sitems), null)
-                                        : oitems.TrySetItemsWithLog(sitems, equalityComparer.require(Reason));
+                                        ? (oitems.TrySetItems(seq), null)
+                                        : oitems.TrySetItemsWithLog(seq, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1208,15 +1208,15 @@ public class AtomHashMap<K, V> :
     public Unit TrySetItems(IEnumerable<K> keys, Func<V, V> Some, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
         SpinWait sw    = default;
-        var      skeys = toSeq(keys);
-        if (skeys.IsEmpty) return default;
+        var      seq = toSeq(keys);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.TrySetItems(skeys, Some), null)
-                                        : oitems.TrySetItemsWithLog(skeys, Some, equalityComparer.require(Reason));
+                                        ? (oitems.TrySetItems(seq, Some), null)
+                                        : oitems.TrySetItemsWithLog(seq, Some, equalityComparer.require(Reason));
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1238,15 +1238,15 @@ public class AtomHashMap<K, V> :
     public Unit RemoveRange(IEnumerable<K> keys)
     {
         SpinWait sw    = default;
-        var      skeys = toSeq(keys);
-        if (skeys.IsEmpty) return default;
+        var      seq = toSeq(keys);
+        if (seq.IsEmpty) return default;
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.RemoveRange(skeys), null)
-                                        : oitems.RemoveRangeWithLog(skeys);
+                                        ? (oitems.RemoveRange(seq), null)
+                                        : oitems.RemoveRangeWithLog(seq);
             if (ReferenceEquals(oitems, nitems))
             {
                 return default;
@@ -1570,14 +1570,14 @@ public class AtomHashMap<K, V> :
     public Unit Intersect(IEnumerable<K> rhs)
     {
         SpinWait sw   = default;
-        var      srhs = toSeq(rhs);            
+        var      seq = toSeq(rhs);            
         while (true)
         {
             var oitems   = Items;
             var onChange = Change;
             var (nitems, changes) = onChange == null
-                                        ? (oitems.Intersect(srhs), null)
-                                        : oitems.IntersectWithLog(srhs);
+                                        ? (oitems.Intersect(seq), null)
+                                        : oitems.IntersectWithLog(seq);
             if (ReferenceEquals(Interlocked.CompareExchange(ref Items, nitems, oitems), oitems))
             {
                 AnnounceChanges(oitems, nitems, changes);

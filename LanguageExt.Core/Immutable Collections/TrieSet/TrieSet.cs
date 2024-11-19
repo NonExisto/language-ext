@@ -18,22 +18,6 @@ internal sealed class TrieSet<K> :
     IEquatable<TrieSet<K>>,
     IReadOnlyCollection<K>
 {
-    internal enum UpdateType
-    {
-        Add,
-        TryAdd,
-        AddOrUpdate,
-        SetItem,
-        TrySetItem
-    }
-
-    internal enum Tag
-    {
-        Entries,
-        Collision,
-        Empty
-    }
-
     public static TrieSet<K> Empty(IEqualityComparer<K>? equalityComparer = null) => 
         new (equalityComparer ?? getRegisteredEqualityComparerOrDefault<K>(), EmptyNode.Default, 0);
 
@@ -57,12 +41,12 @@ internal sealed class TrieSet<K> :
     {
         Root = EmptyNode.Default;
         _equalityComparer = equalityComparer ?? getRegisteredEqualityComparerOrDefault<K>();
-        var type = tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate;
+        var env = new UpdateContext( tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (K item in items)
         {
             var hash    = (uint)_equalityComparer.GetHashCode(item!);
             Sec section = default;
-            var (countDelta, newRoot) = Root.Update((type, true), item!, hash, section, _equalityComparer);
+            var (countDelta, newRoot) = Root.Update(env, item, hash, section, _equalityComparer);
             _count += countDelta;
             Root = newRoot;
         }
@@ -72,12 +56,12 @@ internal sealed class TrieSet<K> :
     {
         Root = EmptyNode.Default;
         _equalityComparer = equalityComparer ?? getRegisteredEqualityComparerOrDefault<K>();
-        var type = tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate;
+        var env = new UpdateContext( tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (K item in items)
         {
             var hash    = (uint)_equalityComparer.GetHashCode(item!);
             Sec section = default;
-            var (countDelta, newRoot) = Root.Update((type, true), item!, hash, section, _equalityComparer);
+            var (countDelta, newRoot) = Root.Update(env, item, hash, section, _equalityComparer);
             _count += countDelta;
             Root = newRoot;
         }
@@ -106,7 +90,7 @@ internal sealed class TrieSet<K> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieSet<K> Add(K key) =>
-        Update(key, UpdateType.Add, false);
+        Update(key, new(UpdateType.Add, false));
 
     /// <summary>
     /// Try to add an item to the map.  If it already exists, do
@@ -114,14 +98,14 @@ internal sealed class TrieSet<K> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieSet<K> TryAdd(K key) =>
-        Update(key, UpdateType.TryAdd, false);
+        Update(key, new(UpdateType.TryAdd, false));
 
     /// <summary>
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieSet<K> AddOrUpdate(K key) =>
-        Update(key, UpdateType.AddOrUpdate, false);
+        Update(key, new(UpdateType.AddOrUpdate, false));
 
     /// <summary>
     /// Add a range of values to the map
@@ -131,9 +115,10 @@ internal sealed class TrieSet<K> :
     public TrieSet<K> AddRange(IEnumerable<K> items)
     {
         var self = this;
+        var env = new UpdateContext(UpdateType.Add, false);
         foreach (var item in items)
         {
-            self = self.Add(item!);
+            self = self.Update(item, env);
         }
         return self;
     }
@@ -142,9 +127,10 @@ internal sealed class TrieSet<K> :
     public TrieSet<K> TryAddRange(IEnumerable<K> items)
     {
         var self = this;
+        var env = new UpdateContext(UpdateType.TryAdd, false);
         foreach (var item in items)
         {
-            self = self.TryAdd(item!);
+            self = self.Update(item, env);
         }
         return self;
     }
@@ -153,9 +139,10 @@ internal sealed class TrieSet<K> :
     public TrieSet<K> AddOrUpdateRange(IEnumerable<K> items)
     {
         var self = this;
+        var env = new UpdateContext(UpdateType.AddOrUpdate, false);
         foreach (var item in items)
         {
-            self = self.AddOrUpdate(item!);
+            self = self.Update(item, env);
         }
         return self;
     }
@@ -164,9 +151,10 @@ internal sealed class TrieSet<K> :
     public TrieSet<K> SetItems(IEnumerable<K> items)
     {
         var self = this;
+        var env = new UpdateContext(UpdateType.SetItem, false);
         foreach (var item in items)
         {
-            self = self.SetItem(item!);
+            self = self.Update(item, env);
         }
         return self;
     }
@@ -175,9 +163,10 @@ internal sealed class TrieSet<K> :
     public TrieSet<K> TrySetItems(IEnumerable<K> items)
     {
         var self = this;
+        var env = new UpdateContext(UpdateType.TrySetItem, false);
         foreach (var item in items)
         {
-            self = self.TrySetItem(item!);
+            self = self.Update(item, env);
         }
         return self;
     }
@@ -198,7 +187,7 @@ internal sealed class TrieSet<K> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieSet<K> SetItem(K key) =>
-        Update(key, UpdateType.SetItem, false);
+        Update(key, new(UpdateType.SetItem, false));
 
     /// <summary>
     /// Try to set an item that already exists in the map.  If none
@@ -206,7 +195,7 @@ internal sealed class TrieSet<K> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TrieSet<K> TrySetItem(K key) =>
-        Update(key, UpdateType.TrySetItem, false);
+        Update(key, new(UpdateType.TrySetItem, false));
 
     /// <summary>
     /// Remove an item from the map
@@ -339,11 +328,11 @@ internal sealed class TrieSet<K> :
     /// Update an item in the map - can mutate if needed
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    TrieSet<K> Update(K key, UpdateType type, bool mutate)
+    TrieSet<K> Update(K key, UpdateContext env)
     {
         var hash    = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot) = Root.Update((type, mutate), key, hash, section, _equalityComparer);
+        var (countDelta, newRoot) = Root.Update(env, key, hash, section, _equalityComparer);
         return ReferenceEquals(newRoot, Root)
                    ? this
                    : new TrieSet<K>(_equalityComparer, newRoot, _count + countDelta);
@@ -535,9 +524,9 @@ internal sealed class TrieSet<K> :
     /// </summary>
     internal abstract class  Node : IEnumerable<K>
     {
-        public abstract Tag Type { get; }
+        public abstract TrieTag Type { get; }
         public abstract (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
-        public abstract (int CountDelta, Node Node) Update((UpdateType Type, bool Mutate) env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract (int CountDelta, Node Node) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract IEnumerator<K> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -560,7 +549,7 @@ internal sealed class TrieSet<K> :
         public readonly K[] Items;
         public readonly Node[] Nodes;
 
-        public override Tag Type => Tag.Entries;
+        public override TrieTag Type => TrieTag.Entries;
 
         public Entries(uint entryMap, uint nodeMap, K[] items, Node[] nodes)
         {
@@ -602,7 +591,7 @@ internal sealed class TrieSet<K> :
 
                 switch (subNode.Type)
                 {
-                    case Tag.Entries:
+                    case TrieTag.Entries:
 
                         var subEntries = (Entries)subNode;
 
@@ -636,7 +625,7 @@ internal sealed class TrieSet<K> :
                             return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy));
                         }
 
-                    case Tag.Collision:
+                    case TrieTag.Collision:
                         var nodeCopy2 = Clone(Nodes);
                         nodeCopy2[ind] = subNode;
                         return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy2));
@@ -685,7 +674,7 @@ internal sealed class TrieSet<K> :
             }
         }
 
-        public override (int CountDelta, Node Node) Update((UpdateType Type, bool Mutate) env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override (int CountDelta, Node Node) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             // var hashIndex = Bit.Get(hash, section);
             // var mask = Mask(hashIndex);
@@ -819,7 +808,7 @@ internal sealed class TrieSet<K> :
         public readonly K[] Items;
         public readonly uint Hash;
 
-        public override Tag Type => Tag.Collision;
+        public override TrieTag Type => TrieTag.Collision;
 
         public Collision(K[] items, uint hash)
         {
@@ -846,32 +835,33 @@ internal sealed class TrieSet<K> :
             else if (len == 1) return (-1, EmptyNode.Default);
             else if (len == 2)
             {
+                var env = new UpdateContext(UpdateType.Add, false);
                 var (_, n) = equalityComparer.Equals(Items[0], key)
-                                 ? EmptyNode.Default.Update((UpdateType.Add, false), Items[1]!, hash, default, equalityComparer)
-                                 : EmptyNode.Default.Update((UpdateType.Add, false), Items[0]!, hash, default, equalityComparer);
+                                 ? EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer)
+                                 : EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer);
 
                 return (-1, n);
             }
             else
             {
-                static IEnumerable<K> Yield(K[] items, K ikey, IEqualityComparer<K> equalityComparer)
-                {
-                    foreach (var item in items)
-                    {
-                        if (!equalityComparer.Equals(item, ikey))
-                        {
-                            yield return item;
-                        }
-                    }
-                }
-
                 var result = Yield(Items, key, equalityComparer).ToArray();
 
                 return (result.Length - Items.Length, new Collision(result, hash));
             }
         }
 
-        public override (int CountDelta, Node Node) Update((UpdateType Type, bool Mutate) env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        static IEnumerable<K> Yield(K[] items, K key, IEqualityComparer<K> equalityComparer)
+        {
+            foreach (var item in items)
+            {
+                if (!equalityComparer.Equals(item, key))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public override (int CountDelta, Node Node) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var index = -1;
             for (var i = 0; i < Items.Length; i++)
@@ -930,7 +920,7 @@ internal sealed class TrieSet<K> :
     {
         public static readonly EmptyNode Default = new EmptyNode();
 
-        public override Tag Type => Tag.Empty;
+        public override TrieTag Type => TrieTag.Empty;
 
         public override (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
             default;
@@ -938,7 +928,7 @@ internal sealed class TrieSet<K> :
         public override (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
             (0, this);
 
-        public override (int CountDelta, Node Node) Update((UpdateType Type, bool Mutate) env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override (int CountDelta, Node Node) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             if (env.Type == UpdateType.SetItem)
             {
@@ -1033,10 +1023,10 @@ internal sealed class TrieSet<K> :
         }
         else
         {
-            var nitems = new A[items.Length];
-            System.Array.Copy(items, nitems, items.Length);
-            nitems[index] = value;
-            return nitems;
+            var newItems = new A[items.Length];
+            System.Array.Copy(items, newItems, items.Length);
+            newItems[index] = value;
+            return newItems;
         }
     }
 
@@ -1047,9 +1037,9 @@ internal sealed class TrieSet<K> :
     static A[] Clone<A>(A[] items)
     {
         var len    = items.Length;
-        var nitems = new A[len];
-        System.Array.Copy(items, nitems, len);
-        return nitems;
+        var newItems = new A[len];
+        System.Array.Copy(items, newItems, len);
+        return newItems;
     }
 
     /// <summary>
