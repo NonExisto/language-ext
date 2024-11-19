@@ -20,7 +20,7 @@ public static class KExtensions
         }
         catch(InvalidCastException)
         {
-            return (FA)F.Map(x => (A)x, fa);
+            return (FA)F.Map(x => x, fa);
         }
     }
     

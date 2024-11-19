@@ -157,22 +157,27 @@ public static class IL
                         .GetTypeInfo()
                         .GetAllMethods(true)
                         .Where(x =>
-                         {
-                             if (!x.IsStatic) return false;
-                             var ps = x.GetParameters();
-                             if (ps.Length != 1) return false;
-                             if (ps[0].ParameterType != typeof(A)) return false;
-                             return methodPred(x);
-                         })
+                        {
+                            if (!x.IsStatic) return false;
+                            var ps = x.GetParameters();
+                            if (ps.Length != 1) return false;
+                            if (ps[0].ParameterType != typeof(A)) return false;
+                            return methodPred(x);
+                        })
                         .FirstOrDefault();
 
         if (methodInfo == null) return None;
 
+        return ToFunc1<A, R>(methodInfo);
+
+    }
+
+    public static Func<A, R> ToFunc1<A, R>(this MethodInfo methodInfo)
+    {
         var larg0 = Expression.Parameter(typeof(A), "arg0");
         var expr = Expression.Call(methodInfo, larg0);
         var lambda = Expression.Lambda<Func<A, R>>(expr, larg0);
         return lambda.Compile();
-
     }
 
     /// <summary>
@@ -186,25 +191,28 @@ public static class IL
                         .GetTypeInfo()
                         .GetAllMethods(true)
                         .Where(x =>
-                         {
-                             if (!x.IsStatic) return false;
-                             var ps = x.GetParameters();
-                             if (ps.Length != 2) return false;
-                             if (ps[0].ParameterType != typeof(A)) return false;
-                             if (ps[1].ParameterType != typeof(B)) return false;
-                             return methodPred(x);
-                         })
+                        {
+                            if (!x.IsStatic) return false;
+                            var ps = x.GetParameters();
+                            if (ps.Length != 2) return false;
+                            if (ps[0].ParameterType != typeof(A)) return false;
+                            if (ps[1].ParameterType != typeof(B)) return false;
+                            return methodPred(x);
+                        })
                         .FirstOrDefault();
 
         if (methodInfo == null) return None;
+        return ToFunc2<A, B, R>(methodInfo);
 
+    }
 
+    public static Func<A, B, R> ToFunc2<A, B, R>(this MethodInfo methodInfo)
+    {
         var larg0 = Expression.Parameter(typeof(A), "arg0");
         var larg1 = Expression.Parameter(typeof(B), "arg1");
         var expr = Expression.Call(methodInfo, larg0, larg1);
         var lambda = Expression.Lambda<Func<A, B, R>>(expr, larg0, larg1);
         return lambda.Compile();
-
     }
 
     /// <summary>
@@ -218,27 +226,30 @@ public static class IL
                         .GetTypeInfo()
                         .GetAllMethods(true)
                         .Where(x =>
-                         {
-                             if (!x.IsStatic) return false;
-                             var ps = x.GetParameters();
-                             if (ps.Length != 3) return false;
-                             if (ps[0].ParameterType != typeof(A)) return false;
-                             if (ps[1].ParameterType != typeof(B)) return false;
-                             if (ps[2].ParameterType != typeof(C)) return false;
-                             return methodPred(x);
-                         })
+                        {
+                            if (!x.IsStatic) return false;
+                            var ps = x.GetParameters();
+                            if (ps.Length != 3) return false;
+                            if (ps[0].ParameterType != typeof(A)) return false;
+                            if (ps[1].ParameterType != typeof(B)) return false;
+                            if (ps[2].ParameterType != typeof(C)) return false;
+                            return methodPred(x);
+                        })
                         .FirstOrDefault();
 
         if (methodInfo == null) return None;
+        return ToFunc3<A, B, C, R>(methodInfo);
 
+    }
 
+    public static Func<A, B, C, R> ToFunc3<A, B, C, R>(this MethodInfo methodInfo)
+    {
         var larg0 = Expression.Parameter(typeof(A), "arg0");
         var larg1 = Expression.Parameter(typeof(B), "arg1");
         var larg2 = Expression.Parameter(typeof(C), "arg2");
         var expr = Expression.Call(methodInfo, larg0, larg1, larg2);
         var lambda = Expression.Lambda<Func<A, B, C, R>>(expr, larg0, larg1, larg2);
         return lambda.Compile();
-
     }
 
     /// <summary>
@@ -252,21 +263,25 @@ public static class IL
                         .GetTypeInfo()
                         .GetAllMethods(true)
                         .Where(x =>
-                         {
-                             if (!x.IsStatic) return false;
-                             var ps = x.GetParameters();
-                             if (ps.Length != 4) return false;
-                             if (ps[0].ParameterType != typeof(A)) return false;
-                             if (ps[1].ParameterType != typeof(B)) return false;
-                             if (ps[2].ParameterType != typeof(C)) return false;
-                             if (ps[3].ParameterType != typeof(D)) return false;
-                             return methodPred(x);
-                         })
+                        {
+                            if (!x.IsStatic) return false;
+                            var ps = x.GetParameters();
+                            if (ps.Length != 4) return false;
+                            if (ps[0].ParameterType != typeof(A)) return false;
+                            if (ps[1].ParameterType != typeof(B)) return false;
+                            if (ps[2].ParameterType != typeof(C)) return false;
+                            if (ps[3].ParameterType != typeof(D)) return false;
+                            return methodPred(x);
+                        })
                         .FirstOrDefault();
 
         if (methodInfo == null) return None;
+        return ToFunc4<A, B, C, D, R>(methodInfo);
 
+    }
 
+    public static Func<A, B, C, D, R> ToFunc4<A, B, C, D, R>(this MethodInfo methodInfo)
+    {
         var larg0 = Expression.Parameter(typeof(A), "arg0");
         var larg1 = Expression.Parameter(typeof(B), "arg1");
         var larg2 = Expression.Parameter(typeof(C), "arg2");
@@ -274,7 +289,6 @@ public static class IL
         var expr = Expression.Call(methodInfo, larg0, larg1, larg2, larg3);
         var lambda = Expression.Lambda<Func<A, B, C, D, R>>(expr, larg0, larg1, larg2, larg3);
         return lambda.Compile();
-
     }
 
     public static Func<A, B>? GetPropertyOrField<A, B>(string name) =>

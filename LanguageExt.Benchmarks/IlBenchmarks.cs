@@ -13,8 +13,11 @@ public class IlBenchmarks
 	private static readonly Type ArrayListType = typeof(ArrayList);
 	private static readonly ConstructorInfo Ctor = ArrayListType.GetConstructor(System.Type.EmptyTypes);
 	private readonly Func<object> _dynamicMethodActivator;
-	private readonly Func<object> _expression;
-	private readonly Func<object> _delegate;
+	private readonly Func<ArrayList> _expression;
+	private readonly Func<ArrayList> _FuncT;
+	private readonly Delegate _delegate;
+
+	private readonly dynamic _dynDelegate;
 
 	public IlBenchmarks()
 	{
@@ -31,9 +34,11 @@ public class IlBenchmarks
 
 		_dynamicMethodActivator = (Func<object>)createHeadersMethod.CreateDelegate(typeof(Func<object>));
 
-		_expression = Expression.Lambda<Func<object>>(Expression.New(ArrayListType)).Compile();
+		_expression = Expression.Lambda<Func<ArrayList>>(Expression.New(ArrayListType)).Compile();
 
-		_delegate = ()=> new ArrayList();
+		_FuncT = () => new ArrayList();
+		_delegate = _FuncT;
+		_dynDelegate = _FuncT;
 	}
 
 
@@ -53,8 +58,11 @@ public class IlBenchmarks
 	public object ReflectionEmit() => _dynamicMethodActivator();
 
 	[Benchmark]
-	public object Delegate() => _delegate();
+	public object FuncT() => _FuncT();
+
+	[Benchmark]
+	public object Delegate() => _delegate.DynamicInvoke();
+
+	[Benchmark]
+	public object DynamicDelegate() => _dynDelegate();
 }
-
-
-

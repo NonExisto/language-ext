@@ -7,32 +7,31 @@ namespace LanguageExt.Traits.Resolve;
 
 internal static class Resolver
 {
+    public static MethodInfo? GetStaticPublicMethodWithGivenArguments(Type type, string name, params Type[] types) =>
+        type.GetMethod(name, BindingFlags.Static | BindingFlags.Public, types);
     
-    public static MethodInfo? Method(Type? type, string name, params Type[] types) =>
-        type?.GetMethod(name, BindingFlags.Static | BindingFlags.Public, types);
-    
-    public static Type? Find(Type type, string prefix = "")
+    public static Type? Find(Type elementType, string prefix = "")
     {
-        var n = $"{prefix}{type.Name}";
+        var typeName = $"{prefix}{elementType.Name}";
 
-        var t = FindType(type.Assembly, n);
-        if (t is not null) return MakeGeneric(t, type);
-        var typeAsmName = type.Assembly.GetName();
+        var typeByName = FindType(elementType.Assembly, typeName);
+        if (typeByName is not null) return MakeGeneric(typeByName, elementType);
+        var typeAsmName = elementType.Assembly.GetName();
         
         foreach (var name in GetAssemblies().Where(asm => asm != typeAsmName))
         {
-            t = FindType(LoadAssembly(name), n);
-            if (t != null) return MakeGeneric(t, type);
+            typeByName = FindType(LoadAssembly(name), typeName);
+            if (typeByName != null) return MakeGeneric(typeByName, elementType);
         }
         return null;
     }
 
-    static Type MakeGeneric(Type generic, Type concrete) =>
+    static Type MakeGeneric(Type generic, Type elementType) =>
         generic.IsGenericType
-            ? generic.MakeGenericType(concrete.GetGenericArguments())
-            : concrete;
+            ? generic.MakeGenericType(elementType.IsGenericType ? elementType.GetGenericArguments() : [elementType])
+            : generic;
 
-    static Type? FindType(Assembly? asm, string name)
+    static TypeInfo? FindType(Assembly? asm, string name)
     {
         if (asm is null) return null;
         var types = asm.DefinedTypes
@@ -76,11 +75,11 @@ internal static class Resolver
 
         foreach (var asm in init.Concat(asmNames).Where(n => n is not null).Distinct())
         {
-            if (asm is not null) yield return asm;
+            yield return asm!;
         }
     }
     
-        public static MethodInfo? GetHashCodeMethod(Type type)
+    public static MethodInfo? GetHashCodeMethod(Type type)
     {
         Type[] traits = [typeof(HashableResolve<>), typeof(EqResolve<>), typeof(OrdResolve<>)];
         foreach (var trait in traits)
