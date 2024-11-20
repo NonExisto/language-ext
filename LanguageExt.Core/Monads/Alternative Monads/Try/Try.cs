@@ -145,14 +145,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     public Try<A> MapFail(Func<Error, Error> f) =>
         new(() => runTry().MapFail(f));
     
-    /// <summary>
-    /// Maps the bound value
-    /// </summary>
-    /// <param name="f">Mapping transducer</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
-    /// <returns>`TryT`</returns>
-    public Try<B> Select<B>(Func<A, B> f) =>
-        new(() => runTry().Map(f));
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -222,54 +215,6 @@ public record Try<A>(Func<Fin<A>> runTry) :
     public Try<A> BindFail(Func<Error, Try<A>> Fail) =>
         BiBind(Succ, Fail);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //  SelectMany
-    //
-
-    /// <summary>
-    /// Monad bind operation
-    /// </summary>
-    /// <param name="bind">Monadic bind function</param>
-    /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
-    /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>`TryT`</returns>
-    public Try<C> SelectMany<B, C>(Func<A, K<Try, B>> bind, Func<A, B, C> project) =>
-        SelectMany(x => bind(x).As(), project);
-
-    /// <summary>
-    /// Monad bind operation
-    /// </summary>
-    /// <param name="bind">Monadic bind function</param>
-    /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
-    /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>`TryT`</returns>
-    public Try<C> SelectMany<B, C>(Func<A, Try<B>> bind, Func<A, B, C> project) =>
-        Bind(x => bind(x).Map(y => project(x, y)));
-
-    /// <summary>
-    /// Monad bind operation
-    /// </summary>
-    /// <param name="bind">Monadic bind function</param>
-    /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
-    /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>`TryT`</returns>
-    public Try<C> SelectMany<B, C>(Func<A, Fin<B>> bind, Func<A, B, C> project) =>
-        SelectMany(x => Try<B>.Lift(bind(x)), project);
-
-    /// <summary>
-    /// Monad bind operation
-    /// </summary>
-    /// <param name="bind">Monadic bind function</param>
-    /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
-    /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>`TryT`</returns>
-    public Try<C> SelectMany<B, C>(Func<A, Pure<B>> bind, Func<A, B, C> project) =>
-        Map(x => project(x, bind(x).Value));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //

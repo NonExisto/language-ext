@@ -21,7 +21,7 @@ public sealed partial class Try :
                          });
 
     static K<Try, B> Functor<Try>.Map<A, B>(Func<A, B> f, K<Try, A> ma) => 
-        new Try<B>(() => ma.Run().Map(f));
+        ma.As().Map(f);
 
     static K<Try, A> Applicative<Try>.Pure<A>(A value) => 
         Try<A>.Succ(value);
