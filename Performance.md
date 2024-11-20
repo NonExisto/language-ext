@@ -24,32 +24,32 @@ References to `Sys.Coll.Imm` are Microsoft's `ImmutableCollections` library.
 
 #### Feed collection using Add method
 
-| Method                         | N      | Mean            | Error         | StdDev          | Median          | Rank | Allocated   |  
-|------------------------------- |------- |----------------:|--------------:|----------------:|----------------:|-----:|------------:|  
-| SysColList                     | 100    |        269.9 ns |       5.45 ns |         9.84 ns |        265.5 ns |    1 |     1.16 KB |  
-| SysColListWrap                 | 100    |        407.9 ns |       8.17 ns |        18.10 ns |        408.3 ns |    2 |     1.18 KB |  
-| SysColImmutableList            | 100    |      8,471.5 ns |     169.00 ns |       213.73 ns |      8,441.1 ns |    8 |    33.89 KB |  
-| SysColImmutableListWithBuilder | 100    |      3,573.5 ns |      18.55 ns |        17.35 ns |      3,566.9 ns |    5 |     4.71 KB |  
-| LangExtLst                     | 100    |      8,669.5 ns |     157.30 ns |       139.44 ns |      8,673.7 ns |    8 |    43.39 KB |
-| LangExtSeq                     | 100    |        759.0 ns |      13.45 ns |        11.93 ns |        757.5 ns |    3 |     5.77 KB |  
-| SysColList                     | 1000   |      2,104.9 ns |      33.74 ns |        31.56 ns |      2,084.9 ns |    4 |     8.23 KB |  
-| SysColListWrap                 | 1000   |      3,726.3 ns |      23.41 ns |        20.75 ns |      3,716.4 ns |    6 |     8.25 KB |  
-| SysColImmutableList            | 1000   |    128,630.5 ns |   2,073.07 ns |     1,837.73 ns |    128,064.6 ns |   13 |   491.11 KB |  
-| SysColImmutableListWithBuilder | 1000   |     47,311.8 ns |     478.07 ns |       399.21 ns |     47,068.9 ns |   11 |     46.9 KB |  
-| LangExtLst                     | 1000   |    138,865.4 ns |   2,531.90 ns |     2,244.47 ns |    138,450.9 ns |   14 |   591.73 KB |  
-| LangExtSeq                     | 1000   |      7,307.2 ns |      53.16 ns |        41.50 ns |      7,325.7 ns |    7 |    55.03 KB |  
-| SysColList                     | 10000  |     22,456.5 ns |     443.13 ns |       544.20 ns |     22,260.8 ns |    9 |   128.32 KB |  
-| SysColListWrap                 | 10000  |     40,212.5 ns |     646.67 ns |       691.93 ns |     40,261.3 ns |   10 |   128.34 KB |  
-| SysColImmutableList            | 10000  |  2,704,957.5 ns |  53,432.35 ns |    65,619.73 ns |  2,714,726.8 ns |   19 |  6497.69 KB |  
-| SysColImmutableListWithBuilder | 10000  |    676,652.2 ns |   6,958.60 ns |     5,810.74 ns |    673,966.7 ns |   17 |   468.77 KB |  
-| LangExtLst                     | 10000  |  2,600,896.1 ns |  51,883.35 ns |    45,993.24 ns |  2,588,640.6 ns |   19 |  7512.02 KB |  
-| LangExtSeq                     | 10000  |     80,515.9 ns |   1,606.60 ns |     4,451.87 ns |     80,292.6 ns |   12 |      597 KB |  
-| SysColList                     | 100000 |    352,060.3 ns |   6,791.21 ns |     6,352.50 ns |    350,350.7 ns |   15 |  1024.48 KB |  
-| SysColListWrap                 | 100000 |    548,609.1 ns |  10,936.96 ns |    23,307.55 ns |    541,110.1 ns |   16 |  1024.51 KB |  
-| SysColImmutableList            | 100000 | 42,737,972.3 ns | 825,671.67 ns | 1,260,887.95 ns | 42,736,358.3 ns |   22 | 80575.05 KB |  
-| SysColImmutableListWithBuilder | 100000 | 10,399,443.4 ns | 205,434.96 ns |   442,220.46 ns | 10,390,200.0 ns |   20 |  4687.53 KB |  
-| LangExtLst                     | 100000 | 39,276,407.5 ns | 783,646.00 ns | 1,831,747.41 ns | 39,368,885.7 ns |   21 | 90729.75 KB |  
-| LangExtSeq                     | 100000 |    935,333.7 ns |  18,651.52 ns |    40,149.36 ns |    925,822.0 ns |   18 |  5711.91 KB |
+| Method                         | N      | Mean            | Error         | StdDev        | Rank | Allocated   |
+|------------------------------- |------- |----------------:|--------------:|--------------:|-----:|------------:|
+| SysColList                     | 100    |        260.3 ns |       3.67 ns |       3.60 ns |    1 |     1.16 KB |
+| SysColListWrap                 | 100    |        415.5 ns |       8.16 ns |      11.44 ns |    2 |     1.18 KB |
+| SysColImmutableList            | 100    |      8,170.8 ns |       8.57 ns |       8.02 ns |    7 |    33.89 KB |
+| SysColImmutableListWithBuilder | 100    |      3,638.9 ns |       3.17 ns |       2.65 ns |    5 |     4.71 KB |
+| LangExtLst                     | 100    |      8,394.2 ns |     123.30 ns |     109.31 ns |    7 |    43.39 KB |
+| LangExtSeq                     | 100    |        757.8 ns |       9.05 ns |       8.02 ns |    3 |     5.77 KB |
+| SysColList                     | 1000   |      2,155.6 ns |      42.06 ns |      73.66 ns |    4 |     8.23 KB |
+| SysColListWrap                 | 1000   |      3,723.4 ns |      33.07 ns |      29.32 ns |    5 |     8.25 KB |
+| SysColImmutableList            | 1000   |    124,877.0 ns |     247.26 ns |     193.04 ns |   12 |   491.11 KB |
+| SysColImmutableListWithBuilder | 1000   |     47,941.5 ns |     729.65 ns |     609.29 ns |   10 |     46.9 KB |
+| LangExtLst                     | 1000   |    132,089.6 ns |     309.36 ns |     241.53 ns |   13 |   591.73 KB |
+| LangExtSeq                     | 1000   |      7,424.6 ns |     127.16 ns |     186.39 ns |    6 |    55.03 KB |
+| SysColList                     | 10000  |     22,075.1 ns |     385.70 ns |     360.79 ns |    8 |   128.32 KB |
+| SysColListWrap                 | 10000  |     39,029.0 ns |      75.06 ns |      66.54 ns |    9 |   128.34 KB |
+| SysColImmutableList            | 10000  |  2,585,389.9 ns |  11,859.28 ns |  11,093.17 ns |   18 |  6497.69 KB |
+| SysColImmutableListWithBuilder | 10000  |    679,105.0 ns |   2,025.36 ns |   1,894.52 ns |   16 |   468.77 KB |
+| LangExtLst                     | 10000  |  2,551,075.3 ns |  13,899.90 ns |  13,001.97 ns |   18 |  7512.01 KB |
+| LangExtSeq                     | 10000  |     74,537.2 ns |     119.00 ns |      92.91 ns |   11 |      597 KB |
+| SysColList                     | 100000 |    345,490.9 ns |   2,676.52 ns |   2,503.61 ns |   14 |  1024.48 KB |
+| SysColListWrap                 | 100000 |    520,535.7 ns |   2,220.97 ns |   2,077.50 ns |   15 |  1024.51 KB |
+| SysColImmutableList            | 100000 | 41,329,511.8 ns | 800,271.39 ns | 821,819.80 ns |   21 | 80575.02 KB |
+| SysColImmutableListWithBuilder | 100000 |  9,711,364.7 ns | 110,120.90 ns | 103,007.16 ns |   19 |  4687.54 KB |
+| LangExtLst                     | 100000 | 36,874,086.5 ns | 726,753.09 ns | 807,784.14 ns |   20 |  90729.7 KB |
+| LangExtSeq                     | 100000 |    882,346.0 ns |   2,171.18 ns |   2,030.93 ns |   17 |  5711.91 KB |
 #### Iterate Collection using foreach loop
 | Method              | N      | Mean            | Error         | StdDev        | Rank | Allocated |
 |-------------------- |------- |----------------:|--------------:|--------------:|-----:|----------:|
@@ -76,40 +76,40 @@ References to `Sys.Coll.Imm` are Microsoft's `ImmutableCollections` library.
 
 #### Feed collection using Add method
 
-| Method       (Add)                         | N      | Mean           | Error         | StdDev        | Median         | Rank | Allocated    |
-|------------------------------------------- |------- |---------------:|--------------:|--------------:|---------------:|-----:|-------------:|
-| SysColImmutableDictionary                  | 100    |      13.808 us |     0.0238 us |     0.0211 us |      13.811 us |    8 |     38.58 KB |
-| SysColImmutableDictionaryWithBuilder       | 100    |       6.498 us |     0.0062 us |     0.0052 us |       6.499 us |    3 |      5.51 KB |
-| SysColImmutableSortedDictionary            | 100    |      10.248 us |     0.0234 us |     0.0219 us |      10.250 us |    6 |     34.41 KB |
-| SysColImmutableSortedDictionaryWithBuilder | 100    |       5.503 us |     0.0058 us |     0.0052 us |       5.502 us |    2 |      4.73 KB |
-| SasaTrie                                   | 100    |       6.751 us |     0.0186 us |     0.0165 us |       6.753 us |    4 |     47.48 KB |
-| SysColDictionary                           | 100    |       1.291 us |     0.0017 us |     0.0015 us |       1.291 us |    1 |      7.22 KB |
-| LangExtHashMap                             | 100    |       6.462 us |     0.1264 us |     0.1505 us |       6.392 us |    3 |     32.45 KB |
-| LangExtMap                                 | 100    |       9.027 us |     0.1307 us |     0.1159 us |       8.993 us |    5 |     40.98 KB |
-| SysColImmutableDictionary                  | 1000   |     302.576 us |     2.1295 us |     1.9920 us |     301.934 us |   15 |       568 KB |
-| SysColImmutableDictionaryWithBuilder       | 1000   |     151.916 us |     0.9358 us |     0.8754 us |     151.436 us |   12 |     54.73 KB |
-| SysColImmutableSortedDictionary            | 1000   |     226.626 us |     4.3430 us |     5.1701 us |     224.807 us |   14 |    500.25 KB |
-| SysColImmutableSortedDictionaryWithBuilder | 1000   |     106.475 us |     0.4449 us |     0.3715 us |     106.606 us |    9 |     46.92 KB |
-| SasaTrie                                   | 1000   |     132.887 us |     2.0604 us |     1.8265 us |     132.978 us |   11 |    917.95 KB |
-| SysColDictionary                           | 1000   |      12.244 us |     0.2386 us |     0.2343 us |      12.185 us |    7 |     71.45 KB |
-| LangExtHashMap                             | 1000   |     118.215 us |     2.2898 us |     2.4500 us |     116.804 us |   10 |     510.9 KB |
-| LangExtMap                                 | 1000   |     174.465 us |     3.4663 us |     4.7447 us |     174.818 us |   13 |    565.74 KB |
-| SysColImmutableDictionary                  | 10000  |   5,819.000 us |   124.6758 us |   349.6044 us |   5,667.700 us |   22 |    7575.2 KB |
-| SysColImmutableDictionaryWithBuilder       | 10000  |   2,287.623 us |     5.5825 us |     4.6616 us |   2,287.641 us |   17 |    546.92 KB |
-| SysColImmutableSortedDictionary            | 10000  |   4,262.348 us |    80.9914 us |   143.9621 us |   4,199.267 us |   21 |   6626.96 KB |
-| SysColImmutableSortedDictionaryWithBuilder | 10000  |   1,620.884 us |     8.2774 us |     7.3377 us |   1,619.336 us |   16 |     468.8 KB |
-| SasaTrie                                   | 10000  |   2,899.309 us |     9.4055 us |     7.3432 us |   2,898.791 us |   19 |  14982.57 KB |
-| SysColDictionary                           | 10000  |     300.249 us |     3.6207 us |     3.3868 us |     301.739 us |   15 |    657.33 KB |
-| LangExtHashMap                             | 10000  |   2,366.062 us |    13.0573 us |    11.5749 us |   2,364.818 us |   18 |   7291.81 KB |
-| LangExtMap                                 | 10000  |   3,618.933 us |    52.6270 us |    43.9460 us |   3,607.049 us |   20 |   7320.76 KB |
-| SysColImmutableDictionary                  | 100000 | 149,745.801 us | 2,975.7710 us | 4,544.3170 us | 149,632.675 us |   29 |   94286.8 KB |
-| SysColImmutableDictionaryWithBuilder       | 100000 |  40,833.756 us |   252.0743 us |   210.4934 us |  40,813.342 us |   24 |   5468.82 KB |
-| SysColImmutableSortedDictionary            | 100000 | 103,044.229 us |   876.4747 us |   731.8961 us | 102,986.300 us |   27 |  82156.79 KB |
-| SysColImmutableSortedDictionaryWithBuilder | 100000 |  28,753.605 us |   236.3851 us |   184.5539 us |  28,746.675 us |   23 |   4687.57 KB |
-| SasaTrie                                   | 100000 |  88,001.983 us | 1,690.5252 us | 1,581.3183 us |  88,221.667 us |   26 | 194994.94 KB |
-| SysColDictionary                           | 100000 |   3,676.909 us |    37.0527 us |    30.9407 us |   3,670.912 us |   20 |   5896.27 KB |
-| LangExtHashMap                             | 100000 |  57,600.342 us | 1,142.4647 us | 1,563.8186 us |  57,246.950 us |   25 |  92364.78 KB |
-| LangExtMap                                 | 100000 | 115,507.115 us | 2,286.3522 us | 3,491.5016 us | 115,674.420 us |   28 |  89033.28 KB |
+| Method                                     | N      | Mean           | Error         | StdDev        | Median         | Rank | Allocated   |
+|------------------------------------------- |------- |---------------:|--------------:|--------------:|---------------:|-----:|------------:|
+| SysColImmutableDictionary                  | 100    |      13.588 us |     0.0138 us |     0.0122 us |      13.588 us |    7 |    38.58 KB |
+| SysColImmutableDictionaryWithBuilder       | 100    |       6.535 us |     0.0135 us |     0.0120 us |       6.531 us |    3 |     5.51 KB |
+| SysColImmutableSortedDictionary            | 100    |       9.966 us |     0.0176 us |     0.0165 us |       9.964 us |    6 |    34.41 KB |
+| SysColImmutableSortedDictionaryWithBuilder | 100    |       5.549 us |     0.0066 us |     0.0062 us |       5.549 us |    2 |     4.73 KB |
+| SasaTrie                                   | 100    |       6.920 us |     0.0106 us |     0.0094 us |       6.920 us |    4 |    47.48 KB |
+| SysColDictionary                           | 100    |       1.275 us |     0.0011 us |     0.0010 us |       1.275 us |    1 |     7.22 KB |
+| LangExtHashMap                             | 100    |       6.458 us |     0.0245 us |     0.0229 us |       6.452 us |    3 |    32.45 KB |
+| LangExtMap                                 | 100    |       8.957 us |     0.0070 us |     0.0058 us |       8.956 us |    5 |    40.98 KB |
+| SysColImmutableDictionary                  | 1000   |     303.295 us |     0.2395 us |     0.2240 us |     303.286 us |   15 |      568 KB |
+| SysColImmutableDictionaryWithBuilder       | 1000   |     151.305 us |     0.2147 us |     0.1792 us |     151.315 us |   12 |    54.73 KB |
+| SysColImmutableSortedDictionary            | 1000   |     224.302 us |     0.2808 us |     0.2627 us |     224.288 us |   14 |   500.25 KB |
+| SysColImmutableSortedDictionaryWithBuilder | 1000   |     105.496 us |     0.1837 us |     0.1629 us |     105.452 us |    9 |    46.92 KB |
+| SasaTrie                                   | 1000   |     128.963 us |     0.4559 us |     0.4265 us |     128.936 us |   11 |   917.95 KB |
+| SysColDictionary                           | 1000   |      16.746 us |     0.0344 us |     0.0305 us |      16.735 us |    8 |    71.45 KB |
+| LangExtHashMap                             | 1000   |     121.185 us |     0.1370 us |     0.1281 us |     121.137 us |   10 |    510.9 KB |
+| LangExtMap                                 | 1000   |     168.319 us |     0.1716 us |     0.1521 us |     168.301 us |   13 |   565.74 KB |
+| SysColImmutableDictionary                  | 10000  |   5,534.780 us |    15.9751 us |    13.3400 us |   5,540.569 us |   22 |   7575.2 KB |
+| SysColImmutableDictionaryWithBuilder       | 10000  |   2,340.439 us |     2.5276 us |     2.2407 us |   2,339.927 us |   17 |   546.92 KB |
+| SysColImmutableSortedDictionary            | 10000  |   4,135.708 us |    15.9365 us |    14.9071 us |   4,136.444 us |   21 |  6626.96 KB |
+| SysColImmutableSortedDictionaryWithBuilder | 10000  |   1,648.290 us |     7.5971 us |     7.1063 us |   1,650.538 us |   16 |    468.8 KB |
+| SasaTrie                                   | 10000  |   2,941.785 us |    10.0519 us |     8.9108 us |   2,939.706 us |   19 | 14982.56 KB |
+| SysColDictionary                           | 10000  |     300.085 us |     3.0759 us |     2.7267 us |     300.580 us |   15 |   657.33 KB |
+| LangExtHashMap                             | 10000  |   2,470.414 us |    16.3842 us |    15.3258 us |   2,467.366 us |   18 |  7291.82 KB |
+| LangExtMap                                 | 10000  |   3,566.618 us |    38.3444 us |    29.9367 us |   3,556.774 us |   20 |  7320.76 KB |
+| SysColImmutableDictionary                  | 100000 | 146,247.825 us | 2,325.4839 us | 2,175.2591 us | 146,106.650 us |   29 | 94287.19 KB |
+| SysColImmutableDictionaryWithBuilder       | 100000 |  40,453.629 us |   491.5779 us |   383.7917 us |  40,619.508 us |   24 |  5468.82 KB |
+| SysColImmutableSortedDictionary            | 100000 | 102,378.723 us | 1,681.1712 us | 1,651.1349 us | 102,447.330 us |   27 | 82156.79 KB |
+| SysColImmutableSortedDictionaryWithBuilder | 100000 |  28,867.744 us |   557.2914 us |   762.8269 us |  28,607.289 us |   23 |  4687.57 KB |
+| SasaTrie                                   | 100000 |  90,451.407 us | 1,642.8739 us | 3,355.9563 us |  90,333.733 us |   26 |   194995 KB |
+| SysColDictionary                           | 100000 |   3,735.036 us |    71.2089 us |   173.3323 us |   3,678.413 us |   20 |  5896.27 KB |
+| LangExtHashMap                             | 100000 |  56,821.041 us | 1,112.1592 us | 1,236.1620 us |  56,750.070 us |   25 | 92364.73 KB |
+| LangExtMap                                 | 100000 | 119,663.102 us | 2,393.0348 us | 6,550.8948 us | 117,520.960 us |   28 | 89033.34 KB |
 
 #### Search Collection using Contains method
 | Method        (Contains)        | N      | Mean            | Error         | StdDev          | Median          | Rank | Allocated |        
@@ -203,34 +203,34 @@ References to `Sys.Coll.Imm` are Microsoft's `ImmutableCollections` library.
 #### Feed collection using Add method
 | Method               (Add)          | N      | Mean           | Error         | StdDev        | Median         | Rank | Allocated   |
 |------------------------------------ |------- |---------------:|--------------:|--------------:|---------------:|-----:|------------:|
-| SysColImmutableHashSet              | 100    |      12.893 us |     0.1986 us |     0.1658 us |      12.861 us |    8 |    39.36 KB |
-| SysColImmutableHashSetWithBuilder   | 100    |       6.586 us |     0.0540 us |     0.0451 us |       6.577 us |    4 |     5.52 KB |
-| SysColImmutableSortedSet            | 100    |       9.556 us |     0.1880 us |     0.3193 us |       9.457 us |    6 |    32.84 KB |
-| SysColImmutableSortedSetWithBuilder | 100    |       5.268 us |     0.0429 us |     0.0358 us |       5.255 us |    2 |     4.72 KB |
-| SysColHashSet                       | 100    |       1.219 us |     0.0227 us |     0.0212 us |       1.212 us |    1 |     5.86 KB |
-| LangExtHashSet                      | 100    |       6.073 us |     0.1114 us |     0.0988 us |       6.025 us |    3 |     28.1 KB |
-| LangExtSet                          | 100    |       8.561 us |     0.0138 us |     0.0107 us |       8.558 us |    5 |     40.6 KB |
-| SysColImmutableHashSet              | 1000   |     284.929 us |     4.2338 us |     6.3370 us |     281.552 us |   15 |   578.49 KB |
-| SysColImmutableHashSetWithBuilder   | 1000   |     142.819 us |     1.2497 us |     1.1079 us |     142.554 us |   11 |    54.73 KB |
-| SysColImmutableSortedSet            | 1000   |     210.419 us |     2.1130 us |     1.9765 us |     209.246 us |   13 |   486.92 KB |
-| SysColImmutableSortedSetWithBuilder | 1000   |     106.622 us |     0.4336 us |     0.3621 us |     106.557 us |    9 |    46.91 KB |
-| SysColHashSet                       | 1000   |      11.007 us |     0.1752 us |     0.1875 us |      10.938 us |    7 |    57.29 KB |
-| LangExtHashSet                      | 1000   |     111.012 us |     1.6457 us |     1.5394 us |     110.242 us |   10 |      477 KB |
-| LangExtSet                          | 1000   |     170.134 us |     1.3688 us |     1.1430 us |     169.887 us |   12 |   572.21 KB |
-| SysColImmutableHashSet              | 10000  |   5,176.150 us |    24.4301 us |    22.8519 us |   5,177.777 us |   22 |  7626.91 KB |
-| SysColImmutableHashSetWithBuilder   | 10000  |   2,211.867 us |     5.9037 us |     5.2334 us |   2,210.207 us |   17 |   546.92 KB |
-| SysColImmutableSortedSet            | 10000  |   4,025.570 us |    16.4677 us |    15.4039 us |   4,024.133 us |   21 |  6448.07 KB |
-| SysColImmutableSortedSetWithBuilder | 10000  |   1,565.279 us |     5.2215 us |     4.0766 us |   1,564.864 us |   16 |   468.78 KB |
-| SysColHashSet                       | 10000  |     252.976 us |     4.9728 us |     4.4083 us |     252.134 us |   14 |   526.03 KB |
-| LangExtHashSet                      | 10000  |   2,385.229 us |    36.7997 us |    30.7294 us |   2,377.804 us |   18 |  7062.04 KB |
-| LangExtSet                          | 10000  |   3,613.593 us |    21.7033 us |    18.1232 us |   3,613.568 us |   20 |  7282.79 KB |
-| SysColImmutableHashSet              | 100000 | 140,304.090 us | 2,678.6353 us | 2,866.1098 us | 140,618.788 us |   28 | 94689.62 KB |
-| SysColImmutableHashSetWithBuilder   | 100000 |  38,559.544 us |   400.7814 us |   374.8912 us |  38,639.521 us |   24 |  5468.83 KB |
-| SysColImmutableSortedSet            | 100000 |  99,236.769 us |   543.0968 us |   453.5104 us |  99,211.483 us |   26 | 80269.87 KB |
-| SysColImmutableSortedSetWithBuilder | 100000 |  27,350.774 us |   163.7672 us |   145.1753 us |  27,354.519 us |   23 |  4687.55 KB |
-| SysColHashSet                       | 100000 |   3,143.114 us |    62.6662 us |   175.7228 us |   3,229.150 us |   19 |  4717.39 KB |
-| LangExtHashSet                      | 100000 |  53,085.868 us |   935.9416 us |   875.4803 us |  53,068.890 us |   25 | 89629.82 KB |
-| LangExtSet                          | 100000 | 112,875.564 us | 2,186.8242 us | 2,147.7537 us | 113,129.230 us |   27 | 88669.88 KB |
+| SysColImmutableHashSet              | 100    |      12.888 us |     0.0890 us |     0.0743 us |      12.876 us |    8 |    39.36 KB |
+| SysColImmutableHashSetWithBuilder   | 100    |       6.537 us |     0.0110 us |     0.0103 us |       6.538 us |    4 |     5.52 KB |
+| SysColImmutableSortedSet            | 100    |       9.209 us |     0.0461 us |     0.0409 us |       9.203 us |    6 |    32.84 KB |
+| SysColImmutableSortedSetWithBuilder | 100    |       5.198 us |     0.0062 us |     0.0048 us |       5.199 us |    2 |     4.72 KB |
+| SysColHashSet                       | 100    |       1.183 us |     0.0021 us |     0.0020 us |       1.183 us |    1 |     5.86 KB |
+| LangExtHashSet                      | 100    |       6.219 us |     0.0224 us |     0.0199 us |       6.218 us |    3 |     28.1 KB |
+| LangExtSet                          | 100    |       8.541 us |     0.0101 us |     0.0095 us |       8.540 us |    5 |     40.6 KB |
+| SysColImmutableHashSet              | 1000   |     286.193 us |     0.6771 us |     0.6334 us |     286.223 us |   15 |   578.49 KB |
+| SysColImmutableHashSetWithBuilder   | 1000   |     143.332 us |     0.1597 us |     0.1416 us |     143.341 us |   11 |    54.73 KB |
+| SysColImmutableSortedSet            | 1000   |     211.609 us |     0.1793 us |     0.1678 us |     211.596 us |   13 |   486.92 KB |
+| SysColImmutableSortedSetWithBuilder | 1000   |     100.438 us |     0.1074 us |     0.1005 us |     100.399 us |    9 |    46.91 KB |
+| SysColHashSet                       | 1000   |      10.880 us |     0.0335 us |     0.0297 us |      10.866 us |    7 |    57.29 KB |
+| LangExtHashSet                      | 1000   |     110.789 us |     0.2418 us |     0.2262 us |     110.845 us |   10 |      477 KB |
+| LangExtSet                          | 1000   |     169.286 us |     0.1748 us |     0.1549 us |     169.292 us |   12 |   572.21 KB |
+| SysColImmutableHashSet              | 10000  |   5,209.366 us |    20.9574 us |    19.6035 us |   5,209.770 us |   22 |  7626.91 KB |
+| SysColImmutableHashSetWithBuilder   | 10000  |   2,204.514 us |     3.9128 us |     3.6601 us |   2,204.183 us |   17 |   546.92 KB |
+| SysColImmutableSortedSet            | 10000  |   3,984.374 us |    17.1572 us |    16.0489 us |   3,982.775 us |   21 |  6448.07 KB |
+| SysColImmutableSortedSetWithBuilder | 10000  |   1,569.580 us |     4.7790 us |     4.4703 us |   1,569.496 us |   16 |   468.78 KB |
+| SysColHashSet                       | 10000  |     246.107 us |     2.2073 us |     2.0647 us |     244.720 us |   14 |   526.03 KB |
+| LangExtHashSet                      | 10000  |   2,325.639 us |    14.1063 us |    11.7794 us |   2,326.414 us |   18 |  7062.04 KB |
+| LangExtSet                          | 10000  |   3,610.864 us |    12.1341 us |    11.3502 us |   3,612.092 us |   20 |  7282.79 KB |
+| SysColImmutableHashSet              | 100000 | 140,217.166 us | 2,730.7645 us | 2,804.2941 us | 140,612.825 us |   28 | 94689.54 KB |
+| SysColImmutableHashSetWithBuilder   | 100000 |  39,431.201 us |   289.0612 us |   256.2453 us |  39,409.300 us |   24 |  5468.83 KB |
+| SysColImmutableSortedSet            | 100000 | 100,388.231 us | 1,067.1315 us |   891.1031 us | 100,389.760 us |   26 | 80269.87 KB |
+| SysColImmutableSortedSetWithBuilder | 100000 |  27,568.141 us |   205.7676 us |   192.4751 us |  27,606.578 us |   23 |  4687.54 KB |
+| SysColHashSet                       | 100000 |   3,133.753 us |    62.2063 us |   140.4100 us |   3,193.066 us |   19 |  4717.33 KB |
+| LangExtHashSet                      | 100000 |  53,603.061 us |   930.3134 us |   870.2157 us |  53,330.710 us |   25 | 89629.83 KB |
+| LangExtSet                          | 100000 | 114,499.462 us | 2,248.9616 us | 2,499.7149 us | 114,172.520 us |   27 | 88669.77 KB |
 
 #### Search Collection using Contains method
 | Method     (Contains)    | N      | Mean            | Error        | StdDev       | Rank |

@@ -1,6 +1,4 @@
 ﻿using LanguageExt.Traits;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 namespace LanguageExt.ClassInstances;
@@ -20,8 +18,6 @@ public struct EqInt : Eq<int>
     public static bool Equals(int a, int b)  => 
         a == b;
 
-    public static IEqualityComparer<int> Comparer => _.Default;
-
     /// <summary>
     /// Get hash code of the value
     /// </summary>
@@ -30,11 +26,4 @@ public struct EqInt : Eq<int>
     [Pure]
     public static int GetHashCode(int x) =>
         HashableInt.GetHashCode(x);
-
-    private sealed class _ : IEqualityComparer<int>
-    {
-        public static readonly _ Default = new _();
-        public bool Equals(int x, int y) => EqInt.Equals(x,y);
-        public int GetHashCode([DisallowNull] int obj) => EqInt.GetHashCode(obj);
-    }
 }

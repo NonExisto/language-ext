@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using LanguageExt.ClassInstances;
+﻿using static LanguageExt.Tests.Comparers;
 using Xunit;
 
 namespace LanguageExt.Tests;
@@ -31,7 +29,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.SwapKey("foo", i => i + 1, EqInt.Comparer);
+        hashMap.SwapKey("foo", i => i + 1, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -48,7 +46,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.SwapKey("foo", i => None, EqInt.Comparer);
+        hashMap.SwapKey("foo", i => None, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -123,7 +121,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Add("biz", 7, EqInt.Comparer);
+        hashMap.Add("biz", 7, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -141,7 +139,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.TryAdd("biz", 7, EqInt.Comparer);
+        hashMap.TryAdd("biz", 7, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -159,7 +157,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.AddOrUpdate("biz", 7, EqInt.Comparer);
+        hashMap.AddOrUpdate("biz", 7, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -177,7 +175,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.AddRange(Seq(("biz", 7), ("baz", 9)), EqInt.Comparer);
+        hashMap.AddRange(Seq(("biz", 7), ("baz", 9)), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -196,7 +194,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.TryAddRange(Seq(("biz", 7), ("baz", 9)), EqInt.Comparer);
+        hashMap.TryAddRange(Seq(("biz", 7), ("baz", 9)), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -215,7 +213,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.AddOrUpdateRange(Seq(("biz", 7), ("baz", 9)), EqInt.Comparer);
+        hashMap.AddOrUpdateRange(Seq(("biz", 7), ("baz", 9)), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -271,7 +269,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.FindOrAdd("biz", () => 7, EqInt.Comparer);
+        hashMap.FindOrAdd("biz", () => 7, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -289,7 +287,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.FindOrAdd("biz", 7, EqInt.Comparer);
+        hashMap.FindOrAdd("biz", 7, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -307,7 +305,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.FindOrMaybeAdd("biz", () => Some(7), EqInt.Comparer);
+        hashMap.FindOrMaybeAdd("biz", () => Some(7), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -325,7 +323,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.FindOrMaybeAdd("biz", Some(7), EqInt.Comparer);
+        hashMap.FindOrMaybeAdd("biz", Some(7), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -343,7 +341,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.SetItems(Seq(("foo", 80), ("bar", 17)), EqInt.Comparer);
+        hashMap.SetItems(Seq(("foo", 80), ("bar", 17)), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -362,7 +360,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.TrySetItems(Seq(("foo", 80), ("bar", 17), ("biz", 33)), EqInt.Comparer);
+        hashMap.TrySetItems(Seq(("foo", 80), ("bar", 17), ("biz", 33)), IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -381,7 +379,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.SetItem("foo", i => i * 2, EqInt.Comparer);
+        hashMap.SetItem("foo", i => i * 2, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -399,7 +397,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.TrySetItem("foo", 80, EqInt.Comparer);
+        hashMap.TrySetItem("foo", 80, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -417,7 +415,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.TrySetItem("foo", i => i * 2, EqInt.Comparer);
+        hashMap.TrySetItem("foo", i => i * 2, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -455,7 +453,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Append(toAppend, EqInt.Comparer);
+        hashMap.Append(toAppend, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -481,7 +479,7 @@ public class AtomHashMapTests
         HashMapPatch<int, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Append(toAppend, EqInt.Comparer);
+        hashMap.Append(toAppend, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -503,7 +501,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Append(toAppend, EqInt.Comparer);
+        hashMap.Append(toAppend, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -696,7 +694,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Union(toUnion, EqInt.Comparer);
+        hashMap.Union(toUnion, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -720,7 +718,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Union(toUnion, Merge: (_, _, r) => r, EqInt.Comparer);
+        hashMap.Union(toUnion, Merge: (_, _, r) => r, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
@@ -745,7 +743,7 @@ public class AtomHashMapTests
         HashMapPatch<string, int> state        = default!;
         hashMap.Change += v => state = v;
 
-        hashMap.Union(toUnion, Merge: (_, l, _) => l, EqInt.Comparer);
+        hashMap.Union(toUnion, Merge: (_, l, _) => l, IntComparer);
 
         Assert.Equal(initialValue, state.From);
         Assert.Equal(hashMap.ToHashMap(), state.To);
