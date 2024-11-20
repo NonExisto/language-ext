@@ -606,8 +606,8 @@ public readonly struct Option<A> :
     /// <returns>An enumerable of zero or one items</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Seq<A> AsEnumerable() =>
-        ToSeq();
+    public Iterable<A> AsIterable() =>
+        IsSome ? [Value!] : [];
         
     /// <summary>
     /// Convert the structure to an Eff
@@ -1242,14 +1242,14 @@ public readonly struct Option<A> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerator<A> GetEnumerator() =>
-        AsEnumerable().GetEnumerator();
+        AsIterable().GetEnumerator();
 
     /// <summary>
     /// Get an enumerator for the Option
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerator IEnumerable.GetEnumerator() =>
-        AsEnumerable().GetEnumerator();
+        AsIterable().GetEnumerator();
         
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 
