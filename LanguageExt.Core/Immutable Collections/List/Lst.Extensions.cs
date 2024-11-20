@@ -329,6 +329,10 @@ public static partial class LstExtensions
     public static int Count<A>(this Lst<A> self) =>
         self.Count;
 
+    [Pure]
+    public static Lst<B> SelectMany<A, B>(this Lst<A> ma, Func<A, Lst<B>> f) => 
+        ma.Bind(t => f(t));
+
     /// <summary>
     /// LINQ bind implementation for Lst
     /// </summary>

@@ -1,8 +1,10 @@
 ﻿using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using static LanguageExt.Prelude;
 
 namespace LanguageExt;
@@ -43,6 +45,53 @@ public static partial class SeqExtensions
     [Pure]
     public static Seq<B> Choose<A, B>(this Seq<A> list, Func<int, A, Option<B>> selector) =>
         Seq.choose(list, selector);
+
+    [Pure]
+    public static Seq<B> SelectMany<A, B>(this Seq<A> ma, Func<A, Seq<B>> f)
+    {
+        var mb = new List<B>();
+        foreach (var a in ma)
+        {
+            foreach (var b in f(a))
+            {
+                mb.Add(b);
+            }
+        }
+        return new Seq<B>(mb);
+    }
+
+    /// <summary>
+    /// Monadic bind (flatmap) of the sequence
+    /// </summary>
+    /// <typeparam name="B">Bound return value type</typeparam>
+    /// <param name="bind">Bind function</param>
+    /// <returns>Flat-mapped sequence</returns>
+    [Pure]
+    public static Seq<C> SelectMany<A, B, C>(this Seq<A> self, Func<A, Seq<B>> bind, Func<A, B, C> project)
+    {
+        static IEnumerable<C> Yield(Seq<A> ma, Func<A, Seq<B>> bnd, Func<A, B, C> prj)
+        {
+            foreach (var a in ma)
+            {
+                foreach (var b in bnd(a))
+                {
+                    yield return prj(a, b);
+                }
+            }
+        }
+        return new Seq<C>(Yield(self, bind, project));
+    }
+
+    /// <summary>
+    /// Map the sequence using the function provided
+    /// </summary>
+    /// <typeparam name="B"></typeparam>
+    /// <param name="f">Mapping function</param>
+    /// <returns>Mapped sequence</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Seq<B> Select<A, B>(this Seq<A> self, Func<A, B> f) =>
+        self.Map(f);
 
     /// <summary>
     /// Reverses the sequence (Reverse in LINQ)

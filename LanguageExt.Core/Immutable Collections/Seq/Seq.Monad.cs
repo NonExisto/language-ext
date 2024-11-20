@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -10,50 +9,17 @@ public sealed partial class Seq :
     Alternative<Seq>, 
     Traversable<Seq>
 {
-    static K<Seq, B> Monad<Seq>.Bind<A, B>(K<Seq, A> ma, Func<A, K<Seq, B>> f)
-    {
-        return new Seq<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var x in ma.As())
-            {
-                foreach (var y in f(x).As())
-                {
-                    yield return y;
-                }
-            }
-        }
-    }
+    static K<Seq, B> Monad<Seq>.Bind<A, B>(K<Seq, A> ma, Func<A, K<Seq, B>> f) => 
+        new Seq<B>(ma.As().SelectMany(a => f(a).As()));
 
-    static K<Seq, B> Functor<Seq>.Map<A, B>(Func<A, B> f, K<Seq, A> ma) 
-    {
-        return new Seq<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return f(x);
-            }
-        }
-    }
+    static K<Seq, B> Functor<Seq>.Map<A, B>(Func<A, B> f, K<Seq, A> ma) => 
+        ma.As().Map(f);
 
     static K<Seq, A> Applicative<Seq>.Pure<A>(A value) =>
         singleton(value);
 
-    static K<Seq, B> Applicative<Seq>.Apply<A, B>(K<Seq, Func<A, B>> mf, K<Seq, A> ma) 
-    {
-        return new Seq<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var f in mf.As())
-            {
-                foreach (var a in ma.As())
-                {
-                    yield return f(a);
-                }
-            }
-        }
-    }
+    static K<Seq, B> Applicative<Seq>.Apply<A, B>(K<Seq, Func<A, B>> mf, K<Seq, A> ma) =>
+        new Seq<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
 
     static K<Seq, B> Applicative<Seq>.Action<A, B>(K<Seq, A> ma, K<Seq, B> mb)
     {

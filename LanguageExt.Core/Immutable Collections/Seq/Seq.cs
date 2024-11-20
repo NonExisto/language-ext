@@ -655,17 +655,6 @@ public readonly struct Seq<A> :
             }
         }
     }
-        
-    /// <summary>
-    /// Map the sequence using the function provided
-    /// </summary>
-    /// <typeparam name="B"></typeparam>
-    /// <param name="f">Mapping function</param>
-    /// <returns>Mapped sequence</returns>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Seq<B> Select<B>(Func<A, B> f) =>
-        Map(f);
 
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
@@ -711,27 +700,7 @@ public readonly struct Seq<A> :
         return new Seq<B>(Yield(this, f));
     }
 
-    /// <summary>
-    /// Monadic bind (flatmap) of the sequence
-    /// </summary>
-    /// <typeparam name="B">Bound return value type</typeparam>
-    /// <param name="bind">Bind function</param>
-    /// <returns>Flat-mapped sequence</returns>
-    [Pure]
-    public Seq<C> SelectMany<B, C>(Func<A, Seq<B>> bind, Func<A, B, C> project)
-    {
-        static IEnumerable<C> Yield(Seq<A> ma, Func<A, Seq<B>> bnd, Func<A, B, C> prj)
-        {
-            foreach (var a in ma)
-            {
-                foreach (var b in bnd(a))
-                {
-                    yield return prj(a, b);
-                }
-            }
-        }
-        return new Seq<C>(Yield(this, bind, project));
-    }
+    
 
     /// <summary>
     /// Filter the items in the sequence

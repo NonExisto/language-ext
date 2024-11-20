@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -15,20 +14,8 @@ public sealed partial class Arr :
     Natural<Arr, Set>,
     Natural<Arr, HashSet>
 {
-    static K<Arr, B> Monad<Arr>.Bind<A, B>(K<Arr, A> ma, Func<A, K<Arr, B>> f)
-    {
-        return new Arr<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                foreach (var y in f(x).As())
-                {
-                    yield return y;
-                }
-            }
-        }
-    }
+    static K<Arr, B> Monad<Arr>.Bind<A, B>(K<Arr, A> ma, Func<A, K<Arr, B>> f) => 
+        new Arr<B>(ma.As().SelectMany(x => f(x).As()));
 
     static K<Arr, B> Functor<Arr>.Map<A, B>(Func<A, B> f, K<Arr, A> ma) => 
         ma.As().Map(f);

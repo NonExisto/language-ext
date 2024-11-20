@@ -10,50 +10,17 @@ public sealed class Lst:
     Alternative<Lst>, 
     Traversable<Lst>
 {
-    static K<Lst, B> Monad<Lst>.Bind<A, B>(K<Lst, A> ma, Func<A, K<Lst, B>> f)
-    {
-        return new Lst<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var x in ma.As())
-            {
-                foreach (var y in f(x).As())
-                {
-                    yield return y;
-                }
-            }
-        }
-    }
+    static K<Lst, B> Monad<Lst>.Bind<A, B>(K<Lst, A> ma, Func<A, K<Lst, B>> f) => 
+        new Lst<B>(ma.As().SelectMany(x => f(x).As()));
 
-    static K<Lst, B> Functor<Lst>.Map<A, B>(Func<A, B> f, K<Lst, A> ma)
-    {
-        return new Lst<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return f(x);
-            }
-        }
-    }
+    static K<Lst, B> Functor<Lst>.Map<A, B>(Func<A, B> f, K<Lst, A> ma) => 
+        ma.As().Map(f);
 
     static K<Lst, A> Applicative<Lst>.Pure<A>(A value) =>
         List.singleton(value);
 
-    static K<Lst, B> Applicative<Lst>.Apply<A, B>(K<Lst, Func<A, B>> mf, K<Lst, A> ma)
-    {
-        return new Lst<B>(go());
-        IEnumerable<B> go()
-        {
-            foreach (var f in mf.As())
-            {
-                foreach (var a in ma.As())
-                {
-                    yield return f(a);
-                }
-            }
-        }
-    }
+    static K<Lst, B> Applicative<Lst>.Apply<A, B>(K<Lst, Func<A, B>> mf, K<Lst, A> ma) => 
+        new Lst<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
 
     static K<Lst, B> Applicative<Lst>.Action<A, B>(K<Lst, A> ma, K<Lst, B> mb) =>
         mb;
