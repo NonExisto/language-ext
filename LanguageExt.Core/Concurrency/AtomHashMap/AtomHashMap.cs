@@ -1903,6 +1903,10 @@ public class AtomHashMap<K, V> :
         Items.Equals(other.Value, equalityComparer);
 
     [Pure]
+    public bool Equals(AtomHashMap<K, V>? other, IEqualityComparer<V> equalityComparer) =>
+        other is not null && Items.Equals(other.Items, equalityComparer);
+
+    [Pure]
     public override int GetHashCode() =>
         Items.GetHashCode();
 

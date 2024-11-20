@@ -467,6 +467,14 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     public bool Equals(VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V>? other) =>
         other is not null && Items.Equals(other.Items);
 
+    /// <summary>
+    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// </summary>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V>? other, IEqualityComparer<VersionVector<ConflictV, OrdActor, TLong, Actor, long, V>> equalityComparer) =>
+        other is not null && Items.Equals(other.Items, equalityComparer);
+
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override int GetHashCode() =>
