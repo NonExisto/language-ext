@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace LanguageExt.Traits.Resolve;
 
@@ -24,8 +21,9 @@ public static class OrdResolve<A>
 
         if(source.IsGenericType && source.GetGenericTypeDefinition() == typeof(K<,>))
         {
-            MakeTraitDefault(source);
-            return;
+            throw new InvalidOperationException(@"Upcast to K<M,A> is prohibited due to limitations on Ord<A> dynamic implementation.
+Please, check your code and ensure you never instantiate types with K<M,A> as generic arguments.
+You can try to provide you custom IComparer<T> implementation as alternative solution");
         }
         
         if (typeof(Delegate).IsAssignableFrom(source))
@@ -73,28 +71,5 @@ public static class OrdResolve<A>
                                     (Delegate dx, Delegate dy) => dx.Method.MetadataToken.CompareTo(dy.Method.MetadataToken),
                                     _                          => -1
                                 };
-    }
-
-    static void MakeTraitDefault(Type source)
-    {
-        var gens = source.GetGenericArguments();
-
-        var typeF = gens[0];
-        var fname = typeF.FullName ?? string.Empty;
-        var tick  = fname.IndexOf('`');
-        var iname = tick >= 0 ? fname[..tick] : fname;
-
-        var tgens = typeF.GetGenericArguments();
-        var gtype = typeF.Assembly.GetType($"{iname}`{tgens.Length + 1}")!;
-
-        var elementTypeA = gens[1];
-        var ngens = tgens.Concat([elementTypeA]).ToArray();
-        var type  = gtype.MakeGenericType(ngens);
-
-        var resolver = typeof(OrdResolve<>).MakeGenericType(type);
-        var comp = (Delegate)resolver.GetField(nameof(CompareFunc))!.GetValue(null)!;
-                      
-        // TOOOOOO SLOOOOOOOOW
-        CompareFunc     = (x,y) => (int)comp.DynamicInvoke(x,y)!;
     }
 }

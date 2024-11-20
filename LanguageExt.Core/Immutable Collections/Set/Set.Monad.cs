@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using LanguageExt.Traits;
 
@@ -7,50 +6,17 @@ namespace LanguageExt;
 
 public sealed partial class Set : Monad<Set>, Alternative<Set>, Traversable<Set>
 {
-    static K<Set, B> Monad<Set>.Bind<A, B>(K<Set, A> ma, Func<A, K<Set, B>> f)
-    {
-        return new Set<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                foreach (var y in f(x).As())
-                {
-                    yield return y;
-                }
-            }
-        }
-    }
+    static K<Set, B> Monad<Set>.Bind<A, B>(K<Set, A> ma, Func<A, K<Set, B>> f) => 
+        new Set<B>(ma.As().SelectMany(x => f(x).As()));
 
-    static K<Set, B> Functor<Set>.Map<A, B>(Func<A, B> f, K<Set, A> ma)
-    {
-        return new Set<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return f(x);
-            }
-        }
-    }
+    static K<Set, B> Functor<Set>.Map<A, B>(Func<A, B> f, K<Set, A> ma) => 
+        ma.As().Map(f);
 
-    static K<Set, A> Applicative<Set>.Pure<A>(A value) =>
+    static K<Set, A> Applicative<Set>.Pure<A>(A value) => 
         singleton(value);
 
-    static K<Set, B> Applicative<Set>.Apply<A, B>(K<Set, Func<A, B>> mf, K<Set, A> ma)
-    {
-        return new Set<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var f in mf.As())
-            {
-                foreach (var a in ma.As())
-                {
-                    yield return f(a);
-                }
-            }
-        }
-    }    
+    static K<Set, B> Applicative<Set>.Apply<A, B>(K<Set, Func<A, B>> mf, K<Set, A> ma) => 
+        new Set<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
 
     static K<Set, B> Applicative<Set>.Action<A, B>(K<Set, A> ma, K<Set, B> mb) => 
         mb;

@@ -397,7 +397,7 @@ public readonly struct Set<A> :
     /// <param name="mapper">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
-    public Set<B> Map<B>(Func<A, B> map, IComparer<B> comparer) =>
+    public Set<B> Map<B>(Func<A, B> map, IComparer<B>? comparer = null) =>
         Wrap(Value.Map(map, comparer));
     
     /// <summary>

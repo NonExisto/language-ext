@@ -449,7 +449,7 @@ internal sealed class SetInternal<A> :
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
-    public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B> comparer)  =>
+    public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B>? comparer)  =>
         new (SetModule.Map(set, f), comparer);
 
     /// <summary>
