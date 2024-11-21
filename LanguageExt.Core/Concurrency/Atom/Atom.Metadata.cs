@@ -99,7 +99,10 @@ public sealed class Atom<M, A>
             }
             if(Interlocked.CompareExchange(ref value, newValue, current) == current)
             {
-                Change?.Invoke(newValueA);
+                if(!Equals(currentV, newValueA))
+                {
+                    Change?.Invoke(newValueA);
+                }
                 return newValueA;
             }
             sw.SpinOnce();
@@ -140,7 +143,10 @@ public sealed class Atom<M, A>
             }
             if(Interlocked.CompareExchange(ref value, newValue, current) == current)
             {
-                Change?.Invoke(newValueA);
+                if(!Equals(currentV, newValueA))
+                {
+                    Change?.Invoke(newValueA);
+                }
                 return newValueA;
             }
             sw.SpinOnce();

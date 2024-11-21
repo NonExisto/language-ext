@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using FluentAssertions;
 using Xunit;
-using System.Diagnostics;
 
 namespace LanguageExt.Tests;
 
@@ -15,8 +15,9 @@ public class AtomTests
         atom.Swap(old => old.Add("E"));
         atom.Swap(old => old.Add("F"));
 
-        Debug.Assert(atom == Set("A", "B", "C", "D", "E", "F"));
+        Assert.True(atom == Set("A", "B", "C", "D", "E", "F"));
     }
+
     [Fact]
     public void AtomSeqEnumeration()
     {
@@ -24,5 +25,22 @@ public class AtomTests
         var atom = AtomSeq(xs);
             
         Assert.Equal(atom.Sum(), xs.Sum());
+    }
+
+    [Fact]
+    public void AtomShouldFeedChangesOnlyOnDifference()
+    {
+        var atom = Atom(5);
+        var count = 0;
+        atom.Change += (ch) => count++;
+
+        atom.Swap(old => 6);
+        atom.Swap(old => 6);
+        atom.Swap(old => 7);
+        atom.Swap(old => None);
+        atom.Swap(old => 7);
+
+        atom.Value.Should().Be(7);
+        count.Should().Be(2);
     }
 }
