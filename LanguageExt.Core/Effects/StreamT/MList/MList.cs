@@ -24,7 +24,7 @@ public abstract record MList<A> : K<MList, A>
         };
 }
 
-public record MNil<A> : MList<A>
+public sealed record MNil<A> : MList<A>
 {
     public static readonly MList<A> Default = new MNil<A>();
 
@@ -32,7 +32,7 @@ public record MNil<A> : MList<A>
         MNil<B>.Default;
 }
 
-public record MCons<M, A>(A Head, Func<K<M, MList<A>>> Tail) : MList<A>
+public sealed record MCons<M, A>(A Head, Func<K<M, MList<A>>> Tail) : MList<A>
     where M : Monad<M>
 {
     public override MList<B> Map<B>(Func<A, B> f) => 
