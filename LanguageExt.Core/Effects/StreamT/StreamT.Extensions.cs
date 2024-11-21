@@ -104,7 +104,7 @@ public static partial class StreamTExtensions
         where M : Monad<M> =>
         mma switch
         {
-            MNil<K<M, MList<A>>>                     => M.Pure(MNil<A>.Default),
+            MNil<K<M, MList<A>>>                     => M.Pure(MList<A>.Nil),
             MCons<M, K<M, MList<A>>> (var h, var t)  => h.Append(t().Flatten()),
             _                                        => throw new NotSupportedException()
         };

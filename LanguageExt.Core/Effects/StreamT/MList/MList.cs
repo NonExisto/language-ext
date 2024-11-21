@@ -7,8 +7,7 @@ public abstract record MList<A> : K<MList, A>
 {
     public abstract MList<B> Map<B>(Func<A, B> f);
 
-    public static MList<A> Nil = 
-        MNil<A>.Default;
+    public readonly static MList<A> Nil = new MNil<A>();
     
     public static MList<A> Cons<M>(A head, Func<K<M, MList<A>>> tail) 
         where M : Monad<M> => 
@@ -26,10 +25,7 @@ public abstract record MList<A> : K<MList, A>
 
 public sealed record MNil<A> : MList<A>
 {
-    public static readonly MList<A> Default = new MNil<A>();
-
-    public override MList<B> Map<B>(Func<A, B> f) =>
-        MNil<B>.Default;
+    public override MList<B> Map<B>(Func<A, B> f) => MList<B>.Nil;
 }
 
 public sealed record MCons<M, A>(A Head, Func<K<M, MList<A>>> Tail) : MList<A>
