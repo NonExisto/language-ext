@@ -1,5 +1,6 @@
 ﻿using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
@@ -162,4 +163,21 @@ public static partial class Prelude
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int compare<ORD, L, R>(Either<L, R> x, Either<L, R> y) where ORD : Ord<R> =>
         x.CompareTo<ORD>(y);
+
+    public static int collectionCompare<T>(this IReadOnlyCollection<T> left, IReadOnlyCollection<T> right, IComparer<T> comparer)
+    {
+        var cmp = left.Count.CompareTo(right.Count);
+        if (cmp != 0) return cmp;
+
+        // Iterate through both sides
+        using var iterA = left.GetEnumerator();
+        using var iterB = right.GetEnumerator();
+        while (iterA.MoveNext() && iterB.MoveNext())
+        {
+            cmp = comparer.Compare(iterA.Current, iterB.Current);
+            if (cmp != 0) return cmp;
+        }
+
+        return 0;
+    }
 }

@@ -25,7 +25,7 @@ public class AtomSeq<A> :
     IEquatable<AtomSeq<A>>, 
     IComparable<Seq<A>>, 
     IEquatable<Seq<A>>,
-    IEnumerable<A>,
+    IReadOnlyCollection<A>,
     IComparable
 {
     /// <summary>
@@ -1079,65 +1079,15 @@ public class AtomSeq<A> :
     /// Equality test
     /// </summary>
     [Pure]
-    public bool Equals<EqA>(Seq<A> rhs) where EqA : Eq<A>
-    {
-        var lhs = items;
-            
-        // Differing lengths?
-        if(lhs.Count != rhs.Count) return false;
+    public bool Equals<EqA>(Seq<A> rhs) where EqA : Eq<A> => 
+        items.collectionEquals<A, EqA>(rhs);
 
-        // If the hash code has been calculated on both sides then 
-        // check for differences
-        if (lhs.GetHashCode() != rhs.GetHashCode())
-        {
-            return false;
-        }
-
-        // Iterate through both sides
-        using var iterA = lhs.GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            if (!EqA.Equals(iterA.Current, iterB.Current))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-        
     /// <summary>
     /// Equality test
     /// </summary>
     [Pure]
-    public bool Equals<EqA>(AtomSeq<A> rhs) where EqA : Eq<A>
-    {
-        var lhs = items;
-            
-        // Differing lengths?
-        if(lhs.Count != rhs.Count) return false;
-
-        // If the hash code has been calculated on both sides then 
-        // check for differences
-        if (lhs.GetHashCode() != rhs.GetHashCode())
-        {
-            return false;
-        }
-
-        // Iterate through both sides
-        using var iterA = lhs.GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            if (!EqA.Equals(iterA.Current, iterB.Current))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public bool Equals<EqA>(AtomSeq<A> rhs) where EqA : Eq<A> => 
+        items.collectionEquals<A, EqA>(rhs);
 
     /// <summary>
     /// Skip count items
@@ -1338,50 +1288,15 @@ public class AtomSeq<A> :
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo(Seq<A> rhs, IComparer<A> comparer)
-    {
-        var lhs = items;
-            
-        // Differing lengths?
-        var cmp = lhs.Count.CompareTo(rhs.Count);
-        if (cmp != 0) return cmp;
+    public int CompareTo(Seq<A> rhs, IComparer<A> comparer) => 
+        items.collectionCompare(rhs, comparer);
 
-        // Iterate through both sides
-        using var iterA = lhs.GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = comparer.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-
-        return 0;
-    }
-        
-        
     /// <summary>
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo(AtomSeq<A> rhs, IComparer<A> comparer)
-    {
-        var lhs = items;
-            
-        // Differing lengths?
-        var cmp = lhs.Count.CompareTo(rhs.Count);
-        if (cmp != 0) return cmp;
-
-        // Iterate through both sides
-        using var iterA = lhs.GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = comparer.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-
-        return 0;
-    }
+    public int CompareTo(AtomSeq<A> rhs, IComparer<A> comparer) => 
+        items.collectionCompare(rhs, comparer);
 
     /// <summary>
     /// Force all items lazy to stream

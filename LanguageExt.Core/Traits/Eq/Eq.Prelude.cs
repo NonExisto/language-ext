@@ -146,4 +146,59 @@ public static partial class Prelude
     [Pure]
     public static bool equals<EQ, A>(Seq<A> x, Seq<A> y) where EQ : Eq<A> =>
         EqSeq<EQ, A>.Equals(x, y);
+
+    public static bool collectionEquals<T, EqA>(this IReadOnlyCollection<T> left, IReadOnlyCollection<T> right, bool ignoreHashCheck = false)
+        where EqA : Eq<T>
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (right is null) return false;
+        if(left.Count != right.Count) return false;
+
+        // If the hash code has been calculated on both sides then 
+        // check for differences
+        if (!ignoreHashCheck && left.GetHashCode() != right.GetHashCode())
+        {
+            return false;
+        }
+
+        // Iterate through both sides
+        using var iterA = left.GetEnumerator();
+        using var iterB = right.GetEnumerator();
+        while (iterA.MoveNext() && iterB.MoveNext())
+        {
+            if (!EqA.Equals(iterA.Current, iterB.Current))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static bool collectionEquals<T>(this IReadOnlyCollection<T> left, IReadOnlyCollection<T>? right, IEqualityComparer<T> equalityComparer, bool ignoreHashCheck = false)
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (right is null) return false;
+        if(left.Count != right.Count) return false;
+
+        // If the hash code has been calculated on both sides then 
+        // check for differences
+        if (!ignoreHashCheck && left.GetHashCode() != right.GetHashCode())
+        {
+            return false;
+        }
+
+        // Iterate through both sides
+        using var iterA = left.GetEnumerator();
+        using var iterB = right.GetEnumerator();
+        while (iterA.MoveNext() && iterB.MoveNext())
+        {
+            if (!equalityComparer.Equals(iterA.Current, iterB.Current))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

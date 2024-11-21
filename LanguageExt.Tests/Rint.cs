@@ -188,7 +188,7 @@ public readonly record struct ReverseNumber<T>(T Value) : INumber<ReverseNumber<
 			Value.TryFormat(destination, out charsWritten, format, provider);
     
 		///<inheritdoc/>
-    bool IEquatable<ReverseNumber<T>>.Equals(ReverseNumber<T> other) => Value.Equals(other.Value);
+    public bool Equals(ReverseNumber<T> other) => Value.Equals(other.Value);
 		///<inheritdoc/>
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => Value.ToString(format, formatProvider);
 		///<inheritdoc/>
@@ -225,4 +225,6 @@ public readonly record struct ReverseNumber<T>(T Value) : INumber<ReverseNumber<
 		///<inheritdoc/>
     public static bool operator >=(ReverseNumber<T> left, ReverseNumber<T> right) => left.Value <= right.Value;
     public override int GetHashCode() => -Value.GetHashCode();
+
+    public static implicit operator ReverseNumber<T> (T number) => new (number);
 }

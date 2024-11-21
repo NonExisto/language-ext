@@ -407,19 +407,8 @@ internal sealed class LstInternal<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(LstInternal<A> other, IComparer<A> comparer)
-    {
-        var cmp = Count.CompareTo(other.Count);
-        if (cmp != 0) return cmp;
-        using var iterA = GetEnumerator();
-        using var iterB = other.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = comparer.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-        return 0;
-    }
+    public int CompareTo(LstInternal<A> other, IComparer<A> comparer) => 
+        this.collectionCompare(other, comparer);
 }
 
 [Serializable]

@@ -760,8 +760,8 @@ public readonly struct Set<A> :
         Value.CompareTo(other.Value);
 
     [Pure]
-    public int CompareTo<OrdA>(Set<A> other) where OrdA : Ord<A> =>
-        Value.CompareTo<OrdA>(other.Value);
+    public int CompareTo(Set<A> other, IComparer<A> comparer) =>
+        Value.CompareTo(other.Value, comparer);
 
     /// <summary>
     /// Implicit conversion from an untyped empty list

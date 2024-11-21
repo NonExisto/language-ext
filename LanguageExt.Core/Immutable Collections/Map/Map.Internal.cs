@@ -20,7 +20,7 @@ namespace LanguageExt;
 /// <typeparam name="V">Value type</typeparam>
 [Serializable]
 internal sealed class MapInternal<K, V> :
-    IEnumerable<(K Key, V Value)>
+    IReadOnlyCollection<(K Key, V Value)>
 {
     public static MapInternal<K, V> Empty => new (MapItem<K, V>.Empty, false, getRegisteredOrderComparerOrDefault<K>());
 

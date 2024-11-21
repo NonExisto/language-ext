@@ -30,25 +30,8 @@ public struct OrdArr<OrdA, A> : Ord<Arr<A>>
     /// if x equals y       : 0
     /// </returns>
     [Pure]
-    public static int Compare(Arr<A> mx, Arr<A> my)
-    {
-        var cmp = mx.Count.CompareTo(my.Count);
-        if (cmp == 0)
-        {
-            var xiter = mx.GetEnumerator();
-            var yiter = my.GetEnumerator();
-            while(xiter.MoveNext() && yiter.MoveNext())
-            {
-                cmp = OrdA.Compare(xiter.Current, yiter.Current);
-                if (cmp != 0) return cmp;
-            }
-            return 0;
-        }
-        else
-        {
-            return cmp;
-        }
-    }
+    public static int Compare(Arr<A> mx, Arr<A> my) => 
+        mx.CompareTo(my);
 
     /// <summary>
     /// Get the hash-code of the provided value

@@ -15,7 +15,7 @@ namespace LanguageExt;
 /// <typeparam name="A">Key type</typeparam>
 [CollectionBuilder(typeof(HashSet), nameof(HashSet.createRange))]
 public readonly struct HashSet<A> :
-    IEnumerable<A>,
+    IReadOnlyCollection<A>,
     IEquatable<HashSet<A>>,
     IEqualityOperators<HashSet<A>, HashSet<A>, bool>,
     IAdditionOperators<HashSet<A>, HashSet<A>, HashSet<A>>,

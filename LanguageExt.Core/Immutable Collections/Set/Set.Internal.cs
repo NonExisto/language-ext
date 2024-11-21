@@ -17,7 +17,7 @@ namespace LanguageExt;
 /// <typeparam name="A">List item type</typeparam>
 [Serializable]
 internal sealed class SetInternal<A> :
-    IEnumerable<A>,
+    IReadOnlyCollection<A>,
     IEquatable<SetInternal<A>>
 {
     public static SetInternal<A> Empty => new (null);
@@ -754,34 +754,12 @@ internal sealed class SetInternal<A> :
         other is not null && SetEquals(other.AsIterable());
 
     [Pure]
-    public int CompareTo(SetInternal<A> other)
-    {
-        var cmp = Count.CompareTo(other.Count);
-        if (cmp != 0) return cmp;
-        using var iterA = GetEnumerator();
-        using var iterB = other.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = _comparer.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-        return 0;
-    }
+    public int CompareTo(SetInternal<A> other) => 
+        this.collectionCompare(other, _comparer);
 
     [Pure]
-    public int CompareTo<OrdAlt>(SetInternal<A> other) where OrdAlt : Ord<A>
-    {
-        var cmp = Count.CompareTo(other.Count);
-        if (cmp != 0) return cmp;
-        using var iterA = GetEnumerator();
-        using var iterB = other.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = OrdAlt.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-        return 0;
-    }
+    public int CompareTo(SetInternal<A> other, IComparer<A> comparer) => 
+        this.collectionCompare(other, comparer);
 
     IEnumerator IEnumerable.GetEnumerator() =>
         new SetModule.SetEnumerator<A>(set, false, 0);

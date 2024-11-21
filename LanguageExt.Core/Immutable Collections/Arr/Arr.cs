@@ -725,20 +725,18 @@ public struct Arr<A> :
     public readonly int CompareTo(object? obj) =>
         obj is Arr<A> t ? CompareTo(t) : 1;
 
+    /// <summary>
+    /// Equality test
+    /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(Arr<A> other)
-    {
-        if (Count != other.Count) return false;
+    public readonly bool Equals(Arr<A> other) =>
+        Equals<EqDefault<A>>(other);
 
-        var ia = GetEnumerator();
-        var ib = other.GetEnumerator();
-        while (ia.MoveNext() && ib.MoveNext())
-        {
-            if (!EqDefault<A>.Equals(ia.Current, ib.Current)) return false;
-        }
-        return true;
-    }
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool Equals<EqA>(Arr<A> other) where EqA : Eq<A> => 
+        this.collectionEquals<A, EqA>(other);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -747,20 +745,8 @@ public struct Arr<A> :
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly int CompareTo(Arr<A> other, IComparer<A> comparer)
-    {
-        if (Count < other.Count) return -1;
-        if (Count > other.Count) return 1;
-
-        var ia = GetEnumerator();
-        var ib = other.GetEnumerator();
-        while (ia.MoveNext() && ib.MoveNext())
-        {
-            var cmp = comparer.Compare(ia.Current, ib.Current);
-            if (cmp != 0) return cmp;
-        }
-        return 0;
-    }
+    public readonly int CompareTo(Arr<A> other, IComparer<A> comparer) => 
+        this.collectionCompare(other, comparer);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

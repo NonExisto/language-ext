@@ -310,19 +310,8 @@ internal sealed class TrieSet<K> :
     /// <summary>
     /// Equality
     /// </summary>
-    public bool Equals(TrieSet<K>? rhs)
-    {
-        if (ReferenceEquals(this, rhs)) return true;
-        if (ReferenceEquals(rhs, null)) return false;
-        if (Count != rhs.Count) return false;
-        using var iterA = GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            if (!_equalityComparer.Equals(iterA.Current, iterB.Current)) return false;
-        }
-        return true;
-    }
+    public bool Equals(TrieSet<K>? rhs) => 
+        this.collectionEquals(rhs, _equalityComparer, true);
 
     /// <summary>
     /// Update an item in the map - can mutate if needed

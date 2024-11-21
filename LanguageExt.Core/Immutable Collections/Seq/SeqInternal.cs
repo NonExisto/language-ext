@@ -14,7 +14,7 @@ internal enum SeqType
     Concat
 }
 
-internal abstract class SeqInternal<A> : IEnumerable<A>
+internal abstract class SeqInternal<A> : IReadOnlyCollection<A>
 {
     public abstract SeqType Type { get; }
     public abstract A this[int index] { get; }

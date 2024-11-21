@@ -1,4 +1,6 @@
+using FluentAssertions;
 using Xunit;
+using Rint = LanguageExt.Tests.ReverseNumber<int>;
 
 namespace LanguageExt.Tests.Transformer.Traverse.ArrT.Collections;
 
@@ -38,6 +40,37 @@ public class SetArr
             Set(2, 30));
 
         Assert.True(mb == mc);
+
+        foreach (var set in mb)
+        {
+            set.Should<int>().BeInAscendingOrder();
+        }
+    }
+
+    [Fact]
+    public void SetArrCrossProductReverse()
+    {
+        var ma = Set(Array<Rint>(1, 2), Array<Rint>(10, 20, 30));
+
+        var mb = ma.KindT<Set, Arr, Arr<Rint>, Rint>()
+                   .SequenceM()
+                   .AsT<Arr, Set, Set<Rint>, Rint>()
+                   .As();
+
+        var mc = Array(
+            Set<Rint>(10, 1),
+            Set<Rint>(20, 1),
+            Set<Rint>(30, 1),
+            Set<Rint>(10, 2),
+            Set<Rint>(20, 2),
+            Set<Rint>(30, 2));
+
+        Assert.True(mb == mc);
+
+        foreach (var set in mb)
+        {
+            set.Select(item => item.Value).Should<int>().BeInDescendingOrder();
+        }
     }
 
     [Fact]

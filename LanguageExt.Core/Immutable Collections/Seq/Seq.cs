@@ -21,9 +21,9 @@ namespace LanguageExt;
 /// <typeparam name="A">Type of the values in the sequence</typeparam>
 [CollectionBuilder(typeof(Seq), nameof(Seq.createRange))]
 public readonly struct Seq<A> :
-    IEnumerable<A>,
+    IReadOnlyCollection<A>,
     IComparable<Seq<A>>, 
-    IEquatable<Seq<A>>, 
+    IEquatable<Seq<A>>,
     IComparable,
     IComparisonOperators<Seq<A>, Seq<A>, bool>,
     IAdditionOperators<Seq<A>, Seq<A>, Seq<A>>,
@@ -942,31 +942,8 @@ public readonly struct Seq<A> :
     /// Equality test
     /// </summary>
     [Pure]
-    public bool Equals<EqA>(Seq<A> rhs) where EqA : Eq<A>
-    {
-        // Differing lengths?
-        if(Count != rhs.Count) return false;
-
-        // If the hash code has been calculated on both sides then 
-        // check for differences
-        if (GetHashCode() != rhs.GetHashCode())
-        {
-            return false;
-        }
-
-        // Iterate through both sides
-        using var iterA = GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            if (!EqA.Equals(iterA.Current, iterB.Current))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public bool Equals<EqA>(Seq<A> rhs) where EqA : Eq<A> => 
+        this.collectionEquals<A, EqA>(rhs);
 
     /// <summary>
     /// Skip count items
@@ -1164,29 +1141,14 @@ public readonly struct Seq<A> :
     /// </summary>
     [Pure]
     public int CompareTo(Seq<A> other) =>
-        CompareTo<OrdDefault<A>>(other);
+        CompareTo(other, OrdComparer<OrdDefault<A>, A>.Default);
 
     /// <summary>
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public int CompareTo<OrdA>(Seq<A> rhs) where OrdA : Ord<A>
-    {
-        // Differing lengths?
-        var cmp = Count.CompareTo(rhs.Count);
-        if (cmp != 0) return cmp;
-
-        // Iterate through both sides
-        using var iterA = GetEnumerator();
-        using var iterB = rhs.GetEnumerator();
-        while (iterA.MoveNext() && iterB.MoveNext())
-        {
-            cmp = OrdA.Compare(iterA.Current, iterB.Current);
-            if (cmp != 0) return cmp;
-        }
-
-        return 0;
-    }
+    public int CompareTo(Seq<A> rhs, IComparer<A> comparer) => 
+        this.collectionCompare(rhs, comparer);
 
     /// <summary>
     /// Force all items lazy to stream
