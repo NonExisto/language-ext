@@ -279,7 +279,7 @@ public static class EffTests1
         memStream.Seek(0, SeekOrigin.Begin);
 
         Eff<Unit> AddToBuffer(ICollection<string> buffer, string value) =>
-            lift(() => { buffer.Add(value); return unit; });
+            lift(() => fun<string>(buffer.Add)(value));
 
         Eff<Unit> CreateEffect(ICollection<string> buffer) =>
             repeat(from ln in (from data in liftEff(() => memStream.ReadByte().AsTask())

@@ -469,7 +469,7 @@ public interface Foldable<out T> : Trait where T : Foldable<T>
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
     public static virtual Unit Iter<A>(Action<A> f, K<T, A> ta) =>
-        T.Fold(a => _ => { f(a); return unit; }, unit, ta);
+        T.Fold(a => _ => fun(f)(a), unit, ta);
     
     /// <summary>
     /// Map each element of a structure to an action, evaluate these

@@ -58,11 +58,7 @@ public sealed class Ref<A> : IEquatable<A>
     public IO<A> ValueIO
     {
         get => IO.lift(_ => (A)STM.Read(Id));
-        set => value.Map(v =>
-                         {
-                             STM.Write(Id, v!);
-                             return unit;
-                         });
+        set => value.Map(v => fun<long, object>(STM.Write)(Id, v!));
     }
 
     /// <summary>

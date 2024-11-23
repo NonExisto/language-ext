@@ -135,7 +135,7 @@ public static partial class Prelude
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit atomic(Action op, Isolation isolation = Isolation.Snapshot) =>
-        STM.DoTransaction(() => { op(); return unit; }, isolation);
+        STM.DoTransaction(() => fun(op)(), isolation);
         
     /// <summary>
     /// Run the op within a new transaction
@@ -161,7 +161,7 @@ public static partial class Prelude
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit snapshot(Action op) =>
-        STM.DoTransaction(() => { op(); return unit; }, Isolation.Snapshot);        
+        STM.DoTransaction(() => fun(op)(), Isolation.Snapshot);
         
     /// <summary>
     /// Run the op within a new transaction
@@ -223,7 +223,7 @@ public static partial class Prelude
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit serial(Action op) =>
-        STM.DoTransaction(() => { op(); return unit; }, Isolation.Snapshot);        
+        STM.DoTransaction(() => fun(op)(), Isolation.Snapshot);        
     
     /// <summary>
     /// Swap the old value for the new returned by `f`

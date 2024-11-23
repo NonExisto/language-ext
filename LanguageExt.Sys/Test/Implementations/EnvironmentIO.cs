@@ -22,11 +22,7 @@ public record EnvironmentIO(MemorySystemEnvironment env) : Sys.Traits.Environmen
     /// Terminates this process and returns an exit code to the operating system.
     /// </summary>
     public IO<Unit> Exit(int exitCode) =>
-        lift(() =>
-             {
-                 Environment.Exit(exitCode);
-                 return unit;
-             });
+        lift(() => fun<int>(Environment.Exit)(exitCode));
 
     /// <summary>
     /// Gets the exit code of the process.
@@ -57,11 +53,7 @@ public record EnvironmentIO(MemorySystemEnvironment env) : Sys.Traits.Environmen
     /// </summary>
     /// message: A message that explains why the process was terminated, or null if no explanation is provided.
     public IO<Unit> FailFast(Option<string> message) =>
-        lift(() =>
-             {
-                 Environment.FailFast(message.IfNone(""));
-                 return unit;
-             });
+        lift(() => fun<string?>(Environment.FailFast)(message.IfNone("")));
 
     /// <summary>
     /// Immediately terminates a process after writing a message to the Windows Application event log, and then includes the message and exception information in error reporting to Microsoft.
@@ -70,10 +62,8 @@ public record EnvironmentIO(MemorySystemEnvironment env) : Sys.Traits.Environmen
     /// exception: An exception that represents the error that caused the termination. This is typically the exception in a catch block.
     public IO<Unit> FailFast(Option<string> message, Option<Exception> exception) =>
         lift(() =>
-             {
-                 Environment.FailFast(message.IfNone(""), exception.IfNone(BottomException.Default));
-                 return unit;
-             });
+                 fun<string?, Exception>(Environment.FailFast)(message.IfNone(""), exception.IfNone(BottomException.Default))
+             );
 
     /// <summary>
     /// Returns a string array containing the command-line arguments for the current process.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace LanguageExt;
 
@@ -310,6 +311,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<Unit> fun(Action f) => () => { f(); return unit; };
 
     /// <summary>
@@ -327,6 +329,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, Unit> fun<T1>(Action<T1> f) => (a1) => { f(a1); return unit; };
 
     /// <summary>
@@ -344,6 +347,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, Unit> fun<T1, T2>(Action<T1, T2> f) => (a1, a2) => { f(a1, a2); return unit; };
 
     /// <summary>
@@ -361,6 +365,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, T3, Unit> fun<T1, T2, T3>(Action<T1, T2, T3> f) => (a1, a2, a3) => { f(a1, a2, a3); return unit; };
 
     /// <summary>
@@ -378,6 +383,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, T3, T4, Unit> fun<T1, T2, T3, T4>(Action<T1, T2, T3, T4> f) => (a1, a2, a3, a4) => { f(a1, a2, a3, a4); return unit; };
 
     /// <summary>
@@ -395,6 +401,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, T3, T4, T5, Unit> fun<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> f) => (a1, a2, a3, a4, a5) => { f(a1, a2, a3, a4, a5); return unit; };
 
     /// <summary>
@@ -412,6 +419,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, T3, T4, T5, T6, Unit> fun<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> f) => (a1, a2, a3, a4, a5, a6) => { f(a1, a2, a3, a4, a5, a6); return unit; };
 
     /// <summary>
@@ -429,6 +437,7 @@ public static partial class Prelude
     /// <param name="f">Function to infer</param>
     /// <returns>Func that returns a Unit</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T1, T2, T3, T4, T5, T6, T7, Unit> fun<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> f) => (a1, a2, a3, a4, a5, a6, a7) => { f(a1, a2, a3, a4, a5, a6, a7); return unit; };
 
     /// <summary>

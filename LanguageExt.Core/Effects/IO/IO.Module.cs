@@ -34,11 +34,7 @@ public partial class IO
     /// </summary>
     /// <param name="f">Action to lift</param>
     public static IO<Unit> lift(Action f) =>
-        lift(() =>
-             {
-                 f();
-                 return unit;
-             });
+        lift(() => fun(f)());
 
     /// <summary>
     /// Creates a local cancellation environment

@@ -101,7 +101,7 @@ public static partial class Prelude
     /// </summary>
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<Unit> liftEff(Action action) =>
-        LanguageExt.Eff<Unit>.Lift(() => { action(); return unit; });
+        LanguageExt.Eff<Unit>.Lift(() => fun(action)());
 
     /// <summary>
     /// Lift a synchronous effect into the IO monad
