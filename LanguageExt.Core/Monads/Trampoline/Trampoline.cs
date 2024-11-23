@@ -59,13 +59,13 @@ public abstract record Trampoline<A>
 
     protected abstract Either<Func<Trampoline<A>>, A> Resume();
 
-    internal record PureStep(A Result) : Trampoline<A>
+    internal sealed record PureStep(A Result) : Trampoline<A>
     {
         protected override Either<Func<Trampoline<A>>, A> Resume() =>
             Result;
     }
 
-    internal record MoreStep(Func<Trampoline<A>> Next) : Trampoline<A>
+    internal sealed record MoreStep(Func<Trampoline<A>> Next) : Trampoline<A>
     {
         protected override Either<Func<Trampoline<A>>, A> Resume() =>
             Next;
@@ -76,7 +76,8 @@ public abstract record Trampoline<A>
         public abstract Trampoline<B> Fix<B>(Func<A, Trampoline<B>> f);
     }
 
-    internal record BindStep<X>(Trampoline<X> Sub, Func<X, Trampoline<A>> Next) : BindStep
+    internal sealed record BindStep<X>(Trampoline<X> Sub, Func<X, Trampoline<A>> Next) 
+        : BindStep
     {
         public override Trampoline<B> Fix<B>(Func<A, Trampoline<B>> f) =>
             new Trampoline<B>.BindStep<X>(Sub, x => Trampoline.Bind(Next(x), f));
