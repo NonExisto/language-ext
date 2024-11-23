@@ -70,7 +70,6 @@ public static class ObservableExt
                         if (item.FailValue == Errors.None) yield break;
                         if (item.FailValue == Errors.Cancelled) throw new OperationCanceledException();
                         item.FailValue.Throw();
-                        yield break;
                     }
                     else
                     {

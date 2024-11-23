@@ -396,6 +396,7 @@ public abstract record Error : Monoid<Error>
     /// <summary>
     /// Throw the error as an exception
     /// </summary>
+    [DoesNotReturn]
     public R Throw<R>()
     {
         ExceptionDispatchInfo.Capture(ToException()).Throw();
