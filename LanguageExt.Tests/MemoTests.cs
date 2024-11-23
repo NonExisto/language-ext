@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using static LanguageExt.List;
+using System.Collections.Generic;
 
 namespace LanguageExt.Tests;
 
@@ -10,18 +11,17 @@ public class MemoTests
     [Fact]
     public void MemoTest1()
     {
-        var saved = DateTime.Now;
-        var date  = saved;
+        var date = DateTime.Now;
 
         var f = memo(() => date.ToString());
 
         var res1 = f();
 
-        date = DateTime.Now.AddDays(1);
+        date = date.AddDays(1);
 
         var res2 = f();
 
-        Assert.True(res1 == res2);
+        Assert.Equal(res1, res2);
     }
 
     [Fact]
@@ -66,10 +66,13 @@ public class MemoTests
     [Fact]
     public void ListMemoTest()
     {
-        var vals = List(1,2,3,4,5).Memo();
+        var lst = new List<int>{1, 2, 3, 4, 5};
+        var vals = lst.Memo();
 
         Assert.Equal(15, vals.Sum());
+        lst.RemoveAt(2);
         Assert.Equal(15, vals.Sum());
+        Assert.Equal(12, lst.Sum());
     }
 
     /*

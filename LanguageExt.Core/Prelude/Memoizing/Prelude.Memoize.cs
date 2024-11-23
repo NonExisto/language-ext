@@ -129,10 +129,10 @@ public static partial class Prelude
                 onFinalize.Invoke();
         }
 
-        ConcurrentDictionary<T, WeakReference<OnFinalize<R>>> dict = new ConcurrentDictionary<T, WeakReference<OnFinalize<R>>>();
+        readonly ConcurrentDictionary<T, WeakReference<OnFinalize<R>>> dict = new();
 
-        private WeakReference<OnFinalize<R>> NewRef(T key, Func<T, R> valueFunc) =>
-            new (new OnFinalize<R>(() => dict.TryRemove(key, out _), valueFunc(key)));
+        private WeakReference<OnFinalize<R>> NewRef(T key, R value) =>
+            new (new OnFinalize<R>(() => dict.TryRemove(key, out _), value));
 
         public bool TryGetValue(T key, [NotNullWhen(true)]out R? value)
         {
@@ -150,7 +150,7 @@ public static partial class Prelude
 
         public R GetOrAdd(T key, Func<T, R> valueFunc)
         {
-            var res = dict.GetOrAdd(key, _ => NewRef(key, valueFunc));
+            var res = dict.GetOrAdd(key, _ => NewRef(key, valueFunc(key)));
 
             if (res.TryGetTarget(out var target))
             {
@@ -158,19 +158,10 @@ public static partial class Prelude
             }
             else
             {
-                var upd = NewRef(key, valueFunc);
+                R value = valueFunc(key);
+                var upd = NewRef(key, value);
                 res = dict.AddOrUpdate(key, upd, (_, _) => upd);
-                if (res.TryGetTarget(out target))
-                {
-                    return target.Value;
-                }
-                else
-                {
-                    // This is a best guess of why the target can't be got.
-                    // It might not be the best approach, perhaps a retry, or a 
-                    // better/more-descriptive exception.
-                    throw new OutOfMemoryException();
-                }
+                return value;
             }
         }
     }
