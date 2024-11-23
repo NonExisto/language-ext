@@ -304,9 +304,3 @@ References to `Sys.Coll.Imm` are Microsoft's `ImmutableCollections` library.
 | LangExtHashSet           | 100000 |  49,172,230.7 ns |   681,393.65 ns |   637,376.04 ns |   15 | 91357174 B |
 | LangExtSet               | 100000 |  98,579,630.0 ns | 1,332,315.50 ns | 1,040,184.31 ns |   17 | 94083552 B |
 
-
-<style>
-table tbody tr:nth-child(even){
-    background-color:silver;
-}
-</style>
