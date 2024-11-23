@@ -6,21 +6,6 @@ namespace LanguageExt;
 
 public static partial class Prelude
 {
-    // There is no documentation that specifies whether the underlying RNG is thread-safe.
-    // It is assumed that the implementation is `RNGCryptoServiceProvider`, which under the
-    // hood calls `CryptGenRandom` from `advapi32` (i.e. a built-in Windows RNG).  There is
-    // no mention of thread-safety issues in any documentation, so we assume this must be 
-    // thread-safe.
-    //
-    // Documentation of `CrypGenRandom`
-    //
-    //    https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptgenrandom
-    //
-    // There is some discussion here:
-    //
-    //    https://stackoverflow.com/questions/46147805/is-cryptgenrandom-thread-safe
-    //
-    static readonly RandomNumberGenerator rnd = RandomNumberGenerator.Create();
     static readonly int wordTop = BitConverter.IsLittleEndian ? 3 : 0;
 
     /// <summary>
@@ -30,11 +15,12 @@ public static partial class Prelude
     /// <returns>A non-negative random number, less than the value specified.</returns>
     public static int random(int max)
     {
-        var bytes = ArrayPool<byte>.Shared.Rent(4);
-        rnd.GetBytes(bytes);
-        bytes[wordTop] &= 0x7f;
-        var value = BitConverter.ToInt32(bytes, 0) % max;
-        ArrayPool<byte>.Shared.Return(bytes);
+        using var bytes = MemoryPool<byte>.Shared.Rent(sizeof(int));
+        using var rnd = RandomNumberGenerator.Create();
+        var span = bytes.Memory.Span;
+        rnd.GetBytes(span);
+        span[wordTop] &= 0x7f;
+        var value = BitConverter.ToInt32(span) % max;
         return value;
     }
 
@@ -42,15 +28,18 @@ public static partial class Prelude
     /// Thread-safe cryptographically strong random base-64 string generator
     /// </summary>
     /// <param name="bytesCount">number of bytes generated that are then 
+    /// <param name="options">optional options for base64 conversion</param>
     /// returned Base64 encoded</param>
     /// <returns>Base64 encoded random string</returns>
-    public static string randomBase64(int bytesCount)
+    public static string randomBase64(int bytesCount, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-        if (bytesCount < 1) throw new ArgumentException($"The minimum value for {nameof(bytesCount)} is 1");
-        var bytes = ArrayPool<byte>.Shared.Rent(bytesCount);
-        rnd.GetBytes(bytes);
-        var r = Convert.ToBase64String(bytes);
-        ArrayPool<byte>.Shared.Return(bytes);
+        ArgumentOutOfRangeException.ThrowIfLessThan(bytesCount, 1, $"The minimum value for {nameof(bytesCount)} is 1");
+        
+        using var bytes = MemoryPool<byte>.Shared.Rent(bytesCount);
+        using var rnd = RandomNumberGenerator.Create();
+        var span = bytes.Memory.Span;
+        rnd.GetBytes(span);
+        var r = Convert.ToBase64String(span, options);
         return r;
     }
 }
