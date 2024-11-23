@@ -41,12 +41,8 @@ public struct EqCharOrdinalIgnoreCase : Eq<char>
     /// <param name="b">The right hand side of the equality operation</param>
     /// <returns>True if a and b are equal</returns>
     [Pure]
-    public static bool Equals(char a, char b)
-    {
-        if (a >= 'a' && a <= 'z') a = (char)(a - 0x20);
-        if (b >= 'a' && b <= 'z') b = (char)(b - 0x20);
-        return a == b;
-    }
+    public static bool Equals(char a, char b) => 
+        TChar.TryUpper(a) == TChar.TryUpper(b);
 
     /// <summary>
     /// Get hash code of the value
