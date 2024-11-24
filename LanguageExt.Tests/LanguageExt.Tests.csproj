@@ -18,6 +18,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LanguageExt.Benchmarks\LanguageExt.Benchmarks.csproj" />
     <ProjectReference Include="..\LanguageExt.Core\LanguageExt.Core.csproj" />
     <ProjectReference Include="..\LanguageExt.FSharp\LanguageExt.FSharp.csproj" />
     <ProjectReference Include="..\LanguageExt.Parsec\LanguageExt.Parsec.csproj" />
