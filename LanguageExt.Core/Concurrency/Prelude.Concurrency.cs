@@ -383,6 +383,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// If the swap operation succeeded then a snapshot of the value that was set is returned.
@@ -399,6 +400,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// * If `f` returns `None` then no update occurs and the result of the call
@@ -417,6 +419,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// If the swap operation succeeded then a snapshot of the value that was set is returned.
@@ -433,6 +436,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// * If `f` returns `None` then no update occurs and the result of the call

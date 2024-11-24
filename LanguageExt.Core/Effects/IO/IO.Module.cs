@@ -47,6 +47,7 @@ public partial class IO
     /// propagates upwards and so catching cancellations is still important. 
     /// </remarks>
     /// <param name="ma">Computation to run within the local context</param>
+    /// <typeparam name="M">Bound Monad type</typeparam>
     /// <typeparam name="A">Bound value</typeparam>
     /// <returns>Result of the computation</returns>
     public static K<M, A> local<M, A>(K<M, A> ma) 
@@ -125,7 +126,8 @@ public partial class IO
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
-    /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
+    /// <param name="ma">Monad of A</param>
+    /// <param name="f">map operation</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
     /// </returns>
@@ -138,6 +140,7 @@ public partial class IO
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">IO Monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -150,6 +153,7 @@ public partial class IO
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">IO Monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.

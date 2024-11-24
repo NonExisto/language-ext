@@ -21,7 +21,7 @@ namespace LanguageExt;
 /// `IO` is a monad, so `IO` actions can be combined using either the LINQ-notation or the `bind` 
 /// operations from the `Monad` class.
 /// </summary>
-/// <param name="runIO">The lifted thunk that is the IO operation</param>
+/// <param name="Error">The lifted thunk that is the IO operation</param>
 /// <typeparam name="A">Bound value</typeparam>
 sealed record IOFail<A>(Error Error) : IO<A>
 {

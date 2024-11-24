@@ -51,6 +51,7 @@ public partial class HashSet
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <param name="range">Range of items</param>
+    /// <param name="equalityComparer">Optional equality comparer</param>
     /// <returns>HSet</returns>
     [Pure]
     public static HashSet<T> createRange<T>(IEnumerable<T> range, IEqualityComparer<T>? equalityComparer = null) =>
@@ -61,6 +62,7 @@ public partial class HashSet
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <param name="range">Range of items</param>
+    /// <param name="equalityComparer">Optional equality comparer</param>
     /// <returns>HSet</returns>
     [Pure]
     public static HashSet<T> createRange<T>(ReadOnlySpan<T> range, IEqualityComparer<T> equalityComparer) =>

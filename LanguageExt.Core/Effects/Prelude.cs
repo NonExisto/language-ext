@@ -22,6 +22,7 @@ public static partial class Prelude
     /// stream.  This gives fine-grained control over when to run events in parallel.
     /// </remarks>
     /// <typeparam name="M">Monad type lifted into the stream</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>StreamT monad transformer that will get the values coming downstream</returns>
 
     public static StreamT<M, A> await<M, A>(Source<A> source)
@@ -31,6 +32,7 @@ public static partial class Prelude
     /// <summary>
     /// Post a value to flow downstream
     /// </summary>
+    /// <param name="source"></param>
     /// <param name="value">Value</param>
     /// <returns>IO effect</returns>
     public static IO<Unit> post<A>(Source<A> source, A value) =>
@@ -39,7 +41,7 @@ public static partial class Prelude
     /// <summary>
     /// Post a value to flow downstream (partially applied)
     /// </summary>
-    /// <param name="value">Value</param>
+    /// <param name="source">Value</param>
     /// <returns>IO effect</returns>
     public static Func<A, IO<Unit>> post<A>(Source<A> source) => 
         source.Post;

@@ -129,7 +129,6 @@ public static partial class EffExtensions
     /// Collapses a nested IO monad so there is no nesting.
     /// </remarks>
     /// <param name="mma">Nest IO monad to flatten</param>
-    /// <typeparam name="RT">Runtime</typeparam>
     /// <typeparam name="A">Bound value</typeparam>
     /// <returns>Flattened IO monad</returns>
     public static Eff<A> Flatten<A>(this K<Eff, K<Eff, A>> mma) =>
@@ -142,7 +141,6 @@ public static partial class EffExtensions
     /// Collapses a nested IO monad so there is no nesting.
     /// </remarks>
     /// <param name="mma">Nest IO monad to flatten</param>
-    /// <typeparam name="RT">Runtime</typeparam>
     /// <typeparam name="A">Bound value</typeparam>
     /// <returns>Flattened IO monad</returns>
     public static Eff<A> Flatten<A>(this K<Eff, Eff<A>> mma) =>

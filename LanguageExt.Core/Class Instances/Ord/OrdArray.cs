@@ -23,8 +23,8 @@ public struct OrdArray<OrdA, A> : Ord<A[]>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="mx">Left hand side of the compare operation</param>
+    /// <param name="my">Right hand side of the compare operation</param>
     /// <returns>
     /// if x greater than y : 1
     /// if x less than y    : -1
@@ -80,8 +80,8 @@ public struct OrdArray<A> : Ord<A[]>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="mx">Left hand side of the compare operation</param>
+    /// <param name="my">Right hand side of the compare operation</param>
     /// <returns>
     /// if x greater than y : 1
     /// if x less than y    : -1

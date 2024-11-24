@@ -271,7 +271,7 @@ public record StreamT<M, A>(Func<K<M, MList<A>>>  runListT) :
     /// </summary>
     /// <param name="state">Initial state of the fold</param>
     /// <param name="f">Fold operation</param>
-    /// <param name="until">Predicate</param>
+    /// <param name="while">Predicate</param>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Stream transformer</returns>
     public StreamT<M, S> FoldWhile<S>(S state, Func<S, A, S> f, Func<S, A, bool> @while) =>
@@ -356,7 +356,8 @@ public record StreamT<M, A>(Func<K<M, MList<A>>>  runListT) :
     /// <summary>
     /// Interleave the items of many streams
     /// </summary>
-    /// <param name="rhs">Other stream to merge with</param>
+    /// <param name="second">Other stream to merge with</param>
+    /// <param name="rest">Remaining streams to merge with</param>
     /// <returns>Stream transformer</returns>
     public StreamT<M, A> Merge(K<StreamT<M>, A> second, params K<StreamT<M>, A>[] rest)
     {

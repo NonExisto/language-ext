@@ -226,6 +226,7 @@ public static partial class Prelude
     public static IO<Unit> serialIO(Action op) =>
         lift(() => serial(op));        
 
+    /// <summary>
     /// Swap the old value for the new returned by `f`
     /// Must be run within a `sync` transaction
     /// </summary>
@@ -377,12 +378,13 @@ public static partial class Prelude
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IO<Atom<M, A>> atomIO<M, A>(M metadata, A value, Func<A, bool> validator) =>
         lift(() => Atom(metadata, value, validator).Match(a => a, () => throw Exceptions.ValidationFailed) );
-        
+
     /// <summary>
     /// Atomically updates the value by passing the old value to `f` and updating
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">Swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// If the swap operation succeeded then a snapshot of the value that was set is returned.
@@ -399,6 +401,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">Swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// If the swap operation succeeded then a snapshot of the value that was set is returned.
@@ -415,6 +418,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">Swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// * If `f` returns `None` then no update occurs and the result of the call
@@ -433,6 +437,7 @@ public static partial class Prelude
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
+    /// <param name="ma">Swap target</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// * If `f` returns `None` then no update occurs and the result of the call
@@ -461,6 +466,7 @@ public static partial class Prelude
     /// value in an atom
     /// </summary>
     /// <param name="ma">Atom to snapshot</param>
+    /// <typeparam name="M">Metadata type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>IO representation of the snapshot</returns>
     public static IO<A> valueIO<M, A>(Atom<M, A> ma) =>
@@ -479,6 +485,7 @@ public static partial class Prelude
     /// of the atomic value without any dependency on the previous state.   
     /// </remarks>
     /// <param name="ma">Atom to write</param>
+    /// <param name="value">Value to write</param>
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>IO representation of the write operation</returns>
     public static IO<A> writeIO<A>(Atom<A> ma, A value) =>
@@ -497,6 +504,8 @@ public static partial class Prelude
     /// of the atomic value without any dependency on the previous state.   
     /// </remarks>
     /// <param name="ma">Atom to write</param>
+    /// <param name="value">Value to write</param>
+    /// <typeparam name="M">Metadata type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>IO representation of the write operation</returns>
     public static IO<A> writeIO<M, A>(Atom<M, A> ma, A value) =>

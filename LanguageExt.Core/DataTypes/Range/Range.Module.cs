@@ -16,8 +16,8 @@ public sealed partial class Range
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
-    /// <param name="to">The maximum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
+    /// <param name="max">The maximum value in the range</param>
     [Pure]
     public static Range<A> fromMinMax<A>(A min, A max)
         where A : 
@@ -31,8 +31,8 @@ public sealed partial class Range
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
-    /// <param name="to">The maximum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
+    /// <param name="max">The maximum value in the range</param>
     /// <param name="step">The size of each step in the range</param>
     [Pure]
     public static Range<A> fromMinMax<A>(A min, A max, A step)
@@ -64,7 +64,7 @@ public sealed partial class Range
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
     /// <param name="count">The number of items in the range</param>
     [Pure]
     public static Range<A> fromCount<A>(A min, A count)
@@ -76,7 +76,7 @@ public sealed partial class Range
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
     /// <param name="count">The number of items in the range</param>
     /// <param name="step">The size of each step in the range</param>
     [Pure]

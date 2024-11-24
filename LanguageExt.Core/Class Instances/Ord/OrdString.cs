@@ -11,8 +11,8 @@ public struct OrdString : Ord<string>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="a">Left hand side of the compare operation</param>
+    /// <param name="b">Right hand side of the compare operation</param>
     /// <returns>
     /// if a greater than b : 1
     /// if a less than b    : -1
@@ -46,8 +46,8 @@ public struct OrdStringOrdinalIgnoreCase : Ord<string>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="a">Left hand side of the compare operation</param>
+    /// <param name="b">Right hand side of the compare operation</param>
     /// <returns>
     /// if a greater than b : 1
     /// if a less than b    : -1
@@ -81,8 +81,8 @@ public struct OrdStringOrdinal : Ord<string>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="a">Left hand side of the compare operation</param>
+    /// <param name="b">Right hand side of the compare operation</param>
     /// <returns>
     /// if a greater than b : 1
     /// if a less than b    : -1
@@ -116,8 +116,8 @@ public struct OrdStringCurrentCultureIgnoreCase : Ord<string>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="a">Left hand side of the compare operation</param>
+    /// <param name="b">Right hand side of the compare operation</param>
     /// <returns>
     /// if a greater than b : 1
     /// if a less than b    : -1
@@ -151,8 +151,8 @@ public struct OrdStringCurrentCulture : Ord<string>
     /// <summary>
     /// Compare two values
     /// </summary>
-    /// <param name="x">Left hand side of the compare operation</param>
-    /// <param name="y">Right hand side of the compare operation</param>
+    /// <param name="a">Left hand side of the compare operation</param>
+    /// <param name="b">Right hand side of the compare operation</param>
     /// <returns>
     /// if a greater than b : 1
     /// if a less than b    : -1

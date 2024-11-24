@@ -45,7 +45,9 @@ public readonly struct HashSet<A> :
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    /// <param name="items"></param>
+    /// <param name="items">Source items</param>
+    /// <param name="tryAdd">Adding strategy</param>
+    /// <param name="equalityComparer">Optional comparer</param>
     public HashSet(ReadOnlySpan<A> items, bool tryAdd = true, IEqualityComparer<A>? equalityComparer = null) =>
         _value = new TrieSet<A>(items, tryAdd, equalityComparer);
 
@@ -141,9 +143,7 @@ public readonly struct HashSet<A> :
     /// Maps the values of this set into a new set of values using the
     /// mapper function to transform the source values.
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>
-    /// <param name="set">HSet</param>
     /// <param name="mapper">Mapping function</param>
     /// <returns>Mapped enumerable</returns>
     [Pure]
@@ -164,7 +164,6 @@ public readonly struct HashSet<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -177,7 +176,6 @@ public readonly struct HashSet<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -190,8 +188,6 @@ public readonly struct HashSet<A> :
     /// returns True for any item then it remains in the set, otherwise
     /// it's dropped.
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <param name="set">HSet</param>
     /// <param name="pred">Predicate</param>
     /// <returns>Filtered enumerable</returns>
     [Pure]
@@ -213,9 +209,7 @@ public readonly struct HashSet<A> :
     /// Maps the values of this set into a new set of values using the
     /// mapper function to transform the source values.
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
     /// <typeparam name="R">Mapped element type</typeparam>
-    /// <param name="set">HSet</param>
     /// <param name="mapper">Mapping function</param>
     /// <returns>Mapped enumerable</returns>
     [Pure]
@@ -227,8 +221,6 @@ public readonly struct HashSet<A> :
     /// returns True for any item then it remains in the set, otherwise
     /// it's dropped.
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <param name="set">HSet</param>
     /// <param name="pred">Predicate</param>
     /// <returns>Filtered enumerable</returns>
     [Pure]
@@ -238,7 +230,7 @@ public readonly struct HashSet<A> :
     /// <summary>
     /// Add an item to the set
     /// </summary>
-    /// <param name="value">Value to add to the set</param>
+    /// <param name="key">Value to add to the set</param>
     /// <returns>New set with the item added</returns>
     [Pure]
     public HashSet<A> Add(A key) =>
@@ -248,7 +240,7 @@ public readonly struct HashSet<A> :
     /// Attempt to add an item to the set.  If an item already
     /// exists then return the Set as-is.
     /// </summary>
-    /// <param name="value">Value to add to the set</param>
+    /// <param name="key">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
     public HashSet<A> TryAdd(A key) =>
@@ -258,7 +250,7 @@ public readonly struct HashSet<A> :
     /// Add an item to the set.  If an item already
     /// exists then replace it.
     /// </summary>
-    /// <param name="value">Value to add to the set</param>
+    /// <param name="key">Value to add to the set</param>
     /// <returns>New set with the item maybe added</returns>
     [Pure]
     public HashSet<A> AddOrUpdate(A key) =>
@@ -331,6 +323,8 @@ public readonly struct HashSet<A> :
     /// result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Existing item action</param>
+    /// <param name="None">Missing item action</param>
     /// <returns>Found value</returns>
     [Pure]
     public R Find<R>(A key, Func<A, R> Some, Func<R> None) =>
@@ -353,7 +347,6 @@ public readonly struct HashSet<A> :
     /// </summary>
     /// <remarks>Null is not allowed for a key</remarks>
     /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if the key is null</exception>
     /// <returns>New HSet with the item added</returns>
     [Pure]
@@ -587,7 +580,7 @@ public readonly struct HashSet<A> :
     /// Finds the union of two sets and produces a new set with 
     /// the results
     /// </summary>
-    /// <param name="other">Other set to union with</param>
+    /// <param name="rhs">Other set to union with</param>
     /// <returns>A set which contains all items from both sets</returns>
     [Pure]
     public HashSet<A> Union(IEnumerable<A> rhs) =>

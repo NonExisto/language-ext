@@ -158,7 +158,6 @@ public sealed class Atom<M, A>
     /// the atom with the result.  Note: `f` may be called multiple times, so it
     /// should be free of side effects.
     /// </summary>
-    /// <param name="x">Additional value to pass to `f`</param>
     /// <param name="f">Function to update the atom</param>
     /// <returns>
     /// If the swap operation succeeded then a snapshot of the value that was set is returned.

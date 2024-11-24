@@ -352,7 +352,6 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
-    /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="predicate">Keep repeating until this predicate returns `true` for each computed value</param>
     /// <returns>The result of the last invocation</returns>
     public override IO<A> RepeatUntil(Func<A, bool> predicate) =>

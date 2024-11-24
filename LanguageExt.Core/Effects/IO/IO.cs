@@ -23,7 +23,6 @@ namespace LanguageExt;
 /// `IO` is a monad, so `IO` actions can be combined using either the LINQ-notation or the `bind` 
 /// operations from the `Monad` class.
 /// </summary>
-/// <param name="runIO">The lifted thunk that is the IO operation</param>
 /// <typeparam name="A">Bound value</typeparam>
 public abstract record IO<A> : 
     Fallible<IO<A>, IO, Error, A>,
@@ -466,7 +465,7 @@ public abstract record IO<A> :
     /// NOTE: An exception will always be thrown if the IO operation fails.  Lift this monad into
     /// other error handling monads to leverage more declarative error handling. 
     /// </remarks>
-    /// <param name="env">IO environment</param>
+    /// <param name="envIO">IO environment</param>
     /// <returns>Result of the IO operation</returns>
     /// <exception cref="TaskCanceledException">Throws if the operation is cancelled</exception>
     /// <exception cref="BottomException">Throws if any lifted task fails without a value `Exception` value.</exception>
@@ -474,7 +473,7 @@ public abstract record IO<A> :
     
     /// <summary>
     /// Run the `IO` monad to get its result.  Differs from `Run` in that it catches any exceptions and turns
-    /// them into a `Fin<A>` result. 
+    /// them into a <see cref="Fin{A}"/> result. 
     /// </summary>
     public FinT<IO, A> Try() =>
         new (Map(Fin<A>.Succ).Catch(Fin<A>.Fail));

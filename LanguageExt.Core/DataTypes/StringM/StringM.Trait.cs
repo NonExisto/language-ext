@@ -7,7 +7,6 @@ namespace LanguageExt;
 /// <summary>
 /// Simple wrapper around String
 /// </summary>
-/// <param name="Value">Contained value</param>
 public interface StringM<SELF> :
     DomainType<SELF, string>,
     Identifier<SELF>,

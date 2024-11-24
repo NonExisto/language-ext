@@ -26,6 +26,7 @@ public static partial class IterableExtensions
     /// comprised of the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">output item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>

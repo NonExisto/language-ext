@@ -111,7 +111,7 @@ public abstract class ErrorException : InvalidOperationException, IEnumerable<Er
     /// <summary>
     /// Create a new error 
     /// </summary>
-    /// <param name="message">Error message</param>
+    /// <param name="thisException">The exception this error represents</param>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ErrorException New(Exception thisException) =>
         new ExceptionalException(thisException);
@@ -155,7 +155,7 @@ public abstract class ErrorException : InvalidOperationException, IEnumerable<Er
     /// <summary>
     /// Create a new error 
     /// </summary>
-    /// <param name="code">Error code</param>
+    /// <param name="message">Error message</param>
     /// <param name="inner">The inner error to this error</param>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ErrorException New(string message, ErrorException inner) =>
@@ -164,8 +164,7 @@ public abstract class ErrorException : InvalidOperationException, IEnumerable<Er
     /// <summary>
     /// Create a new error 
     /// </summary>
-    /// <param name="code">Error code</param>
-    /// <param name="inner">The inner error to this error</param>
+    /// <param name="errors">The inner errors to this error</param>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ErrorException Many(params ErrorException[] errors) =>
         new ManyExceptions(errors.AsIterable().ToSeq());
@@ -173,8 +172,7 @@ public abstract class ErrorException : InvalidOperationException, IEnumerable<Er
     /// <summary>
     /// Create a new error 
     /// </summary>
-    /// <param name="code">Error code</param>
-    /// <param name="inner">The inner error to this error</param>
+    /// <param name="errors">The inner errors to this error</param>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ErrorException Many(Seq<ErrorException> errors) =>
         new ManyExceptions(errors);
@@ -267,7 +265,6 @@ public sealed class WrappedErrorExpectedException(Error Error) :
 /// <summary>
 /// Represents an exceptional (unexpected) error
 /// </summary>
-/// <param name="Exception">Exceptional error</param>
 public class ExceptionalException : ErrorException
 {
     public ExceptionalException(Exception Exception) : base(Exception.HResult)
@@ -366,7 +363,7 @@ public sealed class WrappedErrorExceptionalException(Error Error) :
 /// <summary>
 /// Represents multiple errors
 /// </summary>
-/// <param name="Errors">Errors</param>
+/// <param name="errors">Errors</param>
 public sealed class ManyExceptions(Seq<ErrorException> errors) : ErrorException(0)
 {
     public new static ErrorException Empty { get; } = new ManyExceptions([]);

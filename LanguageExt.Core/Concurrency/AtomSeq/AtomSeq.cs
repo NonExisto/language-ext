@@ -616,7 +616,8 @@ public class AtomSeq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
-    /// <param name="Tail">Match for a non-empty</param>
+    /// <param name="Head">Match head</param>
+    /// <param name="Tail">Match tail</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -638,7 +639,7 @@ public class AtomSeq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
-    /// <param name="Sequence">Match for a non-empty</param>
+    /// <param name="Seq">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -657,7 +658,8 @@ public class AtomSeq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
-    /// <param name="Tail">Match for a non-empty</param>
+    /// <param name="Head">Match head</param>
+    /// <param name="Tail">Match tail</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -706,7 +708,6 @@ public class AtomSeq<A> :
     /// <summary>
     /// Map the sequence using the function provided
     /// </summary>
-    /// <typeparam name="B"></typeparam>
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped sequence</returns>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
@@ -785,13 +786,15 @@ public class AtomSeq<A> :
                             
             sw.SpinOnce();
         }
-    } 
+    }
 
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
     /// </summary>
-    /// <typeparam name="B">Bound return value type</typeparam>
+    /// <typeparam name="B">Bound transform value type</typeparam>
+    /// <typeparam name="C">Bound return value type</typeparam>
     /// <param name="bind">Bind function</param>
+    /// <param name="project">Map function</param>
     /// <returns>Flatmapped sequence</returns>
     [Pure]
     public Seq<C> SelectMany<B, C>(Func<A, Seq<B>> bind, Func<A, B, C> project)
@@ -933,9 +936,7 @@ public class AtomSeq<A> :
     /// <summary>
     /// Inject a value in between each item in the sequence 
     /// </summary>
-    /// <param name="ma">Sequence to inject values into</param>
     /// <param name="value">Item to inject</param>
-    /// <typeparam name="A">Bound type</typeparam>
     /// <returns>A sequence with the values injected</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

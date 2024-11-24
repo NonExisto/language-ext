@@ -52,11 +52,12 @@ public static partial class Prelude
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static K<IO, A> post<A>(K<IO, A> ma) =>
-        ma.As().PostIO();        
+        ma.As().PostIO();
 
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">IO</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -69,6 +70,7 @@ public static partial class Prelude
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">Monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -82,6 +84,7 @@ public static partial class Prelude
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">Stream of monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -97,6 +100,7 @@ public static partial class Prelude
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">Stream of IO</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -112,7 +116,7 @@ public static partial class Prelude
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
-    /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
+    /// <param name="ma">Fork</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
     /// </returns>
@@ -125,7 +129,7 @@ public static partial class Prelude
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
-    /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
+    /// <param name="ma">IO Fork</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
     /// </returns>
@@ -191,7 +195,7 @@ public static partial class Prelude
     /// <summary>
     /// Awaits all 
     /// </summary>
-    /// <param name="ms">IO operations to await</param>
+    /// <param name="mfs">IO operations to await</param>
     /// <returns>Sequence of results</returns>
     public static IO<Seq<A>> awaitAll<A>(params IO<ForkIO<A>>[] mfs) =>
         awaitAll(mfs.ToSeqUnsafe());
@@ -238,7 +242,7 @@ public static partial class Prelude
     /// <summary>
     /// Awaits all 
     /// </summary>
-    /// <param name="ms">IO operations to await</param>
+    /// <param name="mfs">IO operations to await</param>
     /// <returns>Sequence of results</returns>
     public static IO<Seq<A>> awaitAll<A>(Seq<IO<ForkIO<A>>> mfs) =>
         new IOAsync<Seq<A>>(async eio =>
@@ -327,7 +331,7 @@ public static partial class Prelude
     /// <summary>
     /// Awaits for operations to complete
     /// </summary>
-    /// <param name="ms">Operations to await</param>
+    /// <param name="forks">Operations to await</param>
     /// <returns>
     /// If we get one success, then we'll return straight away and cancel the others.
     /// If we get any errors, we'll collect them in the hope that at least one works.
@@ -369,7 +373,7 @@ public static partial class Prelude
     /// <summary>
     /// Awaits for any forks to complete
     /// </summary>
-    /// <param name="forks">Forks to await</param>
+    /// <param name="mfs">Forks to await</param>
     /// <returns>
     /// If we get one success, then we'll return straight away and cancel the others.
     /// If we get any errors, we'll collect them in the hope that at least one works.
@@ -404,6 +408,7 @@ public static partial class Prelude
     /// Keeps repeating the computation   
     /// </summary>
     /// <param name="ma">Computation to repeat</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeat<M, A>(K<M, A> ma)
@@ -424,6 +429,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="ma">Computation to repeat</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeat<M, A>(Schedule schedule, K<M, A> ma)
@@ -444,6 +450,8 @@ public static partial class Prelude
     /// Keeps repeating the computation until the predicate returns false
     /// </summary>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeatWhile<M, A>(K<M, A> ma, Func<A, bool> predicate) 
@@ -454,6 +462,7 @@ public static partial class Prelude
     /// Keeps repeating the computation until the predicate returns false
     /// </summary>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static IO<A> repeatWhile<A>(IO<A> ma, Func<A, bool> predicate) => 
@@ -464,7 +473,9 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeatWhile<M, A>(
         Schedule schedule,
@@ -478,6 +489,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static IO<A> repeatWhile<A>(
@@ -490,7 +502,9 @@ public static partial class Prelude
     /// Keeps repeating the computation until the predicate returns true
     /// </summary>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeatUntil<M, A>(
         K<M, A> ma,
@@ -502,6 +516,7 @@ public static partial class Prelude
     /// Keeps repeating the computation until the predicate returns true
     /// </summary>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static IO<A> repeatUntil<A>(
@@ -514,7 +529,9 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static K<M, A> repeatUntil<M, A>(
         Schedule schedule,
@@ -528,6 +545,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="ma">Computation to repeat</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of `ma`</returns>
     public static IO<A> repeatUntil<A>(
@@ -541,6 +559,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="ma">Computation to retry</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retry<M, A>(K<M, A> ma) 
         where M : Monad<M> =>
@@ -560,6 +579,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for retrying</param>
     /// <param name="ma">Computation to retry</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retry<M, A>(Schedule schedule, K<M, A> ma) 
@@ -580,6 +600,8 @@ public static partial class Prelude
     /// Keeps retrying the computation until the predicate returns false
     /// </summary>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retryWhile<M, A>(
@@ -592,6 +614,7 @@ public static partial class Prelude
     /// Keeps retrying the computation until the predicate returns false
     /// </summary>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static IO<A> retryWhile<A>(
@@ -604,6 +627,8 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for retrying</param>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retryWhile<M, A>(
@@ -618,6 +643,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for retrying</param>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static IO<A> retryWhile<A>(
@@ -630,6 +656,8 @@ public static partial class Prelude
     /// Keeps retrying the computation until the predicate returns true
     /// </summary>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retryUntil<M, A>(
@@ -642,6 +670,7 @@ public static partial class Prelude
     /// Keeps retrying the computation until the predicate returns true
     /// </summary>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static IO<A> retryUntil<A>(
@@ -654,6 +683,8 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for retrying</param>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static K<M, A> retryUntil<M, A>(
@@ -668,6 +699,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="schedule">Scheduler strategy for retrying</param>
     /// <param name="ma">Computation to retry</param>
+    /// <param name="predicate">Looping condition</param>
     /// <typeparam name="A">Computation bound value type</typeparam>
     /// <returns>The result of the last invocation of ma</returns>
     public static IO<A> retryUntil<A>(

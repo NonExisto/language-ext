@@ -3,12 +3,13 @@ using static LanguageExt.Prelude;
 using System;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits.Resolve;
+using System.Collections.Generic;
 
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
 /// Finds an appropriate Eq from the loaded assemblies, if one can't be found then it
-/// falls back to the standard .NET EqualityComparer<A>.Default.Equals(a,b) method to
+/// falls back to the standard .NET <see cref="EqualityComparer{A}.Default"/> method to
 /// provide equality testing.
 /// </summary>
 public readonly struct EqDefault<A> : Eq<A>
@@ -16,8 +17,8 @@ public readonly struct EqDefault<A> : Eq<A>
     /// <summary>
     /// Equality test
     /// </summary>
-    /// <param name="x">The left hand side of the equality operation</param>
-    /// <param name="y">The right hand side of the equality operation</param>
+    /// <param name="a">The left hand side of the equality operation</param>
+    /// <param name="b">The right hand side of the equality operation</param>
     /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(A? a, A? b)
@@ -57,8 +58,8 @@ public static class EqDefault<A, B>
     /// <summary>
     /// Equality test
     /// </summary>
-    /// <param name="x">The left hand side of the equality operation</param>
-    /// <param name="y">The right hand side of the equality operation</param>
+    /// <param name="a">The left hand side of the equality operation</param>
+    /// <param name="b">The right hand side of the equality operation</param>
     /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(A a, B b)

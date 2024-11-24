@@ -12,7 +12,6 @@ namespace LanguageExt;
 /// Represents a sequence of values in a similar way to IEnumerable, but without the
 /// issues of multiple evaluation for key LINQ operators like Skip, Count, etc.
 /// </summary>
-/// <typeparam name="A">Type of the values in the sequence</typeparam>
 public partial class Iterable
 {
     /// <summary>
@@ -114,6 +113,7 @@ public partial class Iterable
     /// comprised of the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">output item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>
@@ -186,7 +186,6 @@ public partial class Iterable
     /// </summary>
     /// <param name="list">First sequence to join</param>
     /// <param name="other">Second sequence to join</param>
-    /// <param name="zipper">Join function</param>
     /// <returns>Joined sequence of tuples</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -207,6 +206,7 @@ public partial class Iterable
     /// <summary>
     /// Return a new sequence with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EqA">comparator type</typeparam>
     /// <typeparam name="A">sequence item type</typeparam>
     /// <param name="list">sequence</param>
     /// <returns>A new sequence with all duplicate values removed</returns>
@@ -233,7 +233,7 @@ public partial class Iterable
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
     /// <param name="list">sequence</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new sequence with the first items that match the predicate</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -246,7 +246,7 @@ public partial class Iterable
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
     /// <param name="list">sequence</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new sequence with the first items that match the predicate</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

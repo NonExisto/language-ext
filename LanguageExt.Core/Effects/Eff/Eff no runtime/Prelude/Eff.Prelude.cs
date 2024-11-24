@@ -83,8 +83,6 @@ public static partial class Prelude
     /// Collapses a nested IO monad so there is no nesting.
     /// </remarks>
     /// <param name="mma">Nest IO monad to flatten</param>
-    /// <typeparam name="RT">Runtime</typeparam>
-    /// <typeparam name="E">Error type</typeparam>
     /// <typeparam name="A">Bound value</typeparam>
     /// <returns>Flattened IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -172,7 +170,7 @@ public static partial class Prelude
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<A> liftEff<A>(Func<Task<Fin<A>>> f) =>
         LanguageExt.Eff<A>.LiftIO(f);
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Map and map-left
@@ -181,6 +179,7 @@ public static partial class Prelude
     /// <summary>
     /// Maps the IO monad if it's in a success state
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="f">Function to map the success value with</param>
     /// <returns>Mapped IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -190,6 +189,7 @@ public static partial class Prelude
     /// <summary>
     /// Maps the IO monad if it's in a success state
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="f">Function to map the success value with</param>
     /// <returns>Mapped IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -205,6 +205,7 @@ public static partial class Prelude
     /// Mapping of either the Success state or the Failure state depending on what
     /// state this IO monad is in.  
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="Succ">Mapping to use if the IO monad is in a success state</param>
     /// <param name="Fail">Mapping to use if the IO monad is in a failure state</param>
     /// <returns>Mapped IO monad</returns>
@@ -220,6 +221,7 @@ public static partial class Prelude
     /// <summary>
     /// Pattern match the success or failure values and collapse them down to a success value
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="Succ">Success value mapping</param>
     /// <param name="Fail">Failure value mapping</param>
     /// <returns>IO in a success state</returns>
@@ -230,7 +232,8 @@ public static partial class Prelude
     /// <summary>
     /// Map the failure to a success value
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="ma">Effect</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO in a success state</returns>
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<A> ifFail<A>(Eff<A> ma, Func<Error, A> Fail) =>
@@ -239,7 +242,8 @@ public static partial class Prelude
     /// <summary>
     /// Map the failure to a new IO effect
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="ma">Effect</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO that encapsulates that IfFail</returns>
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<A> ifFailEff<A>(Eff<A> ma, Func<Error, Eff<A>> Fail) =>
@@ -253,6 +257,7 @@ public static partial class Prelude
     /// <summary>
     /// Only allow values through the effect if the predicate returns `true` for the bound value
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="predicate">Predicate to apply to the bound value></param>
     /// <returns>Filtered IO</returns>
     [Pure, MethodImpl(Opt.Default)]

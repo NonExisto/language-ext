@@ -9,7 +9,7 @@ namespace LanguageExt;
 /// </summary>
 /// <remarks>
 /// Used heavily by `repeat`, `retry`, and `fold` with the effect types.  Use the static methods to create parts
-/// of schedulers and then union them using `|` or intersect them using `&`.  Union will take the minimum of the two
+/// of schedulers and then union them using `|` or intersect them using `&amp;`.  Union will take the minimum of the two
 /// schedules to the length of the longest, intersect will take the maximum of the two schedules to the length of the
 /// shortest.
 /// </remarks>
@@ -30,7 +30,7 @@ namespace LanguageExt;
 /// This example creates a schedule that repeats 5 times, with an exponential delay between each stage, starting
 /// at 10 milliseconds and with a minimum delay of 300 milliseconds:
 /// 
-///     var s = Schedule.recurs(5) | Schedule.exponential(10*ms) & Schedule.spaced(300*ms)
+///     var s = Schedule.recurs(5) | Schedule.exponential(10*ms) &amp; Schedule.spaced(300*ms)
 /// </example>
 public abstract partial record Schedule : Semigroup<Schedule>
 {
@@ -108,7 +108,6 @@ public abstract partial record Schedule : Semigroup<Schedule>
     /// <summary>
     /// Take `amount` durations from the `Schedule`
     /// </summary>
-    /// <param name="s">Schedule to take from</param>
     /// <param name="amount">Amount ot take</param>
     /// <returns>Schedule with `amount` or less durations</returns>
     [Pure]
@@ -118,7 +117,6 @@ public abstract partial record Schedule : Semigroup<Schedule>
     /// <summary>
     /// Skip `amount` durations from the `Schedule`
     /// </summary>
-    /// <param name="s">Schedule to skip durations from</param>
     /// <param name="amount">Amount ot skip</param>
     /// <returns>Schedule with `amount` durations skipped</returns>
     [Pure]
@@ -216,7 +214,6 @@ public abstract partial record Schedule : Semigroup<Schedule>
     /// <summary>
     /// Monad bind and project operation for Schedule
     /// </summary>
-    /// <param name="s">Schedule</param>
     /// <param name="bind">Bind function</param>
     /// <param name="project">Project function</param>
     /// <returns>Chained schedule</returns>

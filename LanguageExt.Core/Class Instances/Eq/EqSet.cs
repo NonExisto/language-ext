@@ -4,8 +4,10 @@ using System.Diagnostics.Contracts;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Set<T> equality
+/// Set equality
 /// </summary>
+/// <typeparam name="EQ">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqSet<EQ, A> : Eq<Set<A>> where EQ : Eq<A>
 {
     /// <summary>
@@ -42,8 +44,9 @@ public struct EqSet<EQ, A> : Eq<Set<A>> where EQ : Eq<A>
 }
 
 /// <summary>
-/// Set<T> equality
+/// Set equality with default comparison
 /// </summary>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqSet<A> : Eq<Set<A>>
 {
     /// <summary>

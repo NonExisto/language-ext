@@ -38,8 +38,8 @@ public readonly struct BiMap<A, B> :
     /// Atomically adds a new item to the map
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
+    /// <param name="left">Key</param>
+    /// <param name="right">Value</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the key already exists</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
     /// <returns>New Map with the item added</returns>
@@ -52,8 +52,8 @@ public readonly struct BiMap<A, B> :
     /// If the key already exists, then the new item is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
+    /// <param name="left">Key</param>
+    /// <param name="right">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
     /// <returns>New Map with the item added</returns>
     [Pure]
@@ -170,7 +170,7 @@ public readonly struct BiMap<A, B> :
     /// Atomically removes an item from the map
     /// If the key doesn't exists, the request is ignored.
     /// </summary>
-    /// <param name="key">Key</param>
+    /// <param name="left">Key</param>
     /// <returns>New map with the item removed</returns>
     [Pure]
     public BiMap<A, B> Remove(A left) =>
@@ -180,7 +180,7 @@ public readonly struct BiMap<A, B> :
     /// Atomically removes an item from the map
     /// If the key doesn't exists, the request is ignored.
     /// </summary>
-    /// <param name="key">Key</param>
+    /// <param name="right">Key</param>
     /// <returns>New map with the item removed</returns>
     [Pure]
     public BiMap<A, B> Remove(B right) =>
@@ -190,7 +190,7 @@ public readonly struct BiMap<A, B> :
     /// <summary>
     /// 'this' accessor
     /// </summary>
-    /// <param name="key">Key</param>
+    /// <param name="value">Key</param>
     /// <returns>value</returns>
     [Pure]
     public A this[B value] => Right[value];
@@ -198,7 +198,7 @@ public readonly struct BiMap<A, B> :
     /// <summary>
     /// 'this' accessor
     /// </summary>
-    /// <param name="key">Key</param>
+    /// <param name="value">Key</param>
     /// <returns>value</returns>
     [Pure]
     public B this[A value] => Left[value];
@@ -225,8 +225,8 @@ public readonly struct BiMap<A, B> :
     /// Atomically updates an existing item
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
+    /// <param name="left">Key</param>
+    /// <param name="right">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
     /// <returns>New Map with the item added</returns>
     [Pure]
@@ -238,8 +238,8 @@ public readonly struct BiMap<A, B> :
     /// it is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
+    /// <param name="left">Key</param>
+    /// <param name="right">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the value is null</exception>
     /// <returns>New Map with the item added</returns>
     [Pure]
@@ -251,8 +251,8 @@ public readonly struct BiMap<A, B> :
     /// If the key already exists, the new item replaces it.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
+    /// <param name="left">Key</param>
+    /// <param name="right">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
     /// <returns>New Map with the item added</returns>
     [Pure]
@@ -265,7 +265,7 @@ public readonly struct BiMap<A, B> :
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="value">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
 
     [Pure]
@@ -274,7 +274,7 @@ public readonly struct BiMap<A, B> :
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="value">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool ContainsKey(B value) => Right.ContainsKey(value);

@@ -4,13 +4,18 @@ using System.Diagnostics.Contracts;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Equality test
+/// List Equality test
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="EQ">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqLst<EQ, A> : Eq<Lst<A>> where EQ : Eq<A>
 {
+    /// <summary>
+    /// Equality check
+    /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Lst<A> x, Lst<A> y)
     {
@@ -40,13 +45,17 @@ public struct EqLst<EQ, A> : Eq<Lst<A>> where EQ : Eq<A>
 }
 
 /// <summary>
-/// Equality test
+/// List Equality test with default comparison
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqLst<A> : Eq<Lst<A>> 
 {
+    /// <summary>
+    /// Equality check
+    /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Lst<A> x, Lst<A> y) =>
         EqLst<EqDefault<A>, A>.Equals(x, y);

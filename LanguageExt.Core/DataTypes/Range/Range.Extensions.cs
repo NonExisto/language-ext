@@ -11,10 +11,11 @@ public static class RangeExtensions
     /// </summary>
     public static Range<A> As<A>(this K<Range, A> ma) =>  
         (Range<A>)ma;
-    
+
     /// <summary>
     /// Returns true if the value provided is in range
     /// </summary>
+    /// <param name="ma">Range</param>
     /// <param name="value">Value to test</param>
     /// <returns>True if the value provided is in range</returns>
     [Pure]
@@ -30,6 +31,7 @@ public static class RangeExtensions
     /// <summary>
     /// Returns true if the range provided overlaps this range
     /// </summary>
+    /// <param name="ma">Range</param>
     /// <param name="other">The range to test</param>
     /// <returns>True if the range provided overlaps this range</returns>
     [Pure]

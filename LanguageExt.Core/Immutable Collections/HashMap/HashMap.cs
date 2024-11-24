@@ -215,6 +215,8 @@ public readonly struct HashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Add action</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -228,6 +230,8 @@ public readonly struct HashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Add action</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -366,6 +370,8 @@ public readonly struct HashMap<K, V> :
     /// result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Existing item action</param>
+    /// <param name="None">Missing item action</param>
     /// <returns>Found value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -438,6 +444,7 @@ public readonly struct HashMap<K, V> :
     /// put it back.
     /// </summary>
     /// <param name="key">Key to set</param>
+    /// <param name="Some">Update action</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the item isn't found</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -499,6 +506,7 @@ public readonly struct HashMap<K, V> :
     /// Checks for existence of a value in the map
     /// </summary>
     /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">Custom value comparer</param>
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -510,6 +518,7 @@ public readonly struct HashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to check</param>
     /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">Custom value comparer</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -730,7 +739,7 @@ public readonly struct HashMap<K, V> :
         Empty;
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -738,7 +747,7 @@ public readonly struct HashMap<K, V> :
         lhs.Equals(rhs);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault<V>` used for values
+    /// In-equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -926,7 +935,7 @@ public readonly struct HashMap<K, V> :
     /// Finds the union of two sets and produces a new set with 
     /// the results
     /// </summary>
-    /// <param name="other">Other set to union with</param>
+    /// <param name="rhs">Other set to union with</param>
     /// <returns>A set which contains all items from both sets</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1002,7 +1011,7 @@ public readonly struct HashMap<K, V> :
 
     
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1010,8 +1019,8 @@ public readonly struct HashMap<K, V> :
         obj is HashMap<K, V> hm && Equals(hm);
 
   
-  /// <summary>
-    /// Equality of keys and values with default `IEqualityComparer<V>` used for values
+    /// <summary>
+    /// Equality of keys and values with default `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1019,7 +1028,7 @@ public readonly struct HashMap<K, V> :
         Value.Equals(other.Value);
 
     /// <summary>
-    /// Equality of keys and values with `IEqualityComparer<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -4,17 +4,19 @@ using System.Diagnostics.Contracts;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Equality test
+/// Iterable Equality test
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="EQ">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqIterable<EQ, A> : Eq<Iterable<A>>
     where EQ : Eq<A>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Iterable<A> x, Iterable<A> y)
     {
@@ -41,16 +43,17 @@ public struct EqIterable<EQ, A> : Eq<Iterable<A>>
 }
 
 /// <summary>
-/// Equality test
+/// Iterable Equality test with default comparison
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+///<typeparam name="A">Element type</typeparam>
 public struct EqIterable<A> : Eq<Iterable<A>>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Iterable<A> x, Iterable<A> y) =>
         EqIterable<EqDefault<A>, A>.Equals(x, y);

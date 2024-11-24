@@ -4,17 +4,19 @@ using System.Diagnostics.Contracts;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Equality test
+/// Seq Equality test
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="EqA">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqSeq<EqA, A> : Eq<Seq<A>>
     where EqA : Eq<A>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Seq<A> x, Seq<A> y)
     {
@@ -44,16 +46,17 @@ public struct EqSeq<EqA, A> : Eq<Seq<A>>
 }
 
 /// <summary>
-/// Equality test
+/// Seq Equality test with default comparison
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqSeq<A> : Eq<Seq<A>>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(Seq<A> x, Seq<A> y) =>
         EqSeq<EqDefault<A>, A>.Equals(x, y);

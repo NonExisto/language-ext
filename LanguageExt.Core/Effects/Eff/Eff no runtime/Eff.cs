@@ -14,7 +14,6 @@ namespace LanguageExt;
 /// <summary>
 /// Transducer based effect/`Eff` monad
 /// </summary>
-/// <typeparam name="RT">Runtime struct</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record Eff<A>(Eff<MinRT, A> effect) :
     Readable<Eff<A>, A>,
@@ -207,7 +206,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// <summary>
     /// Map the failure to a success value
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO in a success state</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<A> IfFail(Func<Error, A> Fail) =>
@@ -216,7 +215,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// <summary>
     /// Map the failure to a new IO effect
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO that encapsulates that IfFail</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<A> IfFailEff(Func<Error, Eff<A>> Fail) =>
@@ -349,6 +348,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, Eff<B>> bind, Func<A, B, C> project) =>
@@ -360,6 +360,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<RT, C> SelectMany<RT, B, C>(Func<A, Eff<RT, B>> bind, Func<A, B, C> project) =>
@@ -371,6 +372,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<RT, C> SelectMany<RT, B, C>(Func<A, K<Eff<RT>, B>> bind, Func<A, B, C> project) =>
@@ -382,6 +384,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, K<Eff, B>> bind, Func<A, B, C> project) =>
@@ -393,6 +396,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, Pure<B>> bind, Func<A, B, C> project) =>
@@ -404,6 +408,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, IO<B>> bind, Func<A, B, C> project) =>
@@ -415,6 +420,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, Ask<MinRT, B>> bind, Func<A, B, C> project) =>
@@ -426,6 +432,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<B, C>(Func<A, Fail<Error>> bind, Func<A, B, C> project) =>
@@ -437,6 +444,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<C>(Func<A, Guard<Error, Unit>> bind, Func<A, Unit, C> project) =>
@@ -448,6 +456,7 @@ public record Eff<A>(Eff<MinRT, A> effect) :
     /// chaining IO operations sequentially.
     /// </summary>
     /// <param name="bind">Bind operation</param>
+    /// <param name="project">Map operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<C> SelectMany<C>(Func<A, Guard<Fail<Error>, Unit>> bind, Func<A, Unit, C> project) =>

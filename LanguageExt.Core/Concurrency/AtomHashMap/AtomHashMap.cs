@@ -130,7 +130,7 @@ public class AtomHashMap<K, V> :
 
     /// <summary>
     /// Internal version of `Swap` that doesn't do any change tracking
-    /// </remarks>
+    /// </summary>
     internal Unit SwapInternal(Func<TrieMap<K, V>, TrieMap<K, V>> swap)
     {
         SpinWait sw = default;
@@ -156,6 +156,7 @@ public class AtomHashMap<K, V> :
     /// Atomically swap a key in the hash-map, if it exists.  If it doesn't exist, nothing changes.
     /// Allows for multiple operations on the hash-map value in an entirely transactional and atomic way.
     /// </summary>
+    /// <param name="key">record key</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <param name="swap">Swap function, maps the current state of a value in the AtomHashMap to a new value</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
@@ -201,6 +202,7 @@ public class AtomHashMap<K, V> :
     ///  
     /// Allows for multiple operations on the hash-map value in an entirely transactional and atomic way.
     /// </summary>
+    /// <param name="key">record key</param>
     /// <param name="swap">Swap function, maps the current state of a value in the AtomHashMap to a new value</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
@@ -455,6 +457,8 @@ public class AtomHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Function to replace value</param>
+    /// <param name="None">Function to add new value</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
@@ -486,6 +490,8 @@ public class AtomHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Function to replace value</param>
+    /// <param name="None">Function to add new value</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
@@ -706,8 +712,8 @@ public class AtomHashMap<K, V> :
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
-    public Option<V> Find(K value) =>
-        Items.Find(value);
+    public Option<V> Find(K key) =>
+        Items.Find(key);
 
     /// <summary>
     /// Retrieve a value from the map by key as an enumerable
@@ -723,6 +729,8 @@ public class AtomHashMap<K, V> :
     /// result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Function to replace existing value</param>
+    /// <param name="None">Function to match missing value</param>
     /// <returns>Found value</returns>
     [Pure]
     public R Find<R>(K key, Func<V, R> Some, Func<R> None) =>
@@ -883,6 +891,7 @@ public class AtomHashMap<K, V> :
     /// put it back.
     /// </summary>
     /// <param name="key">Key to set</param>
+    /// <param name="Some">Function to replace value</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the item isn't found</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
@@ -991,6 +1000,7 @@ public class AtomHashMap<K, V> :
     /// Checks for existence of a key in the map
     /// </summary>
     /// <param name="key">Key to check</param>
+    /// <param name="value">Value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool Contains(K key, V value) =>
@@ -1009,6 +1019,7 @@ public class AtomHashMap<K, V> :
     /// Checks for existence of a value in the map
     /// </summary>
     /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">custom value comparer</param>
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
     public bool Contains(V value, IEqualityComparer<V> equalityComparer) =>
@@ -1018,6 +1029,8 @@ public class AtomHashMap<K, V> :
     /// Checks for existence of a key in the map
     /// </summary>
     /// <param name="key">Key to check</param>
+    /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">custom value comparer</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool Contains(K key, V value, IEqualityComparer<V> equalityComparer) =>
@@ -1355,42 +1368,42 @@ public class AtomHashMap<K, V> :
         Empty;
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator ==(AtomHashMap<K, V> lhs, AtomHashMap<K, V> rhs) =>
         lhs.Equals(rhs);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator ==(AtomHashMap<K, V> lhs, HashMap<K, V> rhs) =>
         lhs?.Items.Equals(rhs.Value) ?? false;
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator ==(HashMap<K, V> lhs, AtomHashMap<K, V> rhs) =>
         lhs.Value.Equals(rhs.Items);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault<V>` used for values
+    /// In-equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator !=(AtomHashMap<K, V> lhs, AtomHashMap<K, V> rhs) =>
         !(lhs == rhs);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault<V>` used for values
+    /// In-equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator !=(AtomHashMap<K, V> lhs, HashMap<K, V> rhs) =>
         !(lhs == rhs);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault<V>` used for values
+    /// In-equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public static bool operator !=(HashMap<K, V> lhs, AtomHashMap<K, V> rhs) =>
@@ -1610,11 +1623,13 @@ public class AtomHashMap<K, V> :
             
             sw.SpinOnce();
         }
-    } 
-        
+    }
+
     /// <summary>
     /// Returns the elements that are in both this and other
     /// </summary>
+    /// <param name="rhs">other hash map</param>
+    /// <param name="Merge">matching behavior</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     public Unit Intersect(IEnumerable<(K Key, V Value)> rhs, WhenMatched<K, V, V, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
@@ -1640,6 +1655,8 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Returns the elements that are in both this and other
     /// </summary>
+    /// <param name="rhs">other hash map</param>
+    /// <param name="Merge">matching behavior</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     public Unit Intersect(HashMap<K, V> rhs, WhenMatched<K, V, V, V> Merge, [AllowNull]IEqualityComparer<V> equalityComparer)
     {
@@ -1778,7 +1795,7 @@ public class AtomHashMap<K, V> :
     /// Finds the union of two sets and produces a new set with 
     /// the results
     /// </summary>
-    /// <param name="other">Other set to union with</param>
+    /// <param name="rhs">Other set to union with</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <returns>A set which contains all items from both sets</returns>
     public Unit Union(IEnumerable<(K, V)> rhs, [AllowNull]IEqualityComparer<V> equalityComparer)
@@ -1806,6 +1823,8 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Union two maps.  
     /// </summary>
+    /// <param name="rhs">other hash map</param>
+    /// <param name="Merge">matching behavior</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>
     /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
@@ -1836,6 +1855,9 @@ public class AtomHashMap<K, V> :
     /// <summary>
     /// Union two maps.  
     /// </summary>
+    /// <param name="rhs">other hash map</param>
+    /// <param name="MapRight">handles right side keys</param>
+    /// <param name="Merge">matching behavior</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <remarks>
     /// The `WhenMatched` merge function is called when keys are present in both map to allow resolving to a
@@ -1868,21 +1890,21 @@ public class AtomHashMap<K, V> :
     }
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public override bool Equals(object? obj) =>
         obj is AtomHashMap<K, V> hm && Equals(hm);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public bool Equals(AtomHashMap<K, V>? other) =>
         other is not null && Items.Equals(other.Items);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     public bool Equals(HashMap<K, V> other) =>

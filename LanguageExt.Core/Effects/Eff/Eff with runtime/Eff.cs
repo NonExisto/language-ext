@@ -256,7 +256,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// <summary>
     /// Map the failure to a success value
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO in a success state</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<RT, A> IfFail(Func<Error, A> Fail) =>
@@ -265,7 +265,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// <summary>
     /// Map the failure to a new IO effect
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO that encapsulates that IfFail</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<RT, A> IfFailEff(Func<Error, K<Eff<RT>, A>> Fail) =>
@@ -274,7 +274,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// <summary>
     /// Map the failure to a new IO effect
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO that encapsulates that IfFail</returns>
     [Pure, MethodImpl(Opt.Default)]
     public Eff<RT, A> IfFailEff(Func<Error, K<Eff, A>> Fail) =>
@@ -406,6 +406,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -417,6 +418,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -428,6 +430,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -439,6 +442,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -450,6 +454,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -461,6 +466,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -472,6 +478,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -489,6 +496,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -506,6 +514,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -517,6 +526,7 @@ public record Eff<RT, A>(ReaderT<RT, IO, A> effect) :
     /// function provided; which in turn returns a new `Eff` monad.  This can be thought of as
     /// chaining IO operations sequentially.
     /// </summary>
+    /// <param name="project">Map operation</param>
     /// <param name="bind">Bind operation</param>
     /// <returns>Composition of this monad and the result of the function provided</returns>
     [Pure, MethodImpl(Opt.Default)]

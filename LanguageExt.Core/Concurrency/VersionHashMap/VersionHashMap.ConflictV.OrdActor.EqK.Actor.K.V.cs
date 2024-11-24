@@ -96,11 +96,12 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Items.Count;
     }
-        
+
     /// <summary>
     /// Atomically swap a key in the map.  Allows for multiple operations on the hash-map in an entirely
     /// transactional and atomic way.
     /// </summary>
+    /// <param name="key">Record Key</param>
     /// <param name="swap">Swap function, maps the current state of the value associated with the key to a new state</param>
     /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
     /// to update this data structure.  Therefore the functions must spend as little time performing the injected
@@ -150,15 +151,15 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     /// 
     /// </summary>
     /// <param name="version">Version to update</param>
-    public Unit Update(Version<Actor, K, V> nversion)
+    public Unit Update(Version<Actor, K, V> version)
     {
         SpinWait sw = default;
         while (true)
         {
             var oitems = Items;
-            var nitems = oitems.AddOrMaybeUpdate(nversion.Key,
-                                                 exists => exists.Put(nversion.ToVector<ConflictV, OrdActor, Actor, K, V>()!),
-                                                 () => Optional(nversion.ToVector<ConflictV, OrdActor, Actor, K, V>()));
+            var nitems = oitems.AddOrMaybeUpdate(version.Key,
+                                                 exists => exists.Put(version.ToVector<ConflictV, OrdActor, Actor, K, V>()!),
+                                                 () => Optional(version.ToVector<ConflictV, OrdActor, Actor, K, V>()));
                 
             if(ReferenceEquals(oitems, nitems))
             {
@@ -215,8 +216,8 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     /// <returns>Found value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Option<V> Find(K value) =>
-        Items.Find(value).Bind(static v => v.Value);
+    public Option<V> Find(K key) =>
+        Items.Find(key).Bind(static v => v.Value);
 
     /// <summary>
     /// Retrieve a value from the map by key
@@ -452,7 +453,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
     } 
         
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -460,7 +461,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
         obj is VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> hm && Equals(hm);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -468,7 +469,7 @@ public class VersionHashMap<ConflictV, OrdActor, EqK, Actor, K, V> :
         other is not null && Items.Equals(other.Items);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

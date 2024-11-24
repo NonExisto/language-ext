@@ -43,6 +43,7 @@ public static partial class HashMap
     /// <summary>
     /// Create a singleton collection
     /// </summary>
+    /// <param name="key">Key</param>
     /// <param name="value">Single value</param>
     /// <returns>Collection with a single item in it</returns>
     [Pure]
@@ -127,6 +128,7 @@ public static partial class HashMap
     /// Atomically adds a new item to the map
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the key already exists</exception>
@@ -142,6 +144,7 @@ public static partial class HashMap
     /// If the key already exists, then the new item is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -156,6 +159,7 @@ public static partial class HashMap
     /// If the key already exists, the new item replaces it.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -169,7 +173,10 @@ public static partial class HashMap
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Add action</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -182,7 +189,10 @@ public static partial class HashMap
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Add action</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -195,7 +205,8 @@ public static partial class HashMap
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -208,7 +219,8 @@ public static partial class HashMap
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -221,7 +233,8 @@ public static partial class HashMap
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -235,7 +248,8 @@ public static partial class HashMap
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -248,7 +262,8 @@ public static partial class HashMap
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -261,7 +276,8 @@ public static partial class HashMap
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of KeyValuePairs to add</param>
+    /// <param name="map">Add target</param>
+    /// <param name="keyValues">Range of KeyValuePairs to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -273,6 +289,7 @@ public static partial class HashMap
     /// Atomically adds a range of items to the map.  If any of the keys exist already
     /// then they're replaced.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="range">Range of tuples to add</param>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -284,6 +301,7 @@ public static partial class HashMap
     /// Atomically adds a range of items to the map.  If any of the keys exist already
     /// then they're replaced.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="range">Range of tuples to add</param>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -296,6 +314,7 @@ public static partial class HashMap
     /// then they're replaced.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="range">Range of KeyValuePairs to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -308,6 +327,7 @@ public static partial class HashMap
     /// Atomically removes an item from the map
     /// If the key doesn't exists, the request is ignored.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <returns>New map with the item removed</returns>
     [Pure]
@@ -318,6 +338,7 @@ public static partial class HashMap
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
@@ -328,7 +349,8 @@ public static partial class HashMap
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Add target</param>
+    /// <param name="kv">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -338,7 +360,8 @@ public static partial class HashMap
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Add target</param>
+    /// <param name="kv">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -348,7 +371,8 @@ public static partial class HashMap
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Add target</param>
+    /// <param name="kv">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -359,6 +383,7 @@ public static partial class HashMap
     /// Atomically updates an existing item
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -373,6 +398,7 @@ public static partial class HashMap
     /// it is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the value is null</exception>
@@ -386,6 +412,7 @@ public static partial class HashMap
     /// Atomically sets an item by first retrieving it, applying a map (Some), and then putting 
     /// it back. Silently fails if the value doesn't exist.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to set</param>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <param name="Some">delegate to map the existing value to a new one before setting</param>
@@ -398,6 +425,7 @@ public static partial class HashMap
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -409,6 +437,7 @@ public static partial class HashMap
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -420,6 +449,7 @@ public static partial class HashMap
     /// <summary>
     /// Atomically sets a series of items using the KeyValuePairs provided
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -431,6 +461,7 @@ public static partial class HashMap
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -442,6 +473,7 @@ public static partial class HashMap
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -454,6 +486,7 @@ public static partial class HashMap
     /// Atomically sets a series of items using the KeyValuePairs provided.  If any of the 
     /// items don't exist then they're silently ignored.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="items">Items to set</param>
     /// <returns>New map with the items set</returns>
     [Pure]
@@ -466,6 +499,7 @@ public static partial class HashMap
     /// and the Some delegate maps to a new value.  If the items don't exist then
     /// they're silently ignored.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="keys">Keys of items to set</param>
     /// <param name="Some">Function map the existing item to a new one</param>
     /// <returns>New map with the items set</returns>
@@ -477,6 +511,7 @@ public static partial class HashMap
     /// <summary>
     /// Retrieve a value from the map by key
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
@@ -488,7 +523,10 @@ public static partial class HashMap
     /// Retrieve a value from the map by key and pattern match the
     /// result.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Existing item action</param>
+    /// <param name="None">Missing item action</param>
     /// <returns>Found value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -499,7 +537,9 @@ public static partial class HashMap
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
+    /// <param name="mapper">Update action</param>
     /// <returns>New map with the mapped value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -510,6 +550,7 @@ public static partial class HashMap
     /// Atomically iterate through all key/value pairs in the map (in order) and execute an
     /// action on each
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="action">Action to execute</param>
     /// <returns>Unit</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -520,6 +561,7 @@ public static partial class HashMap
     /// Atomically iterate through all key/value pairs in the map (in order) and execute an
     /// action on each
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="action">Action to execute</param>
     /// <returns>Unit</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -529,6 +571,7 @@ public static partial class HashMap
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Add target</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -540,6 +583,7 @@ public static partial class HashMap
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
     /// <param name="pred">Predicate</param>
+    /// <param name="map">Add target</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -550,6 +594,7 @@ public static partial class HashMap
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
     /// <param name="pred">Predicate</param>
+    /// <param name="map">Add target</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -577,7 +622,8 @@ public static partial class HashMap
     /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
-    /// <param name="pred">Predicate</param>
+    /// <param name="map">Add target</param>
+    /// <param name="predicate">Predicate</param>
     /// <returns>New map with items filtered</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -587,7 +633,8 @@ public static partial class HashMap
     /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
-    /// <param name="pred">Predicate</param>
+    /// <param name="map">Add target</param>
+    /// <param name="predicate">Predicate</param>
     /// <returns>New map with items filtered</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -9,7 +9,6 @@ namespace LanguageExt;
 /// <summary>
 /// Stream subscription
 /// </summary>
-/// <typeparam name="M">Monad type lifted in the stream</typeparam>
 /// <typeparam name="A">Stream value type</typeparam>
 abstract class Sub<A> : IDisposable
 {

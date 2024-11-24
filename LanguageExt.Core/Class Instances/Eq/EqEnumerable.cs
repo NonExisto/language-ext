@@ -5,17 +5,19 @@ using System.Diagnostics.Contracts;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Equality test
+/// IEnumerable Equality test with open comparison
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="EQ">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqEnumerable<EQ, A> : Eq<IEnumerable<A>>
     where EQ : Eq<A>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(IEnumerable<A> x, IEnumerable<A> y)
     {
@@ -42,16 +44,17 @@ public struct EqEnumerable<EQ, A> : Eq<IEnumerable<A>>
 }
 
 /// <summary>
-/// Equality test
+/// Equality test with default comparison
 /// </summary>
-/// <param name="x">The left hand side of the equality operation</param>
-/// <param name="y">The right hand side of the equality operation</param>
-/// <returns>True if x and y are equal</returns>
+/// <typeparam name="A">Element type</typeparam>
 public struct EqEnumerable<A> : Eq<IEnumerable<A>>
 {
     /// <summary>
     /// Equality check
     /// </summary>
+    /// <param name="x">The left hand side of the equality operation</param>
+    /// <param name="y">The right hand side of the equality operation</param>
+    /// <returns>True if x and y are equal</returns>
     [Pure]
     public static bool Equals(IEnumerable<A> x, IEnumerable<A> y) =>
         EqEnumerable<EqDefault<A>, A>.Equals(x, y);

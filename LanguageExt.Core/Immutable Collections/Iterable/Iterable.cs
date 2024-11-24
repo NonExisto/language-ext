@@ -266,7 +266,6 @@ public class Iterable<A> :
     /// results and the final result.
     /// </summary>
     /// <typeparam name="S">State type</typeparam>
-    /// <typeparam name="T">sequence item type</typeparam>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Folding function</param>
     /// <returns>Aggregate state</returns>
@@ -303,7 +302,6 @@ public class Iterable<A> :
     /// <summary>
     /// Return a new sequence with all duplicate values removed
     /// </summary>
-    /// <typeparam name="T">sequence item type</typeparam>
     /// <returns>A new sequence with all duplicate values removed</returns>
     [Pure]
     public Iterable<A> Distinct<EqA>()
@@ -325,7 +323,6 @@ public class Iterable<A> :
     /// <summary>
     /// Return a new sequence with all duplicate values removed
     /// </summary>
-    /// <typeparam name="T">sequence item type</typeparam>
     /// <returns>A new sequence with all duplicate values removed</returns>
     [Pure]
     public Iterable<A> Distinct() =>
@@ -336,7 +333,6 @@ public class Iterable<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -349,7 +345,6 @@ public class Iterable<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -388,9 +383,7 @@ public class Iterable<A> :
     /// <summary>
     /// Inject a value in between each item in the sequence 
     /// </summary>
-    /// <param name="ma">Sequence to inject values into</param>
     /// <param name="value">Item to inject</param>
-    /// <typeparam name="A">Bound type</typeparam>
     /// <returns>A sequence with the values injected</returns>
     [Pure]
     public Iterable<A> Intersperse(A value)
@@ -568,12 +561,12 @@ public class Iterable<A> :
         }
     }
 
-    [Pure]
     /// <summary>
     /// Partition a list into two based on  a predicate
     /// </summary>
     /// <param name="predicate">True if the item goes in the first list, false for the second list</param>
     /// <returns>Pair of lists</returns>
+    [Pure]
     public (Iterable<A> First, Iterable<A> Second) Partition(Func<A, bool> predicate)
     {
         var f = List<A>();
@@ -737,8 +730,10 @@ public class Iterable<A> :
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
     /// </summary>
-    /// <typeparam name="B">Bound return value type</typeparam>
+    /// <typeparam name="B">Bound transform value type</typeparam>
+    /// <typeparam name="C">Bound return value type</typeparam>
     /// <param name="bind">Bind function</param>
+    /// <param name="project">Map function</param>
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
     public Iterable<C> SelectMany<B, C>(Func<A, Iterable<B>> bind, Func<A, B, C> project) =>
@@ -757,8 +752,10 @@ public class Iterable<A> :
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
     /// </summary>
-    /// <typeparam name="B">Bound return value type</typeparam>
+    /// <typeparam name="B">Bound transform value type</typeparam>
+    /// <typeparam name="C">Bound return value type</typeparam>
     /// <param name="bind">Bind function</param>
+    /// <param name="project">Map function</param>
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
     public Iterable<C> SelectMany<B, C>(Func<A, IEnumerable<B>> bind, Func<A, B, C> project) =>

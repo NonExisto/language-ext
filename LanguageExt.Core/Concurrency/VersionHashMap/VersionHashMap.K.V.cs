@@ -95,6 +95,7 @@ namespace LanguageExt
         /// Atomically swap a key in the map.  Allows for multiple operations on the hash-map in an entirely
         /// transactional and atomic way.
         /// </summary>
+        /// <param name="key">Record Key</param>
         /// <param name="swap">Swap function, maps the current state of the value associated with the key to a new state</param>
         /// <remarks>Any functions passed as arguments may be run multiple times if there are multiple threads competing
         /// to update this data structure.  Therefore the functions must spend as little time performing the injected
@@ -159,8 +160,8 @@ namespace LanguageExt
         /// <returns>Found value</returns>
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Option<V> Find(K value) =>
-            Items.Find(value);
+        public Option<V> Find(K key) =>
+            Items.Find(key);
 
         /// <summary>
         /// Retrieve a value from the map by key
@@ -169,8 +170,8 @@ namespace LanguageExt
         /// <returns>Found value</returns>
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Version<string, K, V> FindVersion(K value) =>
-            Items.FindVersion(value);
+        public Version<string, K, V> FindVersion(K key) =>
+            Items.FindVersion(key);
 
         /// <summary>
         /// Enumerable of keys
@@ -364,7 +365,7 @@ namespace LanguageExt
             Items.Except(rhs);
         
         /// <summary>
-        /// Equality of keys and values with `EqDefault<V>` used for values
+        /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
         /// </summary>
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -372,7 +373,7 @@ namespace LanguageExt
             obj is VersionHashMap<K, V> hm && Equals(hm);
 
         /// <summary>
-        /// Equality of keys and values with `EqDefault<V>` used for values
+        /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
         /// </summary>
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

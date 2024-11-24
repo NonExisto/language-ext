@@ -171,7 +171,7 @@ public struct Arr<A> :
     ///
     ///     Empty collection     = result is null
     ///     Singleton collection = result is A
-    ///     More                 = result is (A, Seq<A>) -- head and tail
+    ///     More                 = result is (A, Seq&lt;A&gt;) -- head and tail
     ///
     ///  Example:
     ///
@@ -638,7 +638,6 @@ public struct Arr<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -651,7 +650,6 @@ public struct Arr<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]

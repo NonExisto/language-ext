@@ -161,6 +161,7 @@ public static class List
     /// Get the item at the head (first) of the list or Left if the list is empty
     /// </summary>
     /// <param name="list">List</param>
+    /// <param name="left">Left value</param>
     /// <returns>Either head item or left</returns>
     [Pure]
     public static Either<L, R> headOrLeft<L, R>(IEnumerable<R> list, L left) =>
@@ -172,6 +173,7 @@ public static class List
     /// Get the item at the head (first) of the list or fail if the list is empty
     /// </summary>
     /// <param name="list">List</param>
+    /// <param name="fail">Fail value</param>
     /// <returns>Either head item or fail</returns>
     [Pure]
     public static Validation<Fail, Success> headOrInvalid<Fail, Success>(IEnumerable<Success> list, Fail fail) 
@@ -216,6 +218,7 @@ public static class List
     /// Get the last item of the list
     /// </summary>
     /// <param name="list">List</param>
+    /// <param name="left">Left value</param>
     /// <returns>Last item</returns>
     [Pure]
     public static Either<L, R> lastOrLeft<L, R>(IEnumerable<R> list, L left) =>
@@ -227,6 +230,7 @@ public static class List
     /// Get the last item of the list
     /// </summary>
     /// <param name="list">List</param>
+    /// <param name="fail">Fail value</param>
     /// <returns>Last item</returns>
     [Pure]
     public static Validation<Fail, Success> lastOrInvalid<Fail, Success>(IEnumerable<Success> list, Fail fail)
@@ -314,6 +318,7 @@ public static class List
     /// the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
+    /// <typeparam name="R">Response item type</typeparam>
     /// <param name="list">Enumerable</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -327,6 +332,7 @@ public static class List
     /// An index value is passed through to the selector function also.
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
+    /// <typeparam name="R">Response item type</typeparam>
     /// <param name="list">Enumerable</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -420,8 +426,8 @@ public static class List
     /// Concatenate an enumerable and an enumerable of enumerables
     /// </summary>
     /// <typeparam name="T">List item type</typeparam>
-    /// <param name="lhs">First list</param>
-    /// <param name="rhs">Second list</param>
+    /// <param name="x">First list</param>
+    /// <param name="xs">Second list</param>
     /// <returns>Concatenated list</returns>
     [Pure]
     public static Iterable<T> append<T>(IEnumerable<T> x, IEnumerable<IEnumerable<T>> xs) =>
@@ -849,7 +855,6 @@ public static class List
     /// </summary>
     /// <param name="list">First list to join</param>
     /// <param name="other">Second list to join</param>
-    /// <param name="zipper">Join function</param>
     /// <returns>Joined enumerable of tuples</returns>
     [Pure]
     public static IEnumerable<(T First, U Second)> zip<T, U>(IEnumerable<T> list, IEnumerable<U> other) =>
@@ -938,6 +943,7 @@ public static class List
     /// Return a new enumerable with all duplicate values removed
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
+    /// <typeparam name="EQ">Comparator type</typeparam>
     /// <param name="list">Enumerable</param>
     /// <returns>A new enumerable with all duplicate values removed</returns>
     [Pure]
@@ -948,7 +954,10 @@ public static class List
     /// Return a new enumerable with all duplicate values removed
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
+    /// <typeparam name="K">Key element type</typeparam>
     /// <param name="list">Enumerable</param>
+    /// <param name="keySelector">Key mapper</param>
+    /// <param name="compare">Comparison function</param>
     /// <returns>A new enumerable with all duplicate values removed</returns>
     [Pure]
     public static IEnumerable<T> distinct<T, K>(IEnumerable<T> list, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default) =>
@@ -973,7 +982,7 @@ public static class List
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
     /// <param name="list">Enumerable</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static IEnumerable<T> takeWhile<T>(IEnumerable<T> list, Func<T, bool> pred) =>
@@ -985,7 +994,7 @@ public static class List
     /// </summary>
     /// <typeparam name="T">Enumerable item type</typeparam>
     /// <param name="list">Enumerable</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static IEnumerable<T> takeWhile<T>(IEnumerable<T> list, Func<T, int, bool> pred) =>

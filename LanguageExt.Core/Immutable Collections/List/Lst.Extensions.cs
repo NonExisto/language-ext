@@ -73,7 +73,9 @@ public static partial class LstExtensions
     /// <summary>
     /// Match empty list, or multi-item list
     /// </summary>
+    /// <typeparam name="A">Item value type</typeparam>
     /// <typeparam name="B">Return value type</typeparam>
+    /// <param name="list">List</param>
     /// <param name="Empty">Match for an empty list</param>
     /// <param name="More">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>
@@ -244,6 +246,7 @@ public static partial class LstExtensions
     /// <summary>
     /// Return a new enumerable with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EQ">Comparator type</typeparam>
     /// <typeparam name="T">Enumerable item type</typeparam>
     /// <param name="list">Enumerable</param>
     /// <returns>A new enumerable with all duplicate values removed</returns>
@@ -326,8 +329,8 @@ public static partial class LstExtensions
     /// <param name="list">List to count</param>
     /// <returns>The number of items in the list</returns>
     [Pure]
-    public static int Count<A>(this Lst<A> self) =>
-        self.Count;
+    public static int Count<A>(this Lst<A> list) =>
+        list.Count;
 
     [Pure]
     public static Lst<B> SelectMany<A, B>(this Lst<A> ma, Func<A, Lst<B>> f) => 

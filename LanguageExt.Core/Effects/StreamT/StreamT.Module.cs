@@ -21,7 +21,7 @@ public static class StreamT
     /// Lift any foldable into the stream
     /// </summary>
     /// <remarks>This is likely to consume the foldable structure eagerly</remarks>
-    /// <param name="foldable">Foldable structure to lift</param>
+    /// <param name="items">Foldable structure to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> liftF<F, M, A>(K<F, A> items)
         where M : Monad<M>
@@ -31,7 +31,7 @@ public static class StreamT
     /// <summary>
     /// Lift an async-enumerable into the stream
     /// </summary>
-    /// <param name="stream">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> lift<M, A>(IAsyncEnumerable<A> items)
         where M : Monad<M> =>
@@ -40,7 +40,7 @@ public static class StreamT
     /// <summary>
     /// Lift an async-enumerable into the stream
     /// </summary>
-    /// <param name="stream">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> liftM<M, A>(IAsyncEnumerable<K<M, A>> items)
         where M : Monad<M> =>
@@ -49,7 +49,7 @@ public static class StreamT
     /// <summary>
     /// Lift an enumerable into the stream
     /// </summary>
-    /// <param name="stream">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> lift<M, A>(IEnumerable<A> items)
         where M : Monad<M> =>
@@ -58,7 +58,7 @@ public static class StreamT
     /// <summary>
     /// Lift an enumerable into the stream
     /// </summary>
-    /// <param name="stream">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> liftM<M, A>(IEnumerable<K<M, A>> items)
         where M : Monad<M> =>
@@ -67,7 +67,7 @@ public static class StreamT
     /// <summary>
     /// Lift a (possibly lazy) sequence into the stream
     /// </summary>
-    /// <param name="list">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> lift<M, A>(Seq<A> items)
         where M : Monad<M> =>
@@ -76,7 +76,7 @@ public static class StreamT
     /// <summary>
     /// Lift a (possibly lazy) sequence into the stream
     /// </summary>
-    /// <param name="list">Sequence to lift</param>
+    /// <param name="items">Sequence to lift</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> liftM<M, A>(Seq<K<M, A>> items)
         where M : Monad<M> =>
@@ -108,10 +108,11 @@ public static class StreamT
     public static StreamT<M, A> liftIO<M, A>(K<IO, A> ma)
         where M : Monad<M> =>
         StreamT<M, A>.LiftIO(ma.As());
-    
+
     /// <summary>
     /// Interleave the items of two streams
     /// </summary>
+    /// <param name="first">First stream</param>
     /// <param name="second">Other stream to merge with</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> merge<M, A>(K<StreamT<M>, A> first, K<StreamT<M>, A> second)
@@ -121,7 +122,9 @@ public static class StreamT
     /// <summary>
     /// Interleave the items of many streams
     /// </summary>
-    /// <param name="rhs">Other stream to merge with</param>
+    /// <param name="first">First stream</param>
+    /// <param name="second">Other stream to merge with</param>
+    /// <param name="rest">Remaining streams to merge with</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> merge<M, A>(K<StreamT<M>, A> first, K<StreamT<M>, A> second, params K<StreamT<M>, A>[] rest)
         where M : Monad<M> =>
@@ -130,6 +133,7 @@ public static class StreamT
     /// <summary>
     /// Merge the items of two streams into pairs
     /// </summary>
+    /// <param name="first">First stream</param>
     /// <param name="second">Other stream to merge with</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, (A First, B Second)> zip<M, A, B>(K<StreamT<M>, A> first, K<StreamT<M>, B> second)
@@ -139,6 +143,7 @@ public static class StreamT
     /// <summary>
     /// Merge the items of two streams into 3-tuples
     /// </summary>
+    /// <param name="first">First stream</param>
     /// <param name="second">Second stream to merge with</param>
     /// <param name="third">Third stream to merge with</param>
     /// <returns>Stream transformer</returns>
@@ -152,6 +157,7 @@ public static class StreamT
     /// <summary>
     /// Merge the items of two streams into 4-tuples
     /// </summary>
+    /// <param name="first">First stream</param>
     /// <param name="second">Second stream to merge with</param>
     /// <param name="third">Third stream to merge with</param>
     /// <param name="fourth">Fourth stream to merge with</param>

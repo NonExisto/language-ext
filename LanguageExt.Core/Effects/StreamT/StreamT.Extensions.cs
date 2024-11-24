@@ -61,7 +61,7 @@ public static partial class StreamTExtensions
 
     /// <summary>
     /// Execute the stream's inner monad `M`, combining the results using
-    /// its `MonoidK<M>.Combine` operator.
+    /// its <see cref="SemigroupK{M}.Combine"/> operator.
     /// </summary>
     /// <param name="mma">Stream to combine</param>
     /// <returns>Result of the combined effects</returns>
@@ -71,7 +71,7 @@ public static partial class StreamTExtensions
 
     /// <summary>
     /// Execute the stream's inner monad `M`, combining the results using
-    /// its `MonoidK<M>.Combine` operator.
+    /// its <see cref="SemigroupK{M}.Combine"/> operator.
     /// </summary>
     /// <param name="mma">Stream to combine</param>
     /// <returns>Result of the combined effects</returns>
@@ -181,20 +181,26 @@ public static partial class StreamTExtensions
     /// <summary>
     /// Fold the stream itself, yielding the latest state value when the fold function returns `None`
     /// </summary>
+    /// <param name="ma">Stream</param>
     /// <param name="state">Initial state of the fold</param>
     /// <param name="f">Fold operation</param>
+    /// <typeparam name="M">Monad type lifted into the stream</typeparam>
+    /// <typeparam name="A">Computation bound value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Stream transformer</returns>
-    public static StreamT<M, S> Fold<M, A,S>(this K<StreamT<M>, A> ma, S state, Func<S, A, Option<S>> f) 
+    public static StreamT<M, S> Fold<M, A, S>(this K<StreamT<M>, A> ma, S state, Func<S, A, Option<S>> f) 
         where M : Monad<M> =>
         ma.As().Fold(state, f);
 
     /// <summary>
     /// Fold the stream itself, yielding values when the `until` predicate is `true`
     /// </summary>
+    /// <param name="ma">Stream</param>
     /// <param name="state">Initial state of the fold</param>
     /// <param name="f">Fold operation</param>
     /// <param name="until">Predicate</param>
+    /// <typeparam name="M">Monad type lifted into the stream</typeparam>
+    /// <typeparam name="A">Computation bound value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, S> FoldUntil<M, A, S>(
@@ -208,9 +214,12 @@ public static partial class StreamTExtensions
     /// <summary>
     /// Fold the stream itself, yielding values when the `until` predicate is `true`
     /// </summary>
+    /// <param name="ma">Stream</param>
     /// <param name="state">Initial state of the fold</param>
     /// <param name="f">Fold operation</param>
-    /// <param name="until">Predicate</param>
+    /// <param name="while">Predicate</param>
+    /// <typeparam name="M">Monad type lifted into the stream</typeparam>
+    /// <typeparam name="A">Computation bound value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, S> FoldWhile<M, A,S>(
@@ -224,8 +233,11 @@ public static partial class StreamTExtensions
     /// <summary>
     /// Left fold
     /// </summary>
+    /// <param name="ma">Stream</param>
     /// <param name="state">Initial state</param>
     /// <param name="f">Folding function</param>
+    /// <typeparam name="M">Monad type lifted into the stream</typeparam>
+    /// <typeparam name="A">Computation bound value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Accumulate state wrapped in the StreamT inner monad</returns>
     public static K<M, S> FoldM<M, A, S>(
@@ -260,7 +272,6 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="first">First stream to merge with</param>
     /// <param name="second">Second stream to merge with</param>
-    /// <param name="rest">N streams to merge</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> Merge<M, A>(
         this K<StreamT<M>, A> first,
@@ -273,6 +284,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="first">First stream to merge with</param>
     /// <param name="second">Second stream to merge with</param>
+    /// <param name="rest">N streams to merge</param>
     /// <returns>Stream transformer</returns>
     public static StreamT<M, A> Merge<M, A>(
         this K<StreamT<M>, A> first,
@@ -380,6 +392,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> Rights<M, L, A>(this IAsyncEnumerable<EitherT<L, M, A>> stream)
@@ -393,6 +406,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> RightsStream<M, L, A>(this IAsyncEnumerable<Either<L, A>> stream)
@@ -406,6 +420,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> Rights<M, L, A>(this IEnumerable<EitherT<L, M, A>> stream)
@@ -419,6 +434,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> RightsStream<M, L, A>(this IEnumerable<Either<L, A>> stream)
@@ -432,6 +448,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> Lefts<M, L, A>(this IAsyncEnumerable<EitherT<L, M, A>> stream)
@@ -445,6 +462,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> LeftsStream<M, L, A>(this IAsyncEnumerable<Either<L, A>> stream)
@@ -458,6 +476,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> Lefts<M, L, A>(this IEnumerable<EitherT<L, M, A>> stream)
@@ -471,6 +490,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Either L type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> LeftsStream<M, L, A>(this IEnumerable<Either<L, A>> stream)
@@ -588,6 +608,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> Succs<M, L, A>(this IAsyncEnumerable<ValidationT<L, M, A>> stream)
@@ -602,6 +623,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> SuccsStream<M, L, A>(this IAsyncEnumerable<Validation<L, A>> stream)
@@ -616,6 +638,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> Succs<M, L, A>(this IEnumerable<ValidationT<L, M, A>> stream)
@@ -630,6 +653,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, A> SuccsStream<M, L, A>(this IEnumerable<Validation<L, A>> stream)
@@ -644,6 +668,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> Fails<M, L, A>(this IAsyncEnumerable<ValidationT<L, M, A>> stream)
@@ -658,6 +683,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> FailsStream<M, L, A>(this IAsyncEnumerable<Validation<L, A>> stream)
@@ -672,6 +698,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> Fails<M, L, A>(this IEnumerable<ValidationT<L, M, A>> stream)
@@ -686,6 +713,7 @@ public static partial class StreamTExtensions
     /// </summary>
     /// <param name="stream">Stream of values</param>
     /// <typeparam name="M">Transformer monad</typeparam>
+    /// <typeparam name="L">Validation Fail type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Stream of values</returns>
     public static StreamT<M, L> FailsStream<M, L, A>(this IEnumerable<Validation<L, A>> stream)

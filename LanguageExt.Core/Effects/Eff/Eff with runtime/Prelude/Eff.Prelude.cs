@@ -12,6 +12,7 @@ public static partial class Prelude
     /// Construct an successful effect with a pure value
     /// </summary>
     /// <param name="value">Pure value to construct the monad with</param>
+    /// <typeparam name="RT">Bound runtime type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Synchronous IO monad that captures the pure value</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -22,6 +23,7 @@ public static partial class Prelude
     /// Construct a failed effect
     /// </summary>
     /// <param name="error">Error that represents the failure</param>
+    /// <typeparam name="RT">Bound runtime type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Synchronous IO monad that captures the failure</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -95,7 +97,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="mma">Nest IO monad to flatten</param>
     /// <typeparam name="RT">Runtime</typeparam>
-    /// <typeparam name="E">Error type</typeparam>
     /// <typeparam name="A">Bound value</typeparam>
     /// <returns>Flattened IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -158,6 +159,7 @@ public static partial class Prelude
     /// <summary>
     /// Maps the IO monad if it's in a success state
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="f">Function to map the success value with</param>
     /// <returns>Mapped IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -167,6 +169,7 @@ public static partial class Prelude
     /// <summary>
     /// Maps the IO monad if it's in a success state
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="f">Function to map the success value with</param>
     /// <returns>Mapped IO monad</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -182,6 +185,7 @@ public static partial class Prelude
     /// Mapping of either the Success state or the Failure state depending on what
     /// state this IO monad is in.  
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="Succ">Mapping to use if the IO monad is in a success state</param>
     /// <param name="Fail">Mapping to use if the IO monad is in a failure state</param>
     /// <returns>Mapped IO monad</returns>
@@ -197,6 +201,7 @@ public static partial class Prelude
     /// <summary>
     /// Pattern match the success or failure values and collapse them down to a success value
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="Succ">Success value mapping</param>
     /// <param name="Fail">Failure value mapping</param>
     /// <returns>IO in a success state</returns>
@@ -207,7 +212,8 @@ public static partial class Prelude
     /// <summary>
     /// Map the failure to a success value
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="ma">Effect</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO in a success state</returns>
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<RT, A> ifFail<RT, A>(Eff<RT, A> ma, Func<Error, A> Fail) =>
@@ -216,7 +222,8 @@ public static partial class Prelude
     /// <summary>
     /// Map the failure to a new IO effect
     /// </summary>
-    /// <param name="f">Function to map the fail value</param>
+    /// <param name="ma">Effect</param>
+    /// <param name="Fail">Function to map the fail value</param>
     /// <returns>IO that encapsulates that IfFail</returns>
     [Pure, MethodImpl(Opt.Default)]
     public static Eff<RT, A> ifFailEff<RT, A>(Eff<RT, A> ma, Func<Error, Eff<RT, A>> Fail) =>
@@ -230,6 +237,7 @@ public static partial class Prelude
     /// <summary>
     /// Only allow values through the effect if the predicate returns `true` for the bound value
     /// </summary>
+    /// <param name="ma">Effect</param>
     /// <param name="predicate">Predicate to apply to the bound value></param>
     /// <returns>Filtered IO</returns>
     [Pure, MethodImpl(Opt.Default)]
@@ -245,6 +253,7 @@ public static partial class Prelude
     /// Construct an effect that will either succeed, have an exceptional, or unexceptional failure
     /// </summary>
     /// <param name="f">Function to capture the effect</param>
+    /// <typeparam name="RT">Bound runtime type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Synchronous IO monad that captures the effect</returns>
     [Obsolete("Use either: `Prelude.liftEff`, `Eff<A>.Lift`, or `Eff<A>.LiftIO` (for async)")]
@@ -256,6 +265,7 @@ public static partial class Prelude
     /// Construct an effect that will either succeed or have an exceptional failure
     /// </summary>
     /// <param name="f">Function to capture the effect</param>
+    /// <typeparam name="RT">Bound runtime type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Synchronous IO monad that captures the effect</returns>
     [Obsolete("Use either: `Prelude.lift`, `Prelude.liftEff`, `Eff<A>.Lift`, or `Eff<A>.LiftIO` (for async)")]

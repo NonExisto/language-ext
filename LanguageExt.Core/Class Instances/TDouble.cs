@@ -94,7 +94,7 @@ public struct TDouble : Floating<double>
     /// Generate a numeric value from an integer
     /// </summary>
     /// <param name="x">The integer to use</param>
-    /// <returns>The equivalent of x in the Num<A></returns>
+    /// <returns>The equivalent of x in the Num&lt;A&gt;</returns>
     [Pure]
     public static double FromInteger(int x) => 
         x;
@@ -103,7 +103,7 @@ public struct TDouble : Floating<double>
     /// Generate a numeric value from a decimal
     /// </summary>
     /// <param name="x">The decimal to use</param>
-    /// <returns>The equivalent of x in the Num<A></returns>
+    /// <returns>The equivalent of x in the Num&lt;A&gt;</returns>
     [Pure]
     public static double FromDecimal(decimal x) => 
         (double)x;
@@ -112,7 +112,7 @@ public struct TDouble : Floating<double>
     /// Generate a numeric value from a float
     /// </summary>
     /// <param name="x">The float to use</param>
-    /// <returns>The equivalent of x in the Num<A></returns>
+    /// <returns>The equivalent of x in the Num&lt;A&gt;</returns>
     [Pure]
     public static double FromFloat(float x) => 
         x;
@@ -121,7 +121,7 @@ public struct TDouble : Floating<double>
     /// Generate a numeric value from a double
     /// </summary>
     /// <param name="x">The double to use</param>
-    /// <returns>The equivalent of x in the Num<A></returns>
+    /// <returns>The equivalent of x in the Num&lt;A&gt;</returns>
     [Pure]
     public static double FromDouble(double x) => 
         x;
@@ -184,8 +184,8 @@ public struct TDouble : Floating<double>
     /// <summary>
     /// Calculates the logarithm of a value with respect to an arbitrary base.
     /// </summary>
-    /// <param name="x">The base to use for the logarithm of t</param>
-    /// <param name="y">The value for which we are calculating the logarithm.</param>
+    /// <param name="b">The base to use for the logarithm of t</param>
+    /// <param name="x">The value for which we are calculating the logarithm.</param>
     /// <returns>The value of <c>log x (y)</c>.</returns>
     [Pure]
     public static double LogBase(double b, double x) => 

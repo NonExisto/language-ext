@@ -9,18 +9,22 @@ namespace LanguageExt;
 /// Wraps up a version vector, making it easier to work with and not generics hell
 /// </summary>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
 public abstract record Version<Actor, K, V>(K Key)
 {
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public abstract Version<Actor, K, V> Write(Actor actor, long timeStamp, V value);
 
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
     /// <param name="value">Value to write</param>
     public Version<Actor, K, V> Write(Actor actor, V value) =>
         Write(actor, DateTime.UtcNow.Ticks, value);
@@ -28,13 +32,14 @@ public abstract record Version<Actor, K, V>(K Key)
     /// <summary>
     /// Perform a delete to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
-    /// <param name="value">Value to write</param>
+    /// <param name="actor">Actor to delete</param>
+    /// <param name="timeStamp"></param>
     public abstract Version<Actor, K, V> Delete(Actor actor, long timeStamp);
 
     /// <summary>
     /// Perform a delete to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
-    /// <param name="value">Value to write</param>
+    /// <param name="actor">Actor to delete</param>
     public Version<Actor, K, V> Delete(Actor actor) =>
         Delete(actor, DateTime.UtcNow.Ticks);
 
@@ -72,6 +77,7 @@ internal static class Version
 /// Abstract representation of a version vector with a value
 /// </summary>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
 internal abstract record VersionSome<Actor, K, V>(K Key, V value) : Version<Actor, K, V>(Key)
 {
@@ -86,6 +92,7 @@ internal abstract record VersionSome<Actor, K, V>(K Key, V value) : Version<Acto
 /// Abstract representation of a version vector without a value (it either never existed or has been deleted)
 /// </summary>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
 internal abstract record VersionNone<Actor, K, V>(K Key) : Version<Actor, K, V>(Key)
 {
@@ -100,9 +107,12 @@ internal abstract record VersionNone<Actor, K, V>(K Key) : Version<Actor, K, V>(
 /// <summary>
 /// Representation of a version vector that never existed
 /// </summary>
+/// <typeparam name="ConflictV"></typeparam>
+/// <typeparam name="OrdActor"></typeparam>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
-internal record VersionNeverExistedVector<ConflictV, OrdActor, Actor, K, V>(K Key) : VersionNone<Actor, K, V>(Key)
+internal sealed record VersionNeverExistedVector<ConflictV, OrdActor, Actor, K, V>(K Key) : VersionNone<Actor, K, V>(Key)
     where OrdActor  : Ord<Actor>
     where ConflictV : Conflict<V>
 {
@@ -111,6 +121,8 @@ internal record VersionNeverExistedVector<ConflictV, OrdActor, Actor, K, V>(K Ke
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public override Version<Actor, K, V> Write(Actor actor, long timeStamp, V value) =>
         new VersionValueVector<ConflictV, OrdActor, Actor, K, V>(
@@ -123,7 +135,8 @@ internal record VersionNeverExistedVector<ConflictV, OrdActor, Actor, K, V>(K Ke
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
-    /// <param name="value">Value to write</param>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     public override Version<Actor, K, V> Delete(Actor actor, long timeStamp) =>
         this;
 }
@@ -131,23 +144,29 @@ internal record VersionNeverExistedVector<ConflictV, OrdActor, Actor, K, V>(K Ke
 /// <summary>
 /// Representation of a version vector that existed but has since had its value deleted
 /// </summary>
+/// <typeparam name="ConflictV"></typeparam>
+/// <typeparam name="OrdActor"></typeparam>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
-internal record VersionDeletedVector<ConflictV, OrdActor, Actor, K, V>(K Key, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V> Vector) : VersionNone<Actor, K, V>(Key)
+internal sealed record VersionDeletedVector<ConflictV, OrdActor, Actor, K, V>(K Key, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V> Vector) : VersionNone<Actor, K, V>(Key)
     where OrdActor : Ord<Actor>
     where ConflictV : Conflict<V>
 {
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public override Version<Actor, K, V> Write(Actor actor, long timeStamp, V value) =>
         new VersionValueVector<ConflictV, OrdActor, Actor, K, V>(Key, Vector.Put(actor, timeStamp, value));
-        
+
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
-    /// <param name="value">Value to write</param>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     public override Version<Actor, K, V> Delete(Actor actor, long timeStamp) =>
         new VersionDeletedVector<ConflictV, OrdActor, Actor, K, V>(Key, Vector.Put(actor, timeStamp, None));
 }
@@ -155,9 +174,12 @@ internal record VersionDeletedVector<ConflictV, OrdActor, Actor, K, V>(K Key, Ve
 /// <summary>
 /// Representation of a version vector with a value
 /// </summary>
+/// <typeparam name="ConflictV"></typeparam>
+/// <typeparam name="OrdActor"></typeparam>
 /// <typeparam name="Actor">Actor type</typeparam>
+/// <typeparam name="K">Key type</typeparam>
 /// <typeparam name="V">Value type</typeparam>
-internal record VersionValueVector<ConflictV, OrdActor, Actor, K, V>(K Key, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V> Vector) : 
+internal sealed record VersionValueVector<ConflictV, OrdActor, Actor, K, V>(K Key, VersionVector<ConflictV, OrdActor, TLong, Actor, long, V> Vector) : 
     VersionSome<Actor, K, V>(Key, Vector.Value.Value ?? throw new ArgumentNullException(nameof(Vector.Value.Value)))
     where OrdActor : Ord<Actor>
     where ConflictV : Conflict<V>
@@ -165,14 +187,17 @@ internal record VersionValueVector<ConflictV, OrdActor, Actor, K, V>(K Key, Vers
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public override Version<Actor, K, V> Write(Actor actor, long timeStamp, V value) =>
         new VersionValueVector<ConflictV, OrdActor, Actor, K, V>(Key, Vector.Put(actor, timeStamp, value));
-        
+
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
-    /// <param name="value">Value to write</param>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     public override Version<Actor, K, V> Delete(Actor actor, long timeStamp) =>
         new VersionDeletedVector<ConflictV, OrdActor, Actor, K, V>(Key, Vector.Put(actor, timeStamp, None));
 }

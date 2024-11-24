@@ -313,7 +313,7 @@ public abstract partial record Schedule
     /// <summary>
     /// Intersperse the provided duration(s) between each duration in the schedule
     /// </summary>
-    /// <param name="duration">schedule to intersperse</param>
+    /// <param name="schedule">schedule to intersperse</param>
     [Pure]
     public static ScheduleTransformer intersperse(Schedule schedule) =>
         Transform(s => s.Bind(schedule.Prepend));

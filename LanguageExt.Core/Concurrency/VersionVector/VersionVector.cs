@@ -24,9 +24,7 @@ public record VersionVector<ConflictA, OrdActor, NumClock, Actor, Clock, A>(
     /// <summary>
     /// Register a write from any actor
     /// </summary>
-    /// <param name="actor">Actor that did the write operation</param>
-    /// <param name="value">Value that the actor wrote</param>
-    /// <param name="vector">The vector of the actor</param>
+    /// <param name="version">The vector of the actor</param>
     /// <returns></returns>
     public VersionVector<ConflictA, OrdActor, NumClock, Actor, Clock, A> Put(
         VersionVector<ConflictA, OrdActor, NumClock, Actor, Clock, A> version) =>
@@ -58,6 +56,8 @@ public record VersionVector<ConflictA, OrdActor, NumClock, Actor, Clock, A>(
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public VersionVector<ConflictA, OrdActor, NumClock, Actor, Clock, A> Put(Actor actor, long timeStamp, Option<A> value) =>
         new (Value: value, 
@@ -79,9 +79,7 @@ public record VersionVector<ConflictA, Actor, A>(Option<A> Value, long TimeStamp
     /// <summary>
     /// Register a write from any actor
     /// </summary>
-    /// <param name="actor">Actor that did the write operation</param>
-    /// <param name="value">Value that the actor wrote</param>
-    /// <param name="vector">The vector of the actor</param>
+    /// <param name="version">The vector of the actor</param>
     /// <returns></returns>
     public VersionVector<ConflictA, Actor, A> Put(VersionVector<ConflictA, Actor, A> version) =>
         VectorClock.relation(Vector, version.Vector) switch
@@ -111,6 +109,8 @@ public record VersionVector<ConflictA, Actor, A>(Option<A> Value, long TimeStamp
     /// <summary>
     /// Perform a write to the vector.  This increases the vector-clock by 1 for the `actor` provided.
     /// </summary>
+    /// <param name="actor"></param>
+    /// <param name="timeStamp"></param>
     /// <param name="value">Value to write</param>
     public VersionVector<ConflictA, Actor, A> Put(Actor actor, long timeStamp, Option<A> value) =>
         new(Value: value, TimeStamp: timeStamp, Vector: Vector.Inc(actor, 0L));

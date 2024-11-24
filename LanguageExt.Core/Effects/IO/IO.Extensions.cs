@@ -77,7 +77,8 @@ public static partial class IOExtensions
     /// propagates upwards and so catching cancellations is still important. 
     /// </remarks>
     /// <param name="ma">Computation to run within the local context</param>
-    /// <typeparam name="A">Bound value</typeparam>
+    /// <typeparam name="M">Bound Monad type</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Result of the computation</returns>
     public static K<M, A> LocalIO<M, A>(this K<M, A> ma) 
         where M : Monad<M> =>
@@ -106,6 +107,7 @@ public static partial class IOExtensions
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">Monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -120,6 +122,7 @@ public static partial class IOExtensions
     /// <summary>
     /// Queue this IO operation to run on the thread-pool. 
     /// </summary>
+    /// <param name="ma">Monad of A</param>
     /// <param name="timeout">Maximum time that the forked IO operation can run for. `None` for no timeout.</param>
     /// <returns>Returns a `ForkIO` data-structure that contains two IO effects that can be used to either cancel
     /// the forked IO operation or to await the result of it.
@@ -214,6 +217,7 @@ public static partial class IOExtensions
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
+    /// <param name="ma">Monad of A</param>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <returns>The result of the last invocation</returns>
     public static K<M, A> RepeatIO<M, A>(
@@ -229,6 +233,7 @@ public static partial class IOExtensions
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
+    /// <param name="ma">Monad of A</param>
     /// <param name="predicate">Keep repeating while this predicate returns `true` for each computed value</param>
     /// <returns>The result of the last invocation</returns>
     public static K<M, A> RepeatWhileIO<M, A>(
@@ -244,6 +249,7 @@ public static partial class IOExtensions
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
+    /// <param name="ma">Monad of A</param>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="predicate">Keep repeating while this predicate returns `true` for each computed value</param>
     /// <returns>The result of the last invocation</returns>
@@ -261,6 +267,7 @@ public static partial class IOExtensions
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
+    /// <param name="ma">Monad of A</param>
     /// <param name="predicate">Keep repeating until this predicate returns `true` for each computed value</param>
     /// <returns>The result of the last invocation</returns>
     public static K<M, A> RepeatUntilIO<M, A>(
@@ -276,6 +283,7 @@ public static partial class IOExtensions
     /// Any resources acquired within a repeated IO computation will automatically be released.  This also means you can't
     /// acquire resources and return them from within a repeated computation.
     /// </remarks>
+    /// <param name="ma">Monad of A</param>
     /// <param name="schedule">Scheduler strategy for repeating</param>
     /// <param name="predicate">Keep repeating until this predicate returns `true` for each computed value</param>
     /// <returns>The result of the last invocation</returns>

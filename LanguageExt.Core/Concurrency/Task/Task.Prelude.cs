@@ -182,10 +182,10 @@ public static partial class Prelude
     /// <param name="fb">Applicative b to apply</param>
     /// <returns>Applicative of type FC derived from Applicative of C</returns>
     [Pure]
-    public static async Task<C> apply<A, B, C>(Task<Func<A, B, C>> fabc, Task<A> fa, Task<B> fb)
+    public static async Task<C> apply<A, B, C>(Task<Func<A, B, C>> fab, Task<A> fa, Task<B> fb)
     {
-        await Task.WhenAll(fabc, fa, fb).ConfigureAwait(false);
-        return fabc.Result(fa.Result, fb.Result);
+        await Task.WhenAll(fab, fa, fb).ConfigureAwait(false);
+        return fab.Result(fa.Result, fb.Result);
     }
 
     /// <summary>
@@ -196,10 +196,10 @@ public static partial class Prelude
     /// <param name="fb">Applicative b to apply</param>
     /// <returns>Applicative of type FC derived from Applicative of C</returns>
     [Pure]
-    public static async Task<C> apply<A, B, C>(Func<A, B, C> fabc, Task<A> fa, Task<B> fb)
+    public static async Task<C> apply<A, B, C>(Func<A, B, C> fab, Task<A> fa, Task<B> fb)
     {
         await Task.WhenAll(fa, fb).ConfigureAwait(false);
-        return fabc(fa.Result, fb.Result);
+        return fab(fa.Result, fb.Result);
     }
 
     /// <summary>
@@ -207,12 +207,12 @@ public static partial class Prelude
     /// </summary>
     /// <param name="fab">Function to apply the applicative to</param>
     /// <param name="fa">Applicative to apply</param>
-    /// <returns>Applicative of type f(b -> c) derived from Applicative of Func<B, C></returns>
+    /// <returns>Applicative of type f(b -> c) derived from Applicative of <see cref="Func{B,C}"/></returns>
     [Pure]
-    public static async Task<Func<B, C>> apply<A, B, C>(Task<Func<A, B, C>> fabc, Task<A> fa)
+    public static async Task<Func<B, C>> apply<A, B, C>(Task<Func<A, B, C>> fab, Task<A> fa)
     {
-        await Task.WhenAll(fabc, fa).ConfigureAwait(false);
-        return curry(fabc.Result)(fa.Result);
+        await Task.WhenAll(fab, fa).ConfigureAwait(false);
+        return curry(fab.Result)(fa.Result);
     }
 
     /// <summary>
@@ -220,22 +220,22 @@ public static partial class Prelude
     /// </summary>
     /// <param name="fab">Function to apply the applicative to</param>
     /// <param name="fa">Applicative to apply</param>
-    /// <returns>Applicative of type f(b -> c) derived from Applicative of Func<B, C></returns>
+    /// <returns>Applicative of type f(b -> c) derived from Applicative of <see cref="Func{B,C}"/></returns>
     [Pure]
-    public static Task<Func<B, C>> apply<A, B, C>(Func<A, B, C> fabc, Task<A> fa) =>
-        fa.Map(curry(fabc));
+    public static Task<Func<B, C>> apply<A, B, C>(Func<A, B, C> fab, Task<A> fa) =>
+        fa.Map(curry(fab));
 
     /// <summary>
     /// Apply
     /// </summary>
     /// <param name="fab">Function to apply the applicative to</param>
     /// <param name="fa">Applicative to apply</param>
-    /// <returns>Applicative of type f(b -> c) derived from Applicative of Func<B, C></returns>
+    /// <returns>Applicative of type f(b -> c) derived from Applicative of <see cref="Func{B,C}"/></returns>
     [Pure]
-    public static async Task<Func<B, C>> apply<A, B, C>(Task<Func<A, Func<B, C>>> fabc, Task<A> fa)
+    public static async Task<Func<B, C>> apply<A, B, C>(Task<Func<A, Func<B, C>>> fab, Task<A> fa)
     {
-        await Task.WhenAll(fabc, fa).ConfigureAwait(false);
-        return fabc.Result(fa.Result);
+        await Task.WhenAll(fab, fa).ConfigureAwait(false);
+        return fab.Result(fa.Result);
     }
 
     /// <summary>
@@ -243,8 +243,8 @@ public static partial class Prelude
     /// </summary>
     /// <param name="fab">Function to apply the applicative to</param>
     /// <param name="fa">Applicative to apply</param>
-    /// <returns>Applicative of type f(b -> c) derived from Applicative of Func<B, C></returns>
+    /// <returns>Applicative of type f(b -> c) derived from Applicative of <see cref="Func{B,C}"/></returns>
     [Pure]
-    public static Task<Func<B, C>> apply<A, B, C>(Func<A, Func<B, C>> fabc, Task<A> fa) =>
-        fa.Map(fabc);
+    public static Task<Func<B, C>> apply<A, B, C>(Func<A, Func<B, C>> fab, Task<A> fa) =>
+        fa.Map(fab);
 }

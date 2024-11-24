@@ -31,6 +31,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="A">Type of the items in the sequence</typeparam>
     /// <param name="head">Head item in the sequence</param>
+    /// <param name="empty">surrogate</param>
     /// <returns></returns>
     [Pure]
     public static Seq<A> Cons<A>(this A head, SeqEmpty empty) =>
@@ -778,7 +779,9 @@ public static partial class Prelude
     /// <summary>
     /// Match empty list, or multi-item list
     /// </summary>
+    /// <typeparam name="A">Incoming value type</typeparam>
     /// <typeparam name="B">Return value type</typeparam>
+    /// <param name="list">source collection</param>
     /// <param name="Empty">Match for an empty list</param>
     /// <param name="More">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>

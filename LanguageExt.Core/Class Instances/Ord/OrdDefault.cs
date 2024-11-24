@@ -1,13 +1,15 @@
 ﻿using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits.Resolve;
+using System.Collections.Generic;
 
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Uses the standard .NET  Comparer<A>.Default.Compare(a,b) method to
+/// Uses the standard .NET  <see cref="Comparer{A}.Default"/> method to
 /// provide equality testing.
 /// </summary>
+/// <typeparam name="A">Element type</typeparam>
 public struct OrdDefault<A> : Ord<A>
 {
     /// <summary>

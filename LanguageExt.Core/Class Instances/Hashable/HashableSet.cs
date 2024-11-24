@@ -4,8 +4,10 @@ using LanguageExt.Traits;
 namespace LanguageExt.ClassInstances;
 
 /// <summary>
-/// Set<T> hashing
+/// Set hashing
 /// </summary>
+/// <typeparam name="HashA">Comparison type</typeparam>
+/// <typeparam name="A">Element type</typeparam>
 public struct HashableSet<HashA, A> : Hashable<Set<A>> where HashA : Hashable<A>
 {
     /// <summary>
@@ -19,8 +21,9 @@ public struct HashableSet<HashA, A> : Hashable<Set<A>> where HashA : Hashable<A>
 }
 
 /// <summary>
-/// Set<T> hashing
+/// Set hashing with default comparison
 /// </summary>
+/// <typeparam name="A">Element type</typeparam>
 public struct HashableSet<A> : Hashable<Set<A>>
 {
     /// <summary>
