@@ -42,7 +42,7 @@ public struct EqCharOrdinalIgnoreCase : Eq<char>
     /// <returns>True if a and b are equal</returns>
     [Pure]
     public static bool Equals(char a, char b) => 
-        TChar.TryUpper(a) == TChar.TryUpper(b);
+        char.ToUpperInvariant(a) == char.ToUpperInvariant(b);
 
     /// <summary>
     /// Get hash code of the value

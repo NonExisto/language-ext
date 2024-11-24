@@ -60,19 +60,4 @@ public struct TChar : Ord<char>, Arithmetic<char>
     [Pure]
     public static char Negate(char x) =>
         (char)-x;
-
-    public static char TryUpper(char input)
-    {
-        if(char.IsLower(input) && !char.IsSurrogate(input))
-        { 
-            var rune = Rune.ToUpper(new Rune(input), CultureInfo.CurrentCulture);
-            if(rune.Utf16SequenceLength == 1)
-            {
-                Span<char> chars = stackalloc char[1];
-                rune.EncodeToUtf16(chars);
-                return chars[0];
-            }
-        } 
-        return input;
-    }
 }

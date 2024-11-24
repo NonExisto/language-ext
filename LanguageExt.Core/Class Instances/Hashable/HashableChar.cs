@@ -30,5 +30,5 @@ public struct HashableCharOrdinalIgnoreCase : Hashable<char>
     /// <returns>The hash code of x</returns>
     [Pure]
     public static int GetHashCode(char x) =>
-        TChar.TryUpper(x).GetHashCode();
+        char.ToUpper(x).GetHashCode();
 }
