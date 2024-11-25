@@ -192,7 +192,7 @@ public static partial class HashMap
     /// <param name="map">Add target</param>
     /// <param name="key">Key to find</param>
     /// <param name="Some">Update action</param>
-    /// <param name="None">Add action</param>
+    /// <param name="None">Add value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>

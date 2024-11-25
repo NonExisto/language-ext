@@ -491,7 +491,7 @@ public class AtomHashMap<K, V> :
     /// </summary>
     /// <param name="key">Key to find</param>
     /// <param name="Some">Function to replace value</param>
-    /// <param name="None">Function to add new value</param>
+    /// <param name="None">Value to add</param>
     /// <param name="equalityComparer">optional parameter necessary only if change subscription is active</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>

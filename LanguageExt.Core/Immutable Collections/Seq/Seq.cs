@@ -526,6 +526,7 @@ public readonly struct Seq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
+    /// <param name="Head">Match a head</param>
     /// <param name="Tail">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
@@ -545,7 +546,7 @@ public readonly struct Seq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
-    /// <param name="Sequence">Match for a non-empty</param>
+    /// <param name="Seq">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -561,6 +562,7 @@ public readonly struct Seq<A> :
     /// </summary>
     /// <typeparam name="B">Return value type</typeparam>
     /// <param name="Empty">Match for an empty list</param>
+    /// <param name="Head">Match a head</param>
     /// <param name="Tail">Match for a non-empty</param>
     /// <returns>Result of match function invoked</returns>
     [Pure]
@@ -594,7 +596,6 @@ public readonly struct Seq<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -607,7 +608,6 @@ public readonly struct Seq<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -771,9 +771,7 @@ public readonly struct Seq<A> :
     /// <summary>
     /// Inject a value in between each item in the sequence 
     /// </summary>
-    /// <param name="ma">Sequence to inject values into</param>
     /// <param name="value">Item to inject</param>
-    /// <typeparam name="A">Bound type</typeparam>
     /// <returns>A sequence with the values injected</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

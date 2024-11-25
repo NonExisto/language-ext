@@ -120,6 +120,7 @@ public static partial class Map
     /// Atomically adds a new item to the map
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the key already exists</exception>
@@ -134,6 +135,7 @@ public static partial class Map
     /// If the key already exists, then the new item is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -148,6 +150,7 @@ public static partial class Map
     /// and the value already set for the key, it expects a new map returned.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <param name="Fail">Delegate to handle failure, you're given the unaltered map 
@@ -163,6 +166,7 @@ public static partial class Map
     /// If the key already exists, the new item replaces it.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -175,7 +179,10 @@ public static partial class Map
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">delegate to return a new map if the item can't be found</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -187,7 +194,10 @@ public static partial class Map
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">a new value if the item can't be found</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -199,7 +209,8 @@ public static partial class Map
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -211,7 +222,8 @@ public static partial class Map
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -223,7 +235,8 @@ public static partial class Map
     /// Atomically adds a range of items to the map.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -236,7 +249,8 @@ public static partial class Map
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -248,7 +262,8 @@ public static partial class Map
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of tuples to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of tuples to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -260,7 +275,8 @@ public static partial class Map
     /// then they're ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
-    /// <param name="range">Range of KeyValuePairs to add</param>
+    /// <param name="map">Target map</param>
+    /// <param name="keyValues">Range of KeyValuePairs to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -271,6 +287,7 @@ public static partial class Map
     /// Atomically adds a range of items to the map.  If any of the keys exist already
     /// then they're replaced.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="range">Range of tuples to add</param>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -281,6 +298,7 @@ public static partial class Map
     /// Atomically adds a range of items to the map.  If any of the keys exist already
     /// then they're replaced.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="range">Range of tuples to add</param>
     /// <returns>New Map with the items added</returns>
     [Pure]
@@ -292,6 +310,7 @@ public static partial class Map
     /// then they're replaced.
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="range">Range of KeyValuePairs to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keys or values are null</exception>
     /// <returns>New Map with the items added</returns>
@@ -303,6 +322,7 @@ public static partial class Map
     /// Atomically removes an item from the map
     /// If the key doesn't exists, the request is ignored.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <returns>New map with the item removed</returns>
     [Pure]
@@ -312,6 +332,7 @@ public static partial class Map
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
@@ -321,7 +342,8 @@ public static partial class Map
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Target map</param>
+    /// <param name="kv">Key/value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public static bool contains<K, V>(Map<K, V> map, KeyValuePair<K, V> kv) =>
@@ -330,7 +352,8 @@ public static partial class Map
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Target map</param>
+    /// <param name="kv">Key/value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public static bool contains<K, V>(Map<K, V> map, Tuple<K, V> kv) =>
@@ -339,7 +362,8 @@ public static partial class Map
     /// <summary>
     /// Checks for existence of a key in the map
     /// </summary>
-    /// <param name="key">Key to check</param>
+    /// <param name="map">Target map</param>
+    /// <param name="kv">Key/value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public static bool contains<K, V>(Map<K, V> map, (K, V) kv) =>
@@ -349,6 +373,7 @@ public static partial class Map
     /// Atomically updates an existing item
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the key or value are null</exception>
@@ -362,6 +387,7 @@ public static partial class Map
     /// it is ignored
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the value is null</exception>
@@ -374,6 +400,7 @@ public static partial class Map
     /// Atomically sets an item by first retrieving it, applying a map (Some), and then putting 
     /// it back. Silently fails if the value doesn't exist.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to set</param>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <param name="Some">delegate to map the existing value to a new one before setting</param>
@@ -387,6 +414,7 @@ public static partial class Map
     /// Calls the None delegate to return a new map if the item can't be found
     /// </summary>
     /// <remarks>Null is not allowed for a Key or a Value</remarks>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key</param>
     /// <param name="Some">delegate to map the existing value to a new one before setting</param>
     /// <param name="None">delegate to return a new map if the item can't be found</param>
@@ -400,6 +428,7 @@ public static partial class Map
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -410,6 +439,7 @@ public static partial class Map
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -420,6 +450,7 @@ public static partial class Map
     /// <summary>
     /// Atomically sets a series of items using the KeyValuePairs provided
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -430,6 +461,7 @@ public static partial class Map
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -440,6 +472,7 @@ public static partial class Map
     /// <summary>
     /// Atomically sets a series of items using the Tuples provided.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys aren't in the map</exception>
     /// <returns>New map with the items set</returns>
@@ -451,6 +484,7 @@ public static partial class Map
     /// Atomically sets a series of items using the KeyValuePairs provided.  If any of the 
     /// items don't exist then they're silently ignored.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="items">Items to set</param>
     /// <returns>New map with the items set</returns>
     [Pure]
@@ -462,6 +496,7 @@ public static partial class Map
     /// and the Some delegate maps to a new value.  If the items don't exist then
     /// they're silently ignored.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="keys">Keys of items to set</param>
     /// <param name="Some">Function map the existing item to a new one</param>
     /// <returns>New map with the items set</returns>
@@ -472,6 +507,7 @@ public static partial class Map
     /// <summary>
     /// Retrieve a value from the map by key
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
@@ -481,6 +517,7 @@ public static partial class Map
     /// <summary>
     /// Retrieve a value from the map by key as an enumerable
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
     /// <returns>Found value</returns>
     [Pure]
@@ -491,7 +528,10 @@ public static partial class Map
     /// Retrieve a value from the map by key and pattern match the
     /// result.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">a new value if the item can't be found</param>
     /// <returns>Found value</returns>
     [Pure]
     public static R find<K, V, R>(Map<K, V> map, K key, Func<V, R> Some, Func<R> None) =>
@@ -501,7 +541,9 @@ public static partial class Map
     /// Retrieve a value from the map by key, map it to a new value,
     /// put it back.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="key">Key to find</param>
+    /// <param name="mapper">Replace item action</param>
     /// <returns>New map with the mapped value</returns>
     [Pure]
     public static Map<K, V> setItem<K, V>(Map<K, V> map, K key, Func<V, V> mapper) =>
@@ -510,6 +552,7 @@ public static partial class Map
     /// <summary>
     /// Retrieve a range of values 
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="keyFrom">Range start (inclusive)</param>
     /// <param name="keyTo">Range to (inclusive)</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException the keyFrom or keyTo are null</exception>
@@ -522,6 +565,7 @@ public static partial class Map
     /// Skips 'amount' values and returns a new tree without the 
     /// skipped values.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="amount">Amount to skip</param>
     /// <returns>Enumerable of map items</returns>
     [Pure]
@@ -532,6 +576,7 @@ public static partial class Map
     /// Atomically iterate through all key/value pairs in the map (in order) and execute an
     /// action on each
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="action">Action to execute</param>
     /// <returns>Unit</returns>
     public static Unit iter<K, V>(Map<K, V> map, Action<V> action) =>
@@ -541,6 +586,7 @@ public static partial class Map
     /// Atomically iterate through all key/value pairs in the map (in order) and execute an
     /// action on each
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="action">Action to execute</param>
     /// <returns>Unit</returns>
     public static Unit iter<K, V>(Map<K, V> map, Action<K, V> action) =>
@@ -549,6 +595,7 @@ public static partial class Map
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -558,6 +605,7 @@ public static partial class Map
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -567,6 +615,7 @@ public static partial class Map
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -576,6 +625,7 @@ public static partial class Map
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -585,6 +635,7 @@ public static partial class Map
     /// <summary>
     /// Return true if all items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -610,7 +661,8 @@ public static partial class Map
     /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
-    /// <param name="pred">Predicate</param>
+    /// <param name="map">Target map</param>
+    /// <param name="predicate">Predicate</param>
     /// <returns>New map with items filtered</returns>
     [Pure]
     public static Map<K, V> filter<K, V>(Map<K, V> map, Func<V, bool> predicate) =>
@@ -619,7 +671,8 @@ public static partial class Map
     /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
-    /// <param name="pred">Predicate</param>
+    /// <param name="map">Target map</param>
+    /// <param name="predicate">Predicate</param>
     /// <returns>New map with items filtered</returns>
     [Pure]
     public static Map<K, V> filter<K, V>(Map<K, V> map, Func<K, V, bool> predicate) =>
@@ -630,6 +683,7 @@ public static partial class Map
     /// Option is Some or None.  If the item is None then it's filtered out, if not the the
     /// mapped Some value is used.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="selector">Predicate</param>
     /// <returns>Filtered map</returns>
     [Pure]
@@ -641,6 +695,7 @@ public static partial class Map
     /// Option is Some or None.  If the item is None then it's filtered out, if not the the
     /// mapped Some value is used.
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="selector">Predicate</param>
     /// <returns>Filtered map</returns>
     [Pure]
@@ -658,6 +713,9 @@ public static partial class Map
     /// Atomically folds all items in the map (in order) using the folder function provided.
     /// </summary>
     /// <typeparam name="S">State type</typeparam>
+    /// <typeparam name="K">Key type</typeparam>
+    /// <typeparam name="V">Value type</typeparam>
+    /// <param name="map">Target map</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
     /// <returns>Folded state</returns>
@@ -669,6 +727,9 @@ public static partial class Map
     /// Atomically folds all items in the map (in order) using the folder function provided.
     /// </summary>
     /// <typeparam name="S">State type</typeparam>
+    /// <typeparam name="K">Key type</typeparam>
+    /// <typeparam name="V">Value type</typeparam>
+    /// <param name="map">Target map</param>
     /// <param name="state">Initial state</param>
     /// <param name="folder">Fold function</param>
     /// <returns>Folded state</returns>
@@ -679,6 +740,7 @@ public static partial class Map
     /// <summary>
     /// Return true if *any* items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -688,6 +750,7 @@ public static partial class Map
     /// <summary>
     /// Return true if *any* items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -697,6 +760,7 @@ public static partial class Map
     /// <summary>
     /// Return true if *any* items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -706,6 +770,7 @@ public static partial class Map
     /// <summary>
     /// Return true if *any* items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -715,6 +780,7 @@ public static partial class Map
     /// <summary>
     /// Return true if *any* items in the map return true when the predicate is applied
     /// </summary>
+    /// <param name="map">Target map</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if all items in the map return true when the predicate is applied</returns>
     [Pure]
@@ -785,6 +851,7 @@ public static partial class Map
     /// Intersect two maps.  Only keys that are in both maps are
     /// returned.  The merge function is called for every resulting
     /// key.
+    /// </summary>
     [Pure]
     public static Map<K, R> intersect<K, A, B, R>(Map<K, A> left, Map<K, B> right, WhenMatched<K, A, B, R> merge) =>
         left.Intersect(right, merge);

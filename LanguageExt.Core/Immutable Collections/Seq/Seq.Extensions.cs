@@ -26,6 +26,7 @@ public static partial class SeqExtensions
     /// comprised of the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">out item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>
@@ -39,6 +40,7 @@ public static partial class SeqExtensions
     /// An index value is passed through to the selector function also.
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">out item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>
@@ -63,8 +65,12 @@ public static partial class SeqExtensions
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
     /// </summary>
-    /// <typeparam name="B">Bound return value type</typeparam>
+    /// <typeparam name="A">collection item type</typeparam>
+    /// <typeparam name="B">transformation item type</typeparam>
+    /// <typeparam name="C">Bound return value type</typeparam>
+    /// <param name="self">A collection</param>
     /// <param name="bind">Bind function</param>
+    /// <param name="project">Map function</param>
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
     public static Seq<C> SelectMany<A, B, C>(this Seq<A> self, Func<A, Seq<B>> bind, Func<A, B, C> project)
@@ -85,7 +91,9 @@ public static partial class SeqExtensions
     /// <summary>
     /// Map the sequence using the function provided
     /// </summary>
-    /// <typeparam name="B"></typeparam>
+    /// <typeparam name="A">item type</typeparam>
+    /// <typeparam name="B">out item type</typeparam>
+    /// <param name="self">a collection</param>
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped sequence</returns>
     [Pure]
@@ -118,8 +126,8 @@ public static partial class SeqExtensions
     /// Concatenate a sequence and a sequence of sequences
     /// </summary>
     /// <typeparam name="T">List item type</typeparam>
-    /// <param name="lhs">First list</param>
-    /// <param name="rhs">Second list</param>
+    /// <param name="x">First list</param>
+    /// <param name="xs">Second list</param>
     /// <returns>Concatenated list</returns>
     [Pure]
     public static Seq<T> Append<T>(this Seq<T> x, Seq<Seq<T>> xs) =>
@@ -176,7 +184,6 @@ public static partial class SeqExtensions
     /// </summary>
     /// <param name="list">First sequence to join</param>
     /// <param name="other">Second sequence to join</param>
-    /// <param name="zipper">Join function</param>
     /// <returns>Joined sequence of tuples</returns>
     [Pure]
     public static Seq<(T First, U Second)> Zip<T, U>(this Seq<T> list, Seq<U> other) =>
@@ -195,6 +202,7 @@ public static partial class SeqExtensions
     /// <summary>
     /// Return a new sequence with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EQ">Comparer item type</typeparam>
     /// <typeparam name="T">sequence item type</typeparam>
     /// <param name="list">sequence</param>
     /// <returns>A new sequence with all duplicate values removed</returns>
@@ -206,7 +214,10 @@ public static partial class SeqExtensions
     /// Return a new sequence with all duplicate values removed
     /// </summary>
     /// <typeparam name="T">sequence item type</typeparam>
+    /// <typeparam name="K">Key item type</typeparam>
     /// <param name="list">sequence</param>
+    /// <param name="keySelector">key selector</param>
+    /// <param name="compare">optional key comparison function</param>
     /// <returns>A new sequence with all duplicate values removed</returns>
     [Pure]
     public static Seq<T> Distinct<T, K>(this Seq<T> list, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default) =>

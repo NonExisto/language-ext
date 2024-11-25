@@ -2,7 +2,7 @@
 
 /// <summary>
 /// A unit type that represents `Seq.Empty`.  This type can be implicitly
-/// converted to `Seq<A>`.
+/// converted to <see cref="Seq{A}"/>.
 /// </summary>
 public readonly struct SeqEmpty : System.IEquatable<SeqEmpty>
 {

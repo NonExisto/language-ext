@@ -93,7 +93,7 @@ public readonly struct Map<K, V> :
     ///
     ///     Empty collection     = null
     ///     Singleton collection = (K, V)
-    ///     More                 = ((K, V), Seq<(K, V)>)   -- head and tail
+    ///     More                 = ((K, V), Seq&lt;(K, V)&gt;)   -- head and tail
     ///
     ///     var res = list.Case switch
     ///     {
@@ -360,6 +360,8 @@ public readonly struct Map<K, V> :
     /// result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Existing item action</param>
+    /// <param name="None">Missing item action</param>
     /// <returns>Found value</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -466,6 +468,7 @@ public readonly struct Map<K, V> :
     /// put it back.
     /// </summary>
     /// <param name="key">Key to set</param>
+    /// <param name="Some">Update action</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the item isn't found</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -532,6 +535,8 @@ public readonly struct Map<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Insert action</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -544,6 +549,8 @@ public readonly struct Map<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">Update action</param>
+    /// <param name="None">Insert value</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -596,6 +603,7 @@ public readonly struct Map<K, V> :
     /// Checks for existence of a key in the map
     /// </summary>
     /// <param name="key">Key to check</param>
+    /// <param name="value">Value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -861,7 +869,7 @@ public readonly struct Map<K, V> :
         new(lhs.Value - rhs.Value);
     
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -869,7 +877,7 @@ public readonly struct Map<K, V> :
         obj is Map<K, V> m && Equals(m);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -877,7 +885,7 @@ public readonly struct Map<K, V> :
         Value.Equals(other.Value, EqualityComparer<K>.Default, EqualityComparer<V>.Default);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -966,7 +974,7 @@ public readonly struct Map<K, V> :
     /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
-    /// <param name="pred">Predicate</param>
+    /// <param name="keyValuePred">Predicate</param>
     /// <returns>New map with items filtered</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1241,6 +1249,7 @@ public readonly struct Map<K, V> :
     /// Intersect two maps.  Only keys that are in both maps are
     /// returned.  The merge function is called for every resulting
     /// key.
+    /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Map<K, R> Intersect<V2, R>(Map<K, V2> other, WhenMatched<K, V, V2, R> Merge) =>
@@ -1264,7 +1273,7 @@ public readonly struct Map<K, V> :
         Wrap(Value.SymmetricExcept(other.Value));
 
     /// <summary>
-    /// Compare keys and values (values use `OrdDefault<V>` for ordering)
+    /// Compare keys and values (values use `OrdDefault&gt;V&lt;` for ordering)
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -20,7 +20,7 @@ public class FibonacciBenchmark
 	[Benchmark]
 	public long RecursiveFib()
 	{
-		Dictionary<int, long> cache = new();
+		Dictionary<int, long> cache = new(N - 2);
 		return fib(N, cache);
 		static long fib(int n, Dictionary<int, long> cache)
 		{
@@ -37,7 +37,7 @@ public class FibonacciBenchmark
 	[Benchmark]
 	public long TrampolineFib()
 	{
-		Dictionary<int, long> cache = new();
+		Dictionary<int, long> cache = new(N - 2);
 		return fib(N, cache).Run();
 		static Tr fib(int n, Dictionary<int, long> cache)
 		{

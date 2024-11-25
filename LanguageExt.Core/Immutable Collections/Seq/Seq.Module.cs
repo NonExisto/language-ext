@@ -14,7 +14,6 @@ namespace LanguageExt;
 /// Represents a sequence of values in a similar way to IEnumerable, but without the
 /// issues of multiple evaluation for key LINQ operators like Skip, Count, etc.
 /// </summary>
-/// <typeparam name="A">Type of the values in the sequence</typeparam>
 public partial class Seq
 {
     /// <summary>
@@ -189,6 +188,7 @@ public partial class Seq
     /// comprised of the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">out item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>
@@ -203,6 +203,7 @@ public partial class Seq
     /// An index value is passed through to the selector function also.
     /// </summary>
     /// <typeparam name="A">sequence item type</typeparam>
+    /// <typeparam name="B">out item type</typeparam>
     /// <param name="list">sequence</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered sequence</returns>
@@ -237,8 +238,8 @@ public partial class Seq
     /// Concatenate a sequence and a sequence of sequences
     /// </summary>
     /// <typeparam name="T">List item type</typeparam>
-    /// <param name="lhs">First list</param>
-    /// <param name="rhs">Second list</param>
+    /// <param name="x">First list</param>
+    /// <param name="xs">Second list</param>
     /// <returns>Concatenated list</returns>
     [Pure]
     public static Seq<T> append<T>(Seq<T> x, Seq<Seq<T>> xs) =>
@@ -325,7 +326,6 @@ public partial class Seq
     /// </summary>
     /// <param name="list">First sequence to join</param>
     /// <param name="other">Second sequence to join</param>
-    /// <param name="zipper">Join function</param>
     /// <returns>Joined sequence of tuples</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -359,6 +359,7 @@ public partial class Seq
     /// <summary>
     /// Return a new sequence with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EQ">item comparison type</typeparam>
     /// <typeparam name="T">sequence item type</typeparam>
     /// <param name="list">sequence</param>
     /// <returns>A new sequence with all duplicate values removed</returns>
@@ -371,7 +372,10 @@ public partial class Seq
     /// Return a new sequence with all duplicate values removed
     /// </summary>
     /// <typeparam name="T">sequence item type</typeparam>
+    /// <typeparam name="K">Key item type</typeparam>
     /// <param name="list">sequence</param>
+    /// <param name="keySelector">key selector</param>
+    /// <param name="compare">optional key comparison function</param>
     /// <returns>A new sequence with all duplicate values removed</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -398,7 +402,7 @@ public partial class Seq
     /// </summary>
     /// <typeparam name="T">sequence item type</typeparam>
     /// <param name="list">sequence</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new sequence with the first items that match the predicate</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -411,7 +415,7 @@ public partial class Seq
     /// </summary>
     /// <typeparam name="T">sequence item type</typeparam>
     /// <param name="list">sequence</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new sequence with the first items that match the predicate</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
