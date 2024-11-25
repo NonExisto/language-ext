@@ -70,9 +70,9 @@ public static partial class OptionExtensions
 
     /// <summary>
     /// Add the bound values of x and y, uses an Add trait to provide the add
-    /// operation for type A.  For example x.Add<TInteger,int>(y)
+    /// operation for type A.  For example `x.Add&lt;TInteger,int&gt;(y)`
     /// </summary>
-    /// <typeparam name="ADD">Add of A</typeparam>
+    /// <typeparam name="ARITH">Add of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
@@ -86,9 +86,9 @@ public static partial class OptionExtensions
 
     /// <summary>
     /// Find the subtract between the two bound values of x and y, uses a Subtract trait
-    /// to provide the subtract operation for type A.  For example x.Subtract<TInteger,int>(y)
+    /// to provide the subtract operation for type A.  For example `x.Subtract&lt;TInteger,int&gt;(y)`
     /// </summary>
-    /// <typeparam name="DIFF">Subtract of A</typeparam>
+    /// <typeparam name="ARITH">Subtract of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
@@ -102,9 +102,9 @@ public static partial class OptionExtensions
 
     /// <summary>
     /// Find the product between the two bound values of x and y, uses a Product trait
-    /// to provide the product operation for type A.  For example x.Product<TInteger,int>(y)
+    /// to provide the product operation for type A.  For example `x.Product&lt;TInteger,int&gt;(y)`
     /// </summary>
-    /// <typeparam name="PROD">Product of A</typeparam>
+    /// <typeparam name="ARITH">Product of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
@@ -118,9 +118,9 @@ public static partial class OptionExtensions
 
     /// <summary>
     /// Divide the two bound values of x and y, uses a Divide trait to provide the divide
-    /// operation for type A.  For example x.Divide<TDouble,double>(y)
+    /// operation for type A.  For example `x.Divide&lt;TDouble,double&gt;(y)`
     /// </summary>
-    /// <typeparam name="DIV">Divide of A</typeparam>
+    /// <typeparam name="NUM">Divide of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>

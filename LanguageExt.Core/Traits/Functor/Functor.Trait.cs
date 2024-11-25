@@ -10,7 +10,7 @@ namespace LanguageExt.Traits;
 /// where `F` is a functor, to produce a value of type `K<F, B>`.
 ///
 /// Note that for any type with more than one parameter (e.g., `Either`), only the
-/// last type parameter can be modified with `Map` (e.g. `R` in `Either<L, R>`).
+/// last type parameter can be modified with `Map` (e.g. `R` in <see cref="Either{L,R}"/>).
 /// 
 /// Some types two generic parameters or more have a `Bifunctor` instance that allows both
 /// the last and the penultimate parameters to be mapped over.

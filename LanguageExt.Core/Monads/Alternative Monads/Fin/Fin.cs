@@ -11,7 +11,7 @@ using static LanguageExt.Prelude;
 namespace LanguageExt;
 
 /// <summary>
-/// Equivalent of `Either<Error, A>`
+/// Equivalent of <see cref="Either{Error, A}"/>
 /// Called `Fin` because it is expected to be used as the concrete result of a computation
 /// </summary>
 public abstract class Fin<A> : 
@@ -280,7 +280,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Fin<A> lhs, A rhs) =>
         lhs < (Fin<A>)rhs;
@@ -290,7 +290,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Fin<A> lhs, A rhs) =>
         lhs <= (Fin<A>)rhs;
@@ -300,7 +300,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Fin<A> lhs, A rhs) =>
         lhs > (Fin<A>)rhs;
@@ -310,7 +310,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Fin<A> lhs, A rhs) =>
         lhs >= (Fin<A>)rhs;
@@ -320,7 +320,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(A lhs, Fin<A> rhs) =>
         (Fin<A>)lhs < rhs;
@@ -330,7 +330,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(A lhs, Fin<A> rhs) =>
         (Fin<A>)lhs <= rhs;
@@ -340,7 +340,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(A lhs, Fin<A>rhs) =>
         (Fin<A>)lhs > rhs;
@@ -350,7 +350,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(A lhs, Fin<A>  rhs) =>
         (Fin<A>)lhs >= rhs;
@@ -360,7 +360,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Fin<A> lhs, Fin<A> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -370,7 +370,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs <= rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Fin<A> lhs, Fin<A> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -380,7 +380,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs > rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Fin<A> lhs, Fin<A> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -390,7 +390,7 @@ public abstract class Fin<A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs >= rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Fin<A> lhs, Fin<A> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -516,7 +516,6 @@ public abstract class Fin<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -529,7 +528,6 @@ public abstract class Fin<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]

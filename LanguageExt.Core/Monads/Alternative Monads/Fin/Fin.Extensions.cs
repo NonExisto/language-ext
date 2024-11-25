@@ -30,10 +30,10 @@ public static partial class FinExtensions
 
     /// <summary>
     /// Add the bound values of x and y, uses an Add trait to provide the add
-    /// operation for type A.  For example x.Add<TInteger,int>(y)
+    /// operation for type A.  For example `x.Add&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with y added to x</returns>
@@ -45,10 +45,10 @@ public static partial class FinExtensions
 
     /// <summary>
     /// Find the subtract between the two bound values of x and y, uses a Subtract trait 
-    /// to provide the subtract operation for type A.  For example x.Subtract<TInteger,int>(y)
+    /// to provide the subtract operation for type A.  For example `x.Subtract&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with the subtract between x and y</returns>
@@ -60,10 +60,10 @@ public static partial class FinExtensions
 
     /// <summary>
     /// Find the product between the two bound values of x and y, uses a Product trait 
-    /// to provide the product operation for type A.  For example x.Product<TInteger,int>(y)
+    /// to provide the product operation for type A.  For example `x.Product&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with the product of x and y</returns>
@@ -75,10 +75,10 @@ public static partial class FinExtensions
 
     /// <summary>
     /// Divide the two bound values of x and y, uses a Divide trait to provide the divide
-    /// operation for type A.  For example x.Divide<TDouble,double>(y)
+    /// operation for type A.  For example `x.Divide&lt;TDouble,double&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin x / y</returns>

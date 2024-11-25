@@ -53,39 +53,48 @@ public static partial class EitherTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Monad type</typeparam>
+    /// <typeparam name="L">Left</typeparam>
+    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`EitherT`</returns>
     [Pure]
-    public static EitherT<L, M, C> SelectMany<L, M, A, B, C>(
-        this K<M, A> ma, 
-        Func<A, K<EitherT<L, M>, B>> bind, 
-        Func<A, B, C> project)
+    public static EitherT<L, M, C> SelectMany<L, M, R, B, C>(
+        this K<M, R> ma, 
+        Func<R, K<EitherT<L, M>, B>> bind, 
+        Func<R, B, C> project)
         where M : Monad<M> =>
-        EitherT<L, M, A>.Lift(ma).SelectMany(bind, project);
+        EitherT<L, M, R>.Lift(ma).SelectMany(bind, project);
 
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Monad type</typeparam>
+    /// <typeparam name="L">Left</typeparam>
+    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`EitherT`</returns>
     [Pure]
-    public static EitherT<L, M, C> SelectMany<L, M, A, B, C>(
-        this K<M, A> ma, 
-        Func<A, EitherT<L, M, B>> bind, 
-        Func<A, B, C> project)
+    public static EitherT<L, M, C> SelectMany<L, M, R, B, C>(
+        this K<M, R> ma, 
+        Func<R, EitherT<L, M, B>> bind, 
+        Func<R, B, C> project)
         where M : Monad<M> =>
-        EitherT<L, M, A>.Lift(ma).SelectMany(bind, project);
+        EitherT<L, M, R>.Lift(ma).SelectMany(bind, project);
 
     /// <summary>
     /// Extracts from a list of 'Either' all the 'Left' elements.
     /// All the 'Left' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>
@@ -114,6 +123,7 @@ public static partial class EitherTExtensions
     /// Extracts from a list of 'Either' all the 'Left' elements.
     /// All the 'Left' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>
@@ -142,6 +152,7 @@ public static partial class EitherTExtensions
     /// Extracts from a list of 'Either' all the 'Right' elements.
     /// All the 'Right' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>
@@ -170,6 +181,7 @@ public static partial class EitherTExtensions
     /// Extracts from a list of 'Either' all the 'Right' elements.
     /// All the 'Right' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>
@@ -200,6 +212,7 @@ public static partial class EitherTExtensions
     /// component of the output.  Similarly, the 'Right' elements are extracted
     /// to the second component of the output.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>
@@ -230,6 +243,7 @@ public static partial class EitherTExtensions
     /// component of the output.  Similarly, the 'Right' elements are extracted
     /// to the second component of the output.
     /// </summary>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="self">Either list</param>

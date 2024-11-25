@@ -4,7 +4,7 @@ If first we think about a tuple:
 
     (int, string)
 
-This type can represent an `int` _AND_ a `string`.  Now consider the `Either<L, R>` monad, this means the value 
+This type can represent an `int` _AND_ a `string`.  Now consider the <see cref="Either{L,R}"/> monad, this means the value 
 can be`Left` _OR_ `Right`  (`L` or `R`).  
 
 So, this:
@@ -19,7 +19,7 @@ or specialisations of `Either`.
 
 | Type                     | Alternative Value Type | Bound Value Type | Notes                                             |
 |--------------------------|------------------------|------------------|---------------------------------------------------|
-| `Either<L, R>`           | `L`                    | `R`              |                                                   |
+| <see cref="Either{L,R}"/>           | `L`                    | `R`              |                                                   |
 | `Option<A>`              | `None`                 | `A`              | Equivalent to `Either<Unit, A>`                   |   
 | `Fin<A>`                 | `Error`                | `A`              | Equivalent to `Either<Error, A>`                  |
 | `Validation<Fail, Succ>` | `Fail`                 | `Succ`           | `Fail` must be a `Monoid<Fail>` to collect errors |

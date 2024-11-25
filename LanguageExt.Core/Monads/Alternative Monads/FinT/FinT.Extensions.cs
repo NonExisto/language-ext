@@ -50,8 +50,11 @@ public static partial class FinTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Given monad trait</typeparam>
+    /// <typeparam name="A">Success value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`EitherT`</returns>
@@ -66,8 +69,11 @@ public static partial class FinTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Given monad trait</typeparam>
+    /// <typeparam name="A">Success value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`EitherT`</returns>
@@ -83,6 +89,7 @@ public static partial class FinTExtensions
     /// Extracts from a sequence of 'Fin' transformers all the 'Fail' values.
     /// The 'Fail' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Given monad trait</typeparam>
     /// <typeparam name="A">Success value type</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A sequence of errors</returns>
@@ -110,7 +117,8 @@ public static partial class FinTExtensions
     /// Extracts from a sequence of 'Fin' transformers all the 'Fail' values.
     /// The 'Fail' elements are extracted in order.
     /// </summary>
-    /// <typeparam name="A">Success value type</typeparam>
+    /// <typeparam name="M">Given monad trait</typeparam>
+    /// <typeparam name="R">Success value type</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A sequence of errors</returns>
     [Pure]
@@ -137,6 +145,7 @@ public static partial class FinTExtensions
     /// Extracts from a sequence of 'Fin' transformers all the 'Succ' values.
     /// The 'Succ' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Given monad trait</typeparam>
     /// <typeparam name="A">Success value type</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A sequence of success values</returns>
@@ -164,6 +173,7 @@ public static partial class FinTExtensions
     /// Extracts from a sequence of 'Fin' transformers all the 'Succ' values.
     /// The 'Succ' elements are extracted in order.
     /// </summary>
+    /// <typeparam name="M">Given monad trait</typeparam>
     /// <typeparam name="A">Success value type</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A sequence of success values</returns>
@@ -194,6 +204,7 @@ public static partial class FinTExtensions
     /// to the second component of the output.
     /// </summary>
     /// <typeparam name="A">Success type</typeparam>
+    /// <typeparam name="M">Given monad trait</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A tuple containing a sequence of `Fail` and a sequence of `Succ`</returns>
     [Pure]
@@ -223,6 +234,7 @@ public static partial class FinTExtensions
     /// to the second component of the output.
     /// </summary>
     /// <typeparam name="A">Success type</typeparam>
+    /// <typeparam name="M">Given monad trait</typeparam>
     /// <param name="self">Sequence of Fin transformers</param>
     /// <returns>A tuple containing a sequence of `Fail` and a sequence of `Succ`</returns>
     [Pure]

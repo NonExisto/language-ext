@@ -7,6 +7,7 @@ namespace LanguageExt;
 /// Trait implementation for `EitherT` 
 /// </summary>
 /// <typeparam name="M">Given monad trait</typeparam>
+/// <typeparam name="L">Either's L type, aka Fail</typeparam>
 public sealed partial class EitherT<L, M> : 
     MonadT<EitherT<L, M>, M>, 
     Fallible<L, EitherT<L, M>>,

@@ -21,7 +21,7 @@ public static partial class Prelude
 
     /// <summary>
     /// Constructs an EitherRight which can be implicitly cast to an 
-    /// Either<_, R>
+    /// Either&lt;_, R&gt;
     /// </summary>
     /// <typeparam name="R">Right</typeparam>
     /// <param name="value">Right value</param>
@@ -44,7 +44,7 @@ public static partial class Prelude
 
     /// <summary>
     /// Constructs an EitherLeft which can be implicitly cast to an 
-    /// Either<L, _>
+    /// Either&lt;L, _&gt;
     /// </summary>
     /// <typeparam name="L">Left</typeparam>
     /// <param name="value">Right value</param>
@@ -62,10 +62,11 @@ public static partial class Prelude
 
     /// <summary>
     /// Add the bound values of x and y, uses an Add trait to provide the add
-    /// operation for type A.  For example x.Add<TInteger,int>(y)
+    /// operation for type A.  For example `x.Add&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="L">Left bound value type</typeparam>
+    /// <typeparam name="R">Right bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>An option with y added to x</returns>
@@ -77,10 +78,11 @@ public static partial class Prelude
 
     /// <summary>
     /// Find the subtract between the two bound values of x and y, uses a Subtract trait 
-    /// to provide the subtract operation for type A.  For example x.Subtract<TInteger,int>(y)
+    /// to provide the subtract operation for type A.  For example `x.Subtract&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="L">Left bound value type</typeparam>
+    /// <typeparam name="R">Right bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>An option with the subtract between x and y</returns>
@@ -92,10 +94,11 @@ public static partial class Prelude
 
     /// <summary>
     /// Find the product between the two bound values of x and y, uses a Product trait 
-    /// to provide the product operation for type A.  For example x.Product<TInteger,int>(y)
+    /// to provide the product operation for type A.  For example `x.Product&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="L">Left bound value type</typeparam>
+    /// <typeparam name="R">Right bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>An option with the product of x and y</returns>
@@ -107,10 +110,11 @@ public static partial class Prelude
 
     /// <summary>
     /// Divide the two bound values of x and y, uses a Divide trait to provide the divide
-    /// operation for type A.  For example x.Divide<TDouble,double>(y)
+    /// operation for type A.  For example `x.Divide&lt;TDouble,double&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="L">Left bound value type</typeparam>
+    /// <typeparam name="R">Right bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>An option x / y</returns>
@@ -146,6 +150,7 @@ public static partial class Prelude
     /// Executes the Left function if the Either is in a Left state.
     /// Returns the Right value if the Either is in a Right state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="Left">Function to generate a Right value if in the Left state</param>
     /// <returns>Returns an unwrapped Right value</returns>
     [Pure]
@@ -156,6 +161,7 @@ public static partial class Prelude
     /// Executes the leftMap function if the Either is in a Left state.
     /// Returns the Right value if the Either is in a Right state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="leftMap">Function to generate a Right value if in the Left state</param>
     /// <returns>Returns an unwrapped Right value</returns>
     [Pure]
@@ -166,6 +172,7 @@ public static partial class Prelude
     /// Returns the rightValue if the Either is in a Left state.
     /// Returns the Right value if the Either is in a Right state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="rightValue">Value to return if in the Left state</param>
     /// <returns>Returns an unwrapped Right value</returns>
     [Pure]
@@ -175,6 +182,7 @@ public static partial class Prelude
     /// <summary>
     /// Executes the Left action if the Either is in a Left state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="Left">Function to generate a Right value if in the Left state</param>
     /// <returns>Returns an unwrapped Right value</returns>
     [Pure]
@@ -184,6 +192,7 @@ public static partial class Prelude
     /// <summary>
     /// Invokes the Right action if the Either is in a Right state, otherwise does nothing
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="Right">Action to invoke</param>
     /// <returns>Unit</returns>
     [Pure]
@@ -194,6 +203,7 @@ public static partial class Prelude
     /// Returns the leftValue if the Either is in a Right state.
     /// Returns the Left value if the Either is in a Left state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="leftValue">Value to return if in the Left state</param>
     /// <returns>Returns an unwrapped Left value</returns>
     [Pure]
@@ -204,6 +214,7 @@ public static partial class Prelude
     /// Returns the result of Left() if the Either is in a Right state.
     /// Returns the Left value if the Either is in a Left state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="Left">Function to generate a Left value if in the Right state</param>
     /// <returns>Returns an unwrapped Left value</returns>
     [Pure]
@@ -214,6 +225,7 @@ public static partial class Prelude
     /// Returns the result of leftMap if the Either is in a Right state.
     /// Returns the Left value if the Either is in a Left state.
     /// </summary>
+    /// <param name="either">Either</param>
     /// <param name="leftMap">Function to generate a Left value if in the Right state</param>
     /// <returns>Returns an unwrapped Left value</returns>
     [Pure]
@@ -258,6 +270,9 @@ public static partial class Prelude
     /// </para>
     /// </summary>
     /// <typeparam name="S">Aggregate state type</typeparam>
+    /// <typeparam name="L">Left bound value type</typeparam>
+    /// <typeparam name="R">Right bound value type</typeparam>
+    /// <param name="either">Either</param>
     /// <param name="state">Initial state</param>
     /// <param name="Right">Folder function, applied if Either is in a Right state</param>
     /// <param name="Left">Folder function, applied if Either is in a Left state</param>
@@ -285,7 +300,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="L">Left</typeparam>
     /// <typeparam name="R">Right</typeparam>
-    /// <param name="self">Either to forall</param>
+    /// <param name="either">Either to forall</param>
     /// <param name="Right">Right predicate</param>
     /// <param name="Left">Left predicate</param>
     /// <returns>True if the predicate returns True.  True if the Either is in a bottom state.</returns>
@@ -336,7 +351,7 @@ public static partial class Prelude
     /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="LRet">Left return</typeparam>
     /// <typeparam name="RRet">Right return</typeparam>
-    /// <param name="self">Either to map</param>
+    /// <param name="either">Either to map</param>
     /// <param name="Right">Right map function</param>
     /// <param name="Left">Left map function</param>
     /// <returns>Mapped Either</returns>

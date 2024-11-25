@@ -24,7 +24,9 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Nullable and return a non-null R.
     /// </summary>
+    /// <typeparam name="T">Underlying nullable type</typeparam>
     /// <typeparam name="R">Return type</typeparam>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some handler</param>
     /// <param name="None">None handler</param>
     /// <returns>A non-null R</returns>
@@ -37,7 +39,9 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Nullable and return a promise for an R.
     /// </summary>
+    /// <typeparam name="T">Underlying nullable type</typeparam>
     /// <typeparam name="R">Return type</typeparam>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some handler</param>
     /// <param name="None">None handler</param>
     /// <returns>A promise to return an R</returns>
@@ -49,7 +53,9 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Nullable and return a promise for an R.
     /// </summary>
+    /// <typeparam name="T">Underlying nullable type</typeparam>
     /// <typeparam name="R">Return type</typeparam>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some handler</param>
     /// <param name="None">None handler</param>
     /// <returns>A promise to return an R</returns>
@@ -61,6 +67,7 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Nullable T
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some match</param>
     /// <param name="None">None match</param>
     public static Unit match<T>(T? self, Action<T> Some, Action None) where T : struct
@@ -241,6 +248,7 @@ public static partial class Prelude
     /// Iterate Nullable.  Imagine the item has zero or one items depending on whether
     /// it's in a None state or not.
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="action">Action to invoke with the value if not in None state</param>
     public static Unit iter<T>(T? self, Action<T> action) where T : struct
     {
@@ -265,6 +273,7 @@ public static partial class Prelude
     /// if it exists, returns true if it doesn't (because the predicate holds 'for all'
     /// items).
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="pred">Predicate</param>
     [Pure]
     public static bool forall<T>(T? self, Func<T, bool> pred) where T : struct =>
@@ -276,6 +285,7 @@ public static partial class Prelude
     /// if it exists, returns true if it doesn't (because the predicate holds 'for all'
     /// items).
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some predicate</param>
     /// <param name="None">None predicate</param>
     [Pure]
@@ -289,6 +299,7 @@ public static partial class Prelude
     /// it's in a None state or not.  This function runs a predicate against the value
     /// if it exists, returns false if it doesn't.
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="pred">Predicate</param>
     [Pure]
     public static bool exists<T>(T? self, Func<T, bool> pred) where T : struct =>
@@ -299,6 +310,7 @@ public static partial class Prelude
     /// it's in a None state or not.  This function runs a predicate against the value
     /// if it exists, returns false if it doesn't.
     /// </summary>
+    /// <param name="self">Nullable</param>
     /// <param name="Some">Some predicate</param>
     /// <param name="None">None predicate</param>
     [Pure]

@@ -4,14 +4,14 @@ namespace LanguageExt.Traits;
 /// Arrow kind: `* -> *` used to represent higher-kinded types.
 /// </summary>
 /// <remarks>
-/// `K<F, A>` should be thought of as `F<A>` (where both `F` an `A` are parametric).  It currently
+/// `K&lt;F, A&gt;` should be thought of as `F&lt;A&gt;` (where both `F` an `A` are parametric).  It currently
 /// can't be represented in C#, so this allows us to define higher-kinded types and pass them
 /// around.  We can then build traits that expected a `K` where the trait is tied to the `F`.
 ///
 /// For example:
 ///
-///     K<F, A> where F : Functor<F>
-///     K<M, A> where M : Monad<M>
+///     K&lt;F, A&gt; where F : Functor&lt;F&gt;
+///     K&lt;M, A&gt; where M : Monad&lt;M&gt;
 ///
 /// That means we can write generic functions that work with monads, functors, etc.
 /// </remarks>

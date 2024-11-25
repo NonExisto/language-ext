@@ -28,6 +28,7 @@ public static partial class Prelude
 
     /// <summary>
     /// Find the product of the Ts
+    /// </summary>
     [Pure]
     public static Option<T> product<NUM, T>(Option<T> lhs, Option<T> rhs) where NUM : Num<T> =>
         lhs.Product<NUM, T>(rhs);
@@ -84,7 +85,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="value">Non-null value to be made optional</param>
-    /// <returns>`Option<A>` in a `Some` state or throws `ValueIsNullException`
+    /// <returns> <see cref="Option{A}"/> in a `Some` state or throws <see cref="ValueIsNullException"/>
     /// if `isnull(value)`.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,7 +97,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="value">Non-null value to be made optional</param>
-    /// <returns>`Option<A>` in a `Some` state or throws `ValueIsNullException`
+    /// <returns> <see cref="Option{A}"/> in a `Some` state or throws <see cref="ValueIsNullException"/>
     /// if `isnull(value)`.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,7 +133,8 @@ public static partial class Prelude
     /// <summary>
     /// Invokes the action if Option is in the Some state, otherwise nothing happens.
     /// </summary>
-    /// <param name="f">Action to invoke if Option is in the Some state</param>
+    /// <param name="option">Option</param>
+    /// <param name="Some">Action to invoke if Option is in the Some state</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit ifSome<T>(Option<T> option, Action<T> Some) => 
         option.IfSome(Some);
@@ -142,6 +144,7 @@ public static partial class Prelude
     /// is in a None state, otherwise the bound Some(x) value is returned.
     /// </summary>
     /// <remarks>Will not accept a null return value from the None operation</remarks>
+    /// <param name="option">Option</param>
     /// <param name="None">Operation to invoke if the structure is in a None state</param>
     /// <returns>Tesult of invoking the None() operation if the optional 
     /// is in a None state, otherwise the bound Some(x) value is returned.</returns>
@@ -155,6 +158,7 @@ public static partial class Prelude
     /// the bound Some(x) value is returned.
     /// </summary>
     /// <remarks>Will not accept a null noneValue</remarks>
+    /// <param name="option">Option</param>
     /// <param name="noneValue">Value to return if in a None state</param>
     /// <returns>noneValue if the optional is in a None state, otherwise
     /// the bound Some(x) value is returned</returns>
@@ -166,7 +170,9 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Option and return a non-null R.
     /// </summary>
-    /// <typeparam name="B">Return type</typeparam>
+    /// <typeparam name="T">Underlying option type</typeparam>
+    /// <typeparam name="R">Return type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="Some">Some match operation. Must not return null.</param>
     /// <param name="None">None match operation. Must not return null.</param>
     /// <returns>A non-null B</returns>
@@ -178,6 +184,7 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the Option
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="Some">Some match operation</param>
     /// <param name="None">None match operation</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -200,6 +207,8 @@ public static partial class Prelude
     /// </para>
     /// </summary>
     /// <typeparam name="S">Aggregate state type</typeparam>
+    /// <typeparam name="A">Underlying option type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="state">Initial state</param>
     /// <param name="Some">Folder function, applied if Option is in a Some state</param>
     /// <param name="None">Folder function, applied if Option is in a None state</param>
@@ -225,6 +234,8 @@ public static partial class Prelude
     /// </para>
     /// </summary>
     /// <typeparam name="S">Aggregate state type</typeparam>
+    /// <typeparam name="A">Underlying option type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="state">Initial state</param>
     /// <param name="Some">Folder function, applied if Option is in a Some state</param>
     /// <param name="None">Folder function, applied if Option is in a None state</param>
@@ -240,6 +251,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="pred">Predicate to apply</param>
     /// <returns>If the Option is in a None state then True is returned (because 
     /// the predicate applies for-all values).  If the Option is in a Some state
@@ -256,6 +268,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the Some predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="Some">Predicate to apply if in a Some state</param>
     /// <param name="None">Predicate to apply if in a None state</param>
     /// <returns>If the Option is in a None state then True is returned if 
@@ -273,6 +286,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the Some predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="Some">Predicate to apply if in a Some state</param>
     /// <param name="None">Predicate to apply if in a None state</param>
     /// <returns>If the Option is in a None state then True is returned if 
@@ -307,6 +321,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the Some predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="pred">Predicate to apply</param>
     /// <returns>If the Option is in a None state then True is returned if 
     /// invoking None returns True. If the Option is in a Some state the value 
@@ -323,6 +338,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the Some predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="Some">Predicate to apply if in a Some state</param>
     /// <param name="None">Predicate to apply if in a None state</param>
     /// <returns>If the Option is in a None state then True is returned if 
@@ -340,6 +356,7 @@ public static partial class Prelude
     /// If the Option is in a Some state the value is the result of running 
     /// applying the bound value to the Some predicate supplied.        
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="Some">Predicate to apply if in a Some state</param>
     /// <param name="None">Predicate to apply if in a None state</param>
     /// <returns>If the Option is in a None state then True is returned if 
@@ -354,7 +371,9 @@ public static partial class Prelude
     /// <summary>
     /// Projection from one value to another 
     /// </summary>
+    /// <typeparam name="A">Underlying option type</typeparam>
     /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="f">Projection function</param>
     /// <returns>Mapped functor</returns>
     [Pure]
@@ -365,7 +384,9 @@ public static partial class Prelude
     /// <summary>
     /// Projection from one value to another
     /// </summary>
+    /// <typeparam name="A">Underlying option type</typeparam>
     /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="Some">Projection function</param>
     /// <param name="None">Projection function</param>
     /// <returns>Mapped functor</returns>
@@ -378,6 +399,8 @@ public static partial class Prelude
     /// Projection from one value to another
     /// </summary>
     /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <typeparam name="A">Underlying option type</typeparam>
+    /// <param name="option">Option</param>
     /// <param name="Some">Projection function</param>
     /// <param name="None">Projection function</param>
     /// <returns>Mapped functor</returns>
@@ -389,6 +412,7 @@ public static partial class Prelude
     /// <summary>
     /// Apply a predicate to the bound value (if in a Some state)
     /// </summary>
+    /// <param name="option">Option</param>
     /// <param name="pred">Predicate to apply</param>
     /// <returns>Some(x) if the Option is in a Some state and the predicate
     /// returns True.  None otherwise.</returns>
@@ -408,6 +432,7 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the list of Options
     /// </summary>
+    /// <param name="list">Options</param>
     /// <param name="Some">Some match operation</param>
     /// <param name="None">None match operation</param>
     [Pure]
@@ -424,6 +449,7 @@ public static partial class Prelude
     /// <summary>
     /// Match the two states of the list of Options
     /// </summary>
+    /// <param name="list">Options</param>
     /// <param name="Some">Some match operation</param>
     /// <param name="None">None match operation</param>
     [Pure]

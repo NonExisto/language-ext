@@ -252,7 +252,6 @@ public record FinT<M, A>(K<M, Fin<A>> runFin) :
     /// Maps the `Error` value
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`FinT`</returns>
     public FinT<M, A> MapFail(Func<Error, Error> f) =>
         new(M.Map(mx => mx.MapFail(f), runFin));

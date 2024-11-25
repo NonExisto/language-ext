@@ -100,8 +100,6 @@ public partial class Either
         /// <summary>
         /// Maps the value in the Either if it's in a Right state
         /// </summary>
-        /// <typeparam name="L">Left</typeparam>
-        /// <typeparam name="R">Right</typeparam>
         /// <typeparam name="B">Mapped Either type</typeparam>
         /// <param name="f">Map function</param>
         /// <returns>Mapped Either</returns>
@@ -112,8 +110,6 @@ public partial class Either
         /// <summary>
         /// Bi-maps the value in the Either if it's in a Right state
         /// </summary>
-        /// <typeparam name="L">Left</typeparam>
-        /// <typeparam name="R">Right</typeparam>
         /// <typeparam name="L2">Left return</typeparam>
         /// <typeparam name="R2">Right return</typeparam>
         /// <param name="Right">Right map function</param>
@@ -126,8 +122,6 @@ public partial class Either
         /// <summary>
         /// Monadic bind
         /// </summary>
-        /// <typeparam name="L">Left</typeparam>
-        /// <typeparam name="R">Right</typeparam>
         /// <typeparam name="B">Resulting bound value</typeparam>
         /// <param name="f">Bind function</param>
         /// <returns>Bound Either</returns>

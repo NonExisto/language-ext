@@ -44,8 +44,11 @@ public static partial class OptionTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Given monad trait</typeparam>
+    /// <typeparam name="A">Success value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`OptionT`</returns>
@@ -60,8 +63,11 @@ public static partial class OptionTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="M">Given monad trait</typeparam>
+    /// <typeparam name="A">Success value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`OptionT`</returns>

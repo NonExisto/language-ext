@@ -27,7 +27,6 @@ public record OptionT<M, A>(K<M, Option<A>> runOption) :
     /// <summary>
     /// Lift a pure value into the monad-transformer
     /// </summary>
-    /// <param name="value">Value to lift</param>
     /// <returns>`OptionT`</returns>
     public static readonly OptionT<M, A> None =
         Lift(Option<A>.None);
@@ -145,7 +144,7 @@ public record OptionT<M, A>(K<M, Option<A>> runOption) :
     /// <summary>
     /// Invokes the action if Option is in the None state, otherwise nothing happens.
     /// </summary>
-    /// <param name="f">Action to invoke if Option is in the None state</param>
+    /// <param name="None">Action to invoke if Option is in the None state</param>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public K<M, Unit> IfNone(Action None) =>
@@ -261,7 +260,6 @@ public record OptionT<M, A>(K<M, Option<A>> runOption) :
     /// Monad bi-bind operation
     /// </summary>
     /// <param name="None">None state mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`OptionT`</returns>
     public OptionT<M, A> BindNone(Func<OptionT<M, A>> None) =>
         BiBind(Some, None);

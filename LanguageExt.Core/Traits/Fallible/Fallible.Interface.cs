@@ -12,7 +12,7 @@ namespace LanguageExt.Traits;
 /// <remarks>
 /// Primarily makes `@catch` work nicely, but is generally beneficial.  
 /// </remarks>
-/// <typeparam name="FA">'Self' type, for example `Either<L, R>`</typeparam>
+/// <typeparam name="FA">'Self' type, for example <see cref="Either{L,R}"/></typeparam>
 /// <typeparam name="F">Trait implementation, for example `Either<L>`</typeparam>
 /// <typeparam name="E">Failure type, for example `L`</typeparam>
 /// <typeparam name="A">Bound value type, for example `R`</typeparam>

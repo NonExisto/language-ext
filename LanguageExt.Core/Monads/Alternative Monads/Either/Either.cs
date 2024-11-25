@@ -53,8 +53,8 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Explicit conversion operator from `Either` to `R`
     /// </summary>
-    /// <param name="value">Value, must not be null.</param>
-    /// <exception cref="InvalidCastException">Value is not in a Right state</exception>
+    /// <param name="ma">Value, must not be null.</param>
+    /// <exception cref="EitherIsNotRightException">Value is not in a Right state</exception>
     [Pure]
     public static explicit operator R(Either<L, R> ma) =>
         ma.RightValue;
@@ -62,8 +62,8 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Explicit conversion operator from `Either` to `L`
     /// </summary>
-    /// <param name="value">Value, must not be null.</param>
-    /// <exception cref="InvalidCastException">Value is not in a Left state</exception>
+    /// <param name="ma">Value, must not be null.</param>
+    /// <exception cref="EitherIsNotLeftException">Value is not in a Left state</exception>
     [Pure]
     public static explicit operator L(Either<L, R> ma) =>
         ma.LeftValue;
@@ -317,7 +317,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Either<L, R> lhs, Fail<L> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -327,7 +327,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Either<L, R> lhs, Fail<L> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -337,7 +337,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Either<L, R> lhs, Fail<L> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -347,7 +347,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Either<L, R> lhs, Fail<L> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -357,7 +357,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Either<L, R> lhs, Pure<R> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -367,7 +367,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Either<L, R> lhs, Pure<R> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -377,7 +377,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Either<L, R> lhs, Pure<R> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -387,7 +387,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Either<L, R> lhs, Pure<R> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -398,7 +398,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Fail<L> lhs, Either<L, R> rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) < 0;
@@ -408,7 +408,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Fail<L>  lhs, Either<L, R> rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) <= 0;
@@ -418,7 +418,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Fail<L> lhs, Either<L, R>rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) > 0;
@@ -428,7 +428,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Fail<L> lhs, Either<L, R>  rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) >= 0;
@@ -438,7 +438,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Pure<R> lhs, Either<L, R>  rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) < 0;
@@ -448,7 +448,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Pure<R> lhs, Either<L, R> rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) <= 0;
@@ -458,7 +458,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Pure<R> lhs, Either<L, R> rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) > 0;
@@ -468,7 +468,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Pure<R> lhs, Either<L, R> rhs) =>
         ((Either<L, R>)lhs).CompareTo(rhs) >= 0;
@@ -478,7 +478,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Either<L, R> lhs, Either<L, R> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -488,7 +488,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs <= rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Either<L, R> lhs, Either<L, R> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -498,7 +498,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs > rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Either<L, R> lhs, Either<L, R> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -508,7 +508,7 @@ public abstract record Either<L, R> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs >= rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Either<L, R> lhs, Either<L, R> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -594,7 +594,6 @@ public abstract record Either<L, R> :
     public static Either<L, R> operator |(Either<L, R> ma, CatchM<L, Either<L>, R> mb) =>
         (ma.Kind() | mb).As();
     
-    /// <summary>
     /// <summary>
     /// Override of the True operator to return True if the Either is Right
     /// </summary>
@@ -785,9 +784,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Invokes a predicate on the value of the Either if it's in the Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
-    /// <param name="self">Either to forall</param>
     /// <param name="Right">Predicate</param>
     /// <returns>True if the Either is in a Left state.  
     /// True if the Either is in a Right state and the predicate returns True.  
@@ -799,9 +795,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Invokes a predicate on the value of the Either if it's in the Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
-    /// <param name="self">Either to forall</param>
     /// <param name="Right">Predicate</param>
     /// <param name="Left">Predicate</param>
     /// <returns>True if either Predicate returns true</returns>
@@ -851,9 +844,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Invokes a predicate on the value of the Either if it's in the Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
-    /// <param name="self">Either to check existence of</param>
     /// <param name="pred">Predicate</param>
     /// <returns>True if the Either is in a Right state and the predicate returns True.  False otherwise.</returns>
     [Pure]
@@ -874,7 +864,6 @@ public abstract record Either<L, R> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -885,8 +874,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Maps the value in the Either if it's in a Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B">Mapped Either type</typeparam>
     /// <param name="f">Map function</param>
     /// <returns>Mapped Either</returns>
@@ -896,8 +883,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Maps the value in the Either if it's in a Left state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B">Mapped Either type</typeparam>
     /// <param name="f">Map function</param>
     /// <returns>Mapped Either</returns>
@@ -908,10 +893,8 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Bi-maps the value in the Either if it's in a Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
-    /// <typeparam name="LRet">Left return</typeparam>
-    /// <typeparam name="RRet">Right return</typeparam>
+    /// <typeparam name="L2">Left return</typeparam>
+    /// <typeparam name="R2">Right return</typeparam>
     /// <param name="Right">Right map function</param>
     /// <param name="Left">Left map function</param>
     /// <returns>Mapped Either</returns>
@@ -921,8 +904,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Monadic bind
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B">Resulting bound value</typeparam>
     /// <param name="f">Bind function</param>
     /// <returns>Bound Either</returns>
@@ -932,8 +913,6 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Monadic bind
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B"></typeparam>
     /// <param name="f"></param>
     /// <returns>Bound Either</returns>
@@ -957,9 +936,7 @@ public abstract record Either<L, R> :
     /// <summary>
     /// Maps the value in the Either if it's in a Right state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="TR">Right</typeparam>
-    /// <typeparam name="UR">Mapped Either type</typeparam>
+    /// <typeparam name="U">Mapped Either type</typeparam>
     /// <param name="f">Map function</param>
     /// <returns>Mapped Either</returns>
     [Pure]
@@ -1008,7 +985,7 @@ public abstract record Either<L, R> :
     /// Monadic bind and project
     /// </summary>
     /// <param name="bind">Bind function</param>
-    /// <param name="project">Project function</param>
+    /// <param name="_">Project function (not used but necessary)</param>
     [Pure]
     public Either<L, C> SelectMany<B, C>(Func<R, Fail<L>> bind, Func<R, B, C> _) =>
         Bind(x => bind(x).ToEither<C>());

@@ -418,7 +418,6 @@ public record EitherT<L, M, R>(K<M, Either<L, R>> runEither) :
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`EitherT`</returns>
     public EitherT<L, M, C> SelectMany<C>(Func<R, Guard<L, Unit>> bind, Func<R, Unit, C> project) =>

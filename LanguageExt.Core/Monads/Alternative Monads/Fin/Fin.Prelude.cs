@@ -18,10 +18,10 @@ public static partial class Prelude
 
     /// <summary>
     /// Add the bound values of x and y, uses an Add trait to provide the add
-    /// operation for type A.  For example x.Add<TInteger,int>(y)
+    /// operation for type A.  For example `x.Add&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with y added to x</returns>
@@ -33,10 +33,10 @@ public static partial class Prelude
 
     /// <summary>
     /// Find the subtract between the two bound values of x and y, uses a Subtract trait 
-    /// to provide the subtract operation for type A.  For example x.Subtract<TInteger,int>(y)
+    /// to provide the subtract operation for type A.  For example `x.Subtract&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with the subtract between x and y</returns>
@@ -48,10 +48,10 @@ public static partial class Prelude
 
     /// <summary>
     /// Find the product between the two bound values of x and y, uses a Product trait 
-    /// to provide the product operation for type A.  For example x.Product<TInteger,int>(y)
+    /// to provide the product operation for type A.  For example `x.Product&lt;TInteger,int&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin with the product of x and y</returns>
@@ -63,10 +63,10 @@ public static partial class Prelude
 
     /// <summary>
     /// Divide the two bound values of x and y, uses a Divide trait to provide the divide
-    /// operation for type A.  For example x.Divide<TDouble,double>(y)
+    /// operation for type A.  For example `x.Divide&lt;TDouble,double&gt;(y)`
     /// </summary>
     /// <typeparam name="NUM">Num of A</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="R">Bound value type</typeparam>
     /// <param name="x">Left hand side of the operation</param>
     /// <param name="y">Right hand side of the operation</param>
     /// <returns>Fin x / y</returns>
@@ -123,6 +123,7 @@ public static partial class Prelude
     /// Returns the bound value if the Fin is in a success state.
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <param name="ma">Fin</param>
     /// <param name="Fail">Function to generate a Fail value if in the failure state</param>
     /// <returns>Returns an unwrapped bound value</returns>
     [Pure]
@@ -134,6 +135,7 @@ public static partial class Prelude
     /// Returns the bound value if the Fin is in a success state.
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <param name="ma">Fin</param>
     /// <param name="alternative">Value to return if in the failure state</param>
     /// <returns>Returns an unwrapped value</returns>
     [Pure]
@@ -143,15 +145,17 @@ public static partial class Prelude
     /// <summary>
     /// Executes the Fail action if the Fin is in a failure state.
     /// </summary>
+    /// <param name="ma">Fin</param>
     /// <param name="Fail">Function to generate a value if in the failure state</param>
     /// <returns>Returns an unwrapped value</returns>
     [Pure]
-    public static Unit ifFail<A>(Fin<A> ma, Action<Error> Left) =>
-        ma.IfFail(Left);
+    public static Unit ifFail<A>(Fin<A> ma, Action<Error> Fail) =>
+        ma.IfFail(Fail);
 
     /// <summary>
     /// Invokes the Succ action if the Fin is in a success state, otherwise does nothing
     /// </summary>
+    /// <param name="ma">Fin</param>
     /// <param name="Succ">Action to invoke</param>
     /// <returns>Unit</returns>
     [Pure]
@@ -195,6 +199,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="S">Aggregate state type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <param name="ma">Fin</param>
     /// <param name="state">Initial state</param>
     /// <param name="Right">Folder function, applied if Either is in a Succ state</param>
     /// <param name="Left">Folder function, applied if Either is in a Fail state</param>

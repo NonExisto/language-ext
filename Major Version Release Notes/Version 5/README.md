@@ -294,7 +294,7 @@ Remember, `Option<A>` inherits from `K<Option, A>`, so we can just downcast it a
 
 So, just to be clear.  Every type, like `Option<A>`, `Seq<A>`, `Eff<A>`, etc. has a sibling type of the same name with the last generic parameter removed. So, `Option<A>` has a sibling type of `Option`, `Seq<A>` has `Seq`, etc.  Those sibling types implement the traits, like `Monad<M>`, `Functor<F>`, etc.  And, because `Option<A>`, `Seq<A>`, etc. all inherit from `K<TRAIT, A>` - where `TRAIT` is `Option`, `Seq`, `Eff`; this allows generic functions that have constriants like `where F : Functor<F>` to 'find' the bespoke implementation.
 
-> Types like `Either<L, R>`, that have multiple generic arguments, again just lose the last argument for their sibling type: `Either<L>`.
+> Types like <see cref="Either{L,R}"/>, that have multiple generic arguments, again just lose the last argument for their sibling type: `Either<L>`.
 
 Invoking the trait functions directly isn't that elegant - although perfectly usable - so there's extension methods that work with all of the abstract traits.  Here's the above `AddOne` method rewritten to use the `Map` extension instead:
 
@@ -456,7 +456,7 @@ The following types have all bee rewritten: `Monad`, `Functor`, `Applicative`, `
 
 The new static interfaces have opened up a more effective approach to higher-kinds in C#.  Instead of doing as much as possible to retain the original types in methods like `Bind`, `Map`, `Apply`, etc. we now expect all types that need to leverage `Monad`, `Functor`, etc. to inherit `K<M, A>`.  
 
-For example, `Option<A>` inherits `K<Option, A>`, `Seq<A>` inehrits `K<Seq, A>`, `Either<L, R>` inherits `K<Either<L>, R>`.  The `M` in `K<M, A>` is the trait implementation.  So, `Option` (no generic argument) would inherit `Monad<Option>`, `Traversable<Option>`, etc.  
+For example, `Option<A>` inherits `K<Option, A>`, `Seq<A>` inehrits `K<Seq, A>`, <see cref="Either{L,R}"/> inherits `K<Either<L>, R>`.  The `M` in `K<M, A>` is the trait implementation.  So, `Option` (no generic argument) would inherit `Monad<Option>`, `Traversable<Option>`, etc.  
 
 Thise truly opens up higher-order generic programming in C#.  
 
@@ -802,7 +802,7 @@ This is my '.NET Framework to .NET Core' moment.  I realise that.  And I an trul
 	* Mitigtation: use `Fin<A>`
 ### `OptionalResult<A>`
 	* Mitigtation: use `Fin<A?>`
-### Async extensions for `Option<A>` and `Either<L, R>`
+### Async extensions for `Option<A>` and <see cref="Either{L,R}"/>
 	* Mitigtation: use `ToIO()` to convert to the transformer variants with embedded `IO`
 ### `ExceptionMatch`, `ExceptionMatchAsync`, `ExceptionMatchOptionalAsync`
 	* Mitigtations: 
