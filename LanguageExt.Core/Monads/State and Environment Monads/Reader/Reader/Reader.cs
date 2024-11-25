@@ -8,7 +8,6 @@ namespace LanguageExt;
 /// </summary>
 /// <param name="runReader">Transducer that represents the transformer operation</param>
 /// <typeparam name="Env">Reader environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record Reader<Env, A>(Func<Env, A> runReader) : K<Reader<Env>, A>
 {

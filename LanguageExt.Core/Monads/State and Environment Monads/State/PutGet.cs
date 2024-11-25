@@ -11,7 +11,6 @@ namespace LanguageExt;
 /// the need for lots of generic parameters when used in `StateT` and `State` based
 /// monads.
 /// </remarks>
-/// <param name="F">Mapping from the environment</param>
 /// <typeparam name="S">State type</typeparam>
 public readonly record struct Put<S>(S Value)
 {
@@ -163,6 +162,7 @@ public readonly record struct Modify<S>(Func<S, S> f)
 /// monads.
 /// </remarks>
 /// <param name="f">Mapping from the environment</param>
+/// <typeparam name="A">Source bound value type</typeparam>
 /// <typeparam name="S">State type</typeparam>
 public readonly record struct Gets<S, A>(Func<S, A> f)
 {

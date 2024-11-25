@@ -15,6 +15,7 @@ public static partial class ReaderExtensions
     /// <summary>
     /// Run the reader monad 
     /// </summary>
+    /// <param name="ma">Reader arrow kind</param>
     /// <param name="env">Input environment</param>
     public static A Run<Env, A>(this K<Reader<Env>, A> ma, Env env) =>
         ((Reader<Env, A>)ma).runReader(env);

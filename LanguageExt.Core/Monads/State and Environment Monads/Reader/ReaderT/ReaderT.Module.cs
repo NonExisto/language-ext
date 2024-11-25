@@ -8,7 +8,6 @@ namespace LanguageExt;
 /// `MonadReaderT` trait implementation for `ReaderT` 
 /// </summary>
 /// <typeparam name="Env">Reader environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public class ReaderT<Env>
 {
     public static ReaderT<Env, M, A> lift<M, A>(K<M, A> ma)  
@@ -38,8 +37,6 @@ public partial class ReaderT<Env, M>
 /// <summary>
 /// `MonadReaderT` trait implementation for `ReaderT` 
 /// </summary>
-/// <typeparam name="Env">Reader environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public class ReaderT
 {
     public static ReaderT<Env, M, A> pure<Env, M, A>(A value)  

@@ -11,9 +11,9 @@ namespace LanguageExt;
 /// <remarks>
 /// Simply carries the bound value through its bind expressions without imparting any additional behaviours.  It can
 /// be constructed using:
-///
-///     Identity<int> ma = Id(123);
-/// 
+/// <code>
+///     Identity&lt;int&gt; ma = Id(123);
+/// </code>
 /// </remarks>
 /// <typeparam name="A">Bound value type</typeparam>
 public record Identity<A>(A Value) : 
@@ -27,9 +27,7 @@ public record Identity<A>(A Value) :
     /// Map each element of a structure to an action, evaluate these actions from
     /// left to right, and collect the results.
     /// </summary>
-    /// </remarks>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -42,7 +40,6 @@ public record Identity<A>(A Value) :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]

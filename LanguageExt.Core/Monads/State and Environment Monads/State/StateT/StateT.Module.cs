@@ -8,7 +8,6 @@ namespace LanguageExt;
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
 /// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public class StateT<S>
 {
     public static StateT<S, M, A> lift<M, A>(K<M, A> ma)  
@@ -38,8 +37,6 @@ public partial class StateT<S, M>
 /// <summary>
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
-/// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public class StateT
 {
     public static StateT<S, M, A> pure<S, M, A>(A value)  

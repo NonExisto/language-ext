@@ -16,7 +16,9 @@ public static partial class TryExtensions
     /// <summary>
     /// Maps the bound value
     /// </summary>
+    /// <param name="self">Try</param>
     /// <param name="f">Mapping transducer</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
     /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
     [Pure]
@@ -33,8 +35,10 @@ public static partial class TryExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="self">Try</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
@@ -45,8 +49,10 @@ public static partial class TryExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="self">Try</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
@@ -59,8 +65,10 @@ public static partial class TryExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="self">Try</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
@@ -71,8 +79,10 @@ public static partial class TryExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="self">Try</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>

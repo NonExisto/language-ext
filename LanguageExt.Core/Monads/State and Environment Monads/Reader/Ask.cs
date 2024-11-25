@@ -17,7 +17,7 @@ namespace LanguageExt;
 public readonly record struct Ask<Env, A>(Func<Env, A> F)
 {
     /// <summary>
-    /// Use a `Readable` trait to convert to an `M<A>`
+    /// Use a `Readable` trait to convert to an <see cref="K{M,A}"/>>
     /// </summary>
     public K<M, A> ToReadable<M>()
         where M : Readable<M, Env> =>
@@ -35,12 +35,6 @@ public readonly record struct Ask<Env, A>(Func<Env, A> F)
     public ReaderT<Env, M, A> ToReaderT<M>()
         where M : Monad<M>, Choice<M> =>
         ToReadable<ReaderT<Env, M>>().As();
-    
-    /// <summary>
-    /// Convert to a `RWS`
-    /// </summary>
-    //public RWS<Env, W, S, A> ToRWS() =>
-    //    ToReadable<RWS<Env, W, S>>().As();
     
     /// <summary>
     /// Convert to a `RWST`
@@ -88,6 +82,9 @@ public readonly record struct Ask<Env, A>(Func<Env, A> F)
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
@@ -103,6 +100,9 @@ public readonly record struct Ask<Env, A>(Func<Env, A> F)
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>

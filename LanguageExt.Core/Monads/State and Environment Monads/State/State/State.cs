@@ -9,7 +9,6 @@ namespace LanguageExt;
 /// </summary>
 /// <param name="runState">Transducer that represents the transformer operation</param>
 /// <typeparam name="S">State type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record State<S, A>(Func<S, (A Value, S State)> runState) : K<State<S>, A>
 {
@@ -139,7 +138,6 @@ public record State<S, A>(Func<S, (A Value, S State)> runState) : K<State<S>, A>
     /// Monad bind operation
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`State`</returns>
     public State<S, Unit> Bind(Func<A, Put<S>> f) =>
         Bind(x => f(x).ToState());
@@ -148,7 +146,6 @@ public record State<S, A>(Func<S, (A Value, S State)> runState) : K<State<S>, A>
     /// Monad bind operation
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`State`</returns>
     public State<S, Unit> Bind(Func<A, Modify<S>> f) =>
         Bind(x => f(x).ToState());
@@ -196,7 +193,6 @@ public record State<S, A>(Func<S, (A Value, S State)> runState) : K<State<S>, A>
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`State`</returns>
     public State<S, C> SelectMany<C>(Func<A, Put<S>> bind, Func<A, Unit, C> project) =>
@@ -218,7 +214,6 @@ public record State<S, A>(Func<S, (A Value, S State)> runState) : K<State<S>, A>
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`State`</returns>
     public State<S, C> SelectMany<C>(Func<A, Modify<S>> bind, Func<A, Unit, C> project) =>

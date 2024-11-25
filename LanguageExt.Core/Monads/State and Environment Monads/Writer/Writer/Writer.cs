@@ -7,9 +7,8 @@ namespace LanguageExt;
 /// <summary>
 /// `Writer` monad transformer, which adds a modifiable state to a given monad. 
 /// </summary>
-/// <param name="runState">Transducer that represents the transformer operation</param>
-/// <typeparam name="S">State type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
+/// <param name="runWriter">Transducer that represents the transformer operation</param>
+/// <typeparam name="W">Writer type</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record Writer<W, A>(Func<W, (A Value, W Output)> runWriter) : K<Writer<W>, A>
     where W : Monoid<W>
@@ -38,7 +37,8 @@ public record Writer<W, A>(Func<W, (A Value, W Output)> runWriter) : K<Writer<W>
     /// <remarks>
     /// The inverse of `Run()`
     /// </remarks>
-    /// <param name="result">Result / Output pair</param>
+    /// <param name="value">Result</param>
+    /// <param name="output">Output</param>
     public Writer<W, A> Write(A value, W output) =>
         new(w => (value, w.Combine(output)));
 
@@ -188,7 +188,6 @@ public record Writer<W, A>(Func<W, (A Value, W Output)> runWriter) : K<Writer<W>
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`Writer`</returns>
     public Writer<W, C> SelectMany<C>(Func<A, Tell<W>> bind, Func<A, Unit, C> project) =>

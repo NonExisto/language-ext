@@ -52,8 +52,8 @@ public static partial class Prelude
     ///     * Validation
     ///     
     /// </summary>
-    /// <param name="value">Value to lift</param>
-    /// <typeparam name="A">Bound value type</typeparam>
+    /// <param name="error">Value to lift</param>
+    /// <typeparam name="E">Bound value type</typeparam>
     /// <returns>Pure monad</returns>
     public static Fail<E> Fail<E>(E error) =>
         new(error);

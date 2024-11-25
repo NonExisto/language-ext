@@ -32,7 +32,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="F">Error type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
-    /// <param name="value">Error value</param>
+    /// <param name="values">Error values</param>
     /// <returns>Validation applicative</returns>
     public static Validation<F, A> Fail<F, A>(Seq<F> values)
         where F : Monoid<F> =>

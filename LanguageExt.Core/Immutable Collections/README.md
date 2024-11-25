@@ -1,9 +1,9 @@
 This a suite of [very high-performance immutable-collections](https://github.com/louthy/language-ext/blob/main/Performance.md).
 
-* For lists you should always prefer to use `Seq<A>` - it is about 10x faster than `Lst<A>`.  The only reason you'd pick 
-  `Lst<A>` is if you needed to do inserts into the middle of the list: `Seq<A>` doesn't allow this (it only allows prepending or 
+* For lists you should always prefer to use `Seq<A>` - it is about 10x faster than <see cref="Lst{F}"/>.  The only reason you'd pick 
+  <see cref="Lst{F}"/> is if you needed to do inserts into the middle of the list: `Seq<A>` doesn't allow this (it only allows prepending or 
   appending), as it would be a performance hit.
-  `Seq<A>` is backed by an array, and so it has exceptional memory locality, `Lst<A>` is an AVL tree to allow for efficient  
+  `Seq<A>` is backed by an array, and so it has exceptional memory locality, <see cref="Lst{F}"/> is an AVL tree to allow for efficient  
   insertion, but suffers from poorer memory locality.
 * For 'dictionaries' or maps as we prefer to call them, then `HashMap` is the fastest implementation you'll find in .NET-land.  It is 
   unsorted.  If you need a sorted dictionary, use `Map`.  `HashMap` uses the CHAMP data-structure, `Map` uses an AVL tree.

@@ -14,6 +14,7 @@ public static partial class StateExtensions
     /// <summary>
     /// Run the state monad 
     /// </summary>
+    /// <param name="ma">State arrow kind</param>
     /// <param name="state">Initial state</param>
     public static (A Value, S State) Run<S, A>(this K<State<S>, A> ma, S state) =>
         ((State<S, A>)ma).runState(state);

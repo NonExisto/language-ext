@@ -70,6 +70,9 @@ public static class RWST
     /// </summary>
     /// <param name="item">Item to tell</param>
     /// <typeparam name="W">Writer type</typeparam>
+    /// <typeparam name="R">Reader bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <returns>Structure with the told item</returns>
     public static RWST<R, W, S, M, Unit> tell<R, W, S, M>(W item)
         where M : Monad<M>, Choice<M>

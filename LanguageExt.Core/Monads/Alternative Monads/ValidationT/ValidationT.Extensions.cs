@@ -60,12 +60,16 @@ public static partial class ValidationTExtensions
     public static FinT<M, A> ToFin<M, A>(this ValidationT<Error, M, A> ma)
         where M : Monad<M> =>
         new(ma.runValidation.Map(ma => ma.ToFin()));
-    
+
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="L">Fail bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ValidationT`</returns>
@@ -81,8 +85,12 @@ public static partial class ValidationTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="L">Fail bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ValidationT`</returns>

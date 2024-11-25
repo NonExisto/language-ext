@@ -8,6 +8,7 @@ namespace LanguageExt;
 /// IdentityT monad
 /// </summary>
 /// <typeparam name="A">Bound value type</typeparam>
+/// <typeparam name="M">Monad bound type</typeparam>
 public record IdentityT<M, A>(K<M, A> Value) : K<IdentityT<M>, A>
     where M : Monad<M>, Choice<M>
 {

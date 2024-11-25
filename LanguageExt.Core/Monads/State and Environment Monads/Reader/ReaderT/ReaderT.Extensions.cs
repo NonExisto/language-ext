@@ -20,6 +20,7 @@ public static partial class ReaderTExtensions
     /// <summary>
     /// Run the reader monad 
     /// </summary>
+    /// <param name="ma">Reader arrow kind</param>
     /// <param name="env">Input environment</param>
     /// <returns>Bound monad</returns>
     public static K<M, A> Run<Env, M, A>(this K<ReaderT<Env, M>, A> ma, Env env)
@@ -45,8 +46,12 @@ public static partial class ReaderTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="Env">Reader environment bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
@@ -60,8 +65,12 @@ public static partial class ReaderTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="Env">Reader environment bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>

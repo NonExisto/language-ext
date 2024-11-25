@@ -6,8 +6,8 @@ namespace LanguageExt;
 /// <summary>
 /// `WriterT` monad transformer, which adds a modifiable state to a given monad. 
 /// </summary>
-/// <param name="runState">Transducer that represents the transformer operation</param>
-/// <typeparam name="S">State type</typeparam>
+/// <param name="runWriter">Transducer that represents the transformer operation</param>
+/// <typeparam name="W">Writer type</typeparam>
 /// <typeparam name="M">Given monad trait</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record WriterT<W, M, A>(Func<W, K<M, (A Value, W Output)>> runWriter) : K<WriterT<W, M>, A>
@@ -38,7 +38,8 @@ public record WriterT<W, M, A>(Func<W, K<M, (A Value, W Output)>> runWriter) : K
     /// <remarks>
     /// The inverse of `Run()`
     /// </remarks>
-    /// <param name="result">Result / Output pair</param>
+    /// <param name="value">Result</param>
+    /// <param name="output">Output</param>
     public static WriterT<W, M, A> Write(A value, W output) =>
         new(w => M.Pure((value, w.Combine(output))));
 
@@ -106,6 +107,7 @@ public record WriterT<W, M, A>(Func<W, K<M, (A Value, W Output)>> runWriter) : K
     /// </summary>
     /// <param name="f">Mapping function</param>
     /// <typeparam name="M1">Trait of the monad to map to</typeparam>
+    /// <typeparam name="B">Output bound value type</typeparam>
     /// <returns>`WriterT`</returns>
     public WriterT<W, M1, B> MapT<M1, B>(Func<K<M, (A Value, W Output)>, K<M1, (B Value, W Output)>> f)
         where M1 : Monad<M1>, Choice<M1> =>
@@ -236,7 +238,6 @@ public record WriterT<W, M, A>(Func<W, K<M, (A Value, W Output)>> runWriter) : K
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`WriterT`</returns>
     public WriterT<W, M, C> SelectMany<C>(Func<A, Tell<W>> bind, Func<A, Unit, C> project) =>

@@ -15,11 +15,11 @@ public static partial class Prelude
     /// <param name="alternative">Computation to run if the flag is `false`</param>
     /// <returns>Either the result of the `alternative` computation if the `flag` is `false` or `Unit`</returns>
     /// <example>
-    ///
+    /// <code>
     ///     from x in ma
-    ///     from _ in unless(x == 100, Console.writeLine<RT>("x should be 100!"))
+    ///     from _ in unless(x == 100, Console.writeLine&lt;RT&gt;("x should be 100!"))
     ///     select x;
-    /// 
+    /// </code>
     /// </example>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

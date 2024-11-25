@@ -53,7 +53,7 @@ Scroll down to the section on Ad-hoc polymorphism for more details.
 `HashMap<EqA, A, B>`                        | Ordering is done by `GetHashCode()`.  Existence testing is with `default(EqA).Equals(a,b)`
 `Set<OrdA, A> where OrdA : struct, Ord<A>`  | Ordering is done by `default(OrdA).Compare(a,b)`.  Existence testing is with `default(OrdA).Equals(a,b)`
 `Map<EqA, A, B>`                            | Ordering is done by `default(OrdA).Compare(a,b)`.  Existence testing is with `default(OrdA).Equals(a,b)`
-`Arr<A>`                                    | Immutable array.  Has the same access speed as the built-in array type, but with immutable cells.  Modification is expensive, due to the entire array being copied per operation (although for very small arrays this would be more efficient than `Lst<T>` or `Set<T>`).
+<see cref="Arr{F}"/>                                    | Immutable array.  Has the same access speed as the built-in array type, but with immutable cells.  Modification is expensive, due to the entire array being copied per operation (although for very small arrays this would be more efficient than `Lst<T>` or `Set<T>`).
 `Lst<PredList, A> where PredList : struct, Pred<ListInfo>` | This allows lists to run a predicate on the `Count` property of the list after construction.  
 `Lst<PredList, PredItem, A> where PredItem : struct, Pred<A>` | This allows lists to run a predicate on the `Count` property of the list after construction and on items as they're being added to the list.  
 
@@ -72,7 +72,7 @@ The two new predicate versions of `Lst` allow for properties of the list to trav
     public int Product(Lst<NonEmpty, int> list) =>
         list.Fold(1, (s, x) => s * x);
 ```
-There are implicit conversion operators between `Lst<A>` and `Lst<PredList, A>`, and between `Lst<A>` and `Lst<PredList, PredItem, A>`.  They don't need to reallocate the collection, but converting to a more constrained type will cause the validation to run.  This is very light for constructing `Lst<PredList, A>`, but will cause every item in the list to be validated for `Lst<PredList, PredItem, A>`.
+There are implicit conversion operators between <see cref="Lst{F}"/> and `Lst<PredList, A>`, and between <see cref="Lst{F}"/> and `Lst<PredList, PredItem, A>`.  They don't need to reallocate the collection, but converting to a more constrained type will cause the validation to run.  This is very light for constructing `Lst<PredList, A>`, but will cause every item in the list to be validated for `Lst<PredList, PredItem, A>`.
 
 And so it's possible to do this:
 ```c#
@@ -142,8 +142,8 @@ In practice if you're using `Cons` you don't need to provide `Empty`:
 The primary benefits are:
 * Immutable
 * Thread-safe
-* Much lighter weight than using `Lst<A>` (although `Lst<A>` is very efficient, it is still an AVL tree behind the scenes)
-* Maintains the original type for `Lst<A>`, `Arr<A>`, and arrays.  So if you construct a `Seq` from one of those types, the `Seq` then gains extra powers for random lookups (`Skip`), and length queries (`Count`).
+* Much lighter weight than using <see cref="Lst{F}"/> (although <see cref="Lst{F}"/> is very efficient, it is still an AVL tree behind the scenes)
+* Maintains the original type for <see cref="Lst{F}"/>, <see cref="Arr{F}"/>, and arrays.  So if you construct a `Seq` from one of those types, the `Seq` then gains extra powers for random lookups (`Skip`), and length queries (`Count`).
 * If you construct a `Seq` with an `IEnumerable` then it maintains its laziness, but also __guarantees that each item in the original `IEnumerable` is only ever enumerated once.__
 * Obviously easier to type `Seq` than `IEnumerable`!
 * `Count` works by default for all non-`IEnumerable` sources.  If you construct with an `IEnumerable` then `Count` will only cause a single evaluation of the underlying `IEnumerable` (and subsequent access to the seq for anything else doesn't cause additional evaluation)

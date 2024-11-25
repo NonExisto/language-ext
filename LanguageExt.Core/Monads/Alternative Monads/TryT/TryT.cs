@@ -8,7 +8,7 @@ namespace LanguageExt;
 /// <summary>
 /// `TryT` monad transformer, which allows for an optional result. 
 /// </summary>
-/// <param name="runEither">Transducer that represents the transformer operation</param>
+/// <param name="runTry">Transducer that represents the transformer operation</param>
 /// <typeparam name="M">Given monad trait</typeparam>
 /// <typeparam name="A">Bound value type</typeparam>
 public record TryT<M, A>(K<M, Try<A>> runTry) : 
@@ -93,7 +93,6 @@ public record TryT<M, A>(K<M, Try<A>> runTry) :
     /// <summary>
     /// Match the bound value and return a result (which gets packages back up inside the inner monad)
     /// </summary>
-    /// <param name="Succ">Success branch</param>
     /// <param name="Fail">Fail branch</param>
     /// <returns>Inner monad with the result of the `Succ` or `Fail` branches</returns>
     public K<M, A> IfFail(Func<Error, A> Fail) =>
@@ -102,7 +101,6 @@ public record TryT<M, A>(K<M, Try<A>> runTry) :
     /// <summary>
     /// Match the bound value and return a result (which gets packages back up inside the inner monad)
     /// </summary>
-    /// <param name="Succ">Success branch</param>
     /// <param name="Fail">Fail branch</param>
     /// <returns>Inner monad with the result of the `Succ` or `Fail` branches</returns>
     public K<M, A> IfFailM(Func<Error, K<M, A>> Fail) =>
@@ -190,7 +188,6 @@ public record TryT<M, A>(K<M, Try<A>> runTry) :
     /// Monad bind operation
     /// </summary>
     /// <param name="Fail">Failure mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
     public TryT<M, A> BindFail(Func<Error, TryT<M, A>> Fail) =>
         BiBind(Succ, Fail);

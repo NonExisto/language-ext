@@ -11,8 +11,7 @@ namespace LanguageExt;
 /// the need for lots of generic parameters when used in `WriterT` and `State` based
 /// monads.
 /// </remarks>
-/// <param name="F">Mapping from the environment</param>
-/// <typeparam name="S">State type</typeparam>
+/// <typeparam name="W">Writer value type</typeparam>
 public record Tell<W>(W Value) where W : Monoid<W>
 {
     /// <summary>

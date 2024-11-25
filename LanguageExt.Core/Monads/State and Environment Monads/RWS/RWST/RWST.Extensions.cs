@@ -44,8 +44,14 @@ public static partial class RWSTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="R">Reader bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
@@ -60,8 +66,14 @@ public static partial class RWSTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="R">Reader bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
@@ -77,8 +89,14 @@ public static partial class RWSTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="R">Reader bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
@@ -93,8 +111,14 @@ public static partial class RWSTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Source bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="R">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`ReaderT`</returns>

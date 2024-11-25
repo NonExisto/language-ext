@@ -128,6 +128,7 @@ public record StateT<S, M, A>(Func<S, K<M, (A Value, S State)>> runState) : K<St
     /// </summary>
     /// <param name="f">Mapping function</param>
     /// <typeparam name="M1">Trait of the monad to map to</typeparam>
+    /// <typeparam name="B">Output bound value type</typeparam>
     /// <returns>`StateT`</returns>
     public StateT<S, M1, B> MapT<M1, B>(Func<K<M, (A Value, S State)>, K<M1, (B Value, S State)>> f)
         where M1 : Monad<M1>, Choice<M1> =>
@@ -197,7 +198,6 @@ public record StateT<S, M, A>(Func<S, K<M, (A Value, S State)>> runState) : K<St
     /// Monad bind operation
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
     public StateT<S, M, Unit> Bind(Func<A, Put<S>> f) =>
         Bind(x => f(x).ToStateT<M>());
@@ -206,7 +206,6 @@ public record StateT<S, M, A>(Func<S, K<M, (A Value, S State)>> runState) : K<St
     /// Monad bind operation
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
     public StateT<S, M, Unit> Bind(Func<A, Modify<S>> f) =>
         Bind(x => f(x).ToStateT<M>());
@@ -285,7 +284,6 @@ public record StateT<S, M, A>(Func<S, K<M, (A Value, S State)>> runState) : K<St
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
     public StateT<S, M, C> SelectMany<C>(Func<A, Put<S>> bind, Func<A, Unit, C> project) =>
@@ -307,7 +305,6 @@ public record StateT<S, M, A>(Func<S, K<M, (A Value, S State)>> runState) : K<St
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
     public StateT<S, M, C> SelectMany<C>(Func<A, Modify<S>> bind, Func<A, Unit, C> project) =>

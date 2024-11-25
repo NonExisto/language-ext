@@ -87,7 +87,8 @@ public record RWST<R, W, S, M, A>(Func<(R Env, W Output, S State), K<M, (A Value
     /// <remarks>
     /// The inverse of `Run()`
     /// </remarks>
-    /// <param name="result">Result / Output pair</param>
+    /// <param name="value">result</param>
+    /// <param name="output">output</param>
     public static RWST<R, W, S, M, A> Write(A value, W output) =>
         Writable.write<W, RWST<R, W, S, M>, A>(value, output).As();
 
@@ -342,7 +343,6 @@ public record RWST<R, W, S, M, A>(Func<(R Env, W Output, S State), K<M, (A Value
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`RWST`</returns>
     public RWST<R, W, S, M, C> SelectMany<C>(Func<A, Put<S>> bind, Func<A, Unit, C> project) =>
@@ -364,7 +364,6 @@ public record RWST<R, W, S, M, A>(Func<(R Env, W Output, S State), K<M, (A Value
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`RWST`</returns>
     public RWST<R, W, S, M, C> SelectMany<C>(Func<A, Modify<S>> bind, Func<A, Unit, C> project) =>
@@ -375,7 +374,6 @@ public record RWST<R, W, S, M, A>(Func<(R Env, W Output, S State), K<M, (A Value
     /// </summary>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
-    /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`RWST`</returns>
     public RWST<R, W, S, M, C> SelectMany<C>(Func<A, Tell<W>> bind, Func<A, Unit, C> project) =>

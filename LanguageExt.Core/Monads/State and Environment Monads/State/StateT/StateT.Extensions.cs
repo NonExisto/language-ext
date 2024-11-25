@@ -16,6 +16,7 @@ public static partial class StateTExtensions
     /// <summary>
     /// Run the state monad 
     /// </summary>
+    /// <param name="ma">State arrow kind</param>
     /// <param name="state">Initial state</param>
     /// <returns>Bound monad</returns>
     public static K<M, (A Value, S State)> Run<S, M, A>(this K<StateT<S, M>, A> ma, S state) 
@@ -33,8 +34,12 @@ public static partial class StateTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
@@ -48,8 +53,12 @@ public static partial class StateTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="S">State bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>

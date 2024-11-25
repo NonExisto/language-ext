@@ -8,8 +8,8 @@ namespace LanguageExt;
 public static partial class Prelude
 {
     /// <summary>
-    /// Returns a Func<A> that wraps func.  The first
-    /// call to the resulting Func<A> will cache the result.
+    /// Returns a <see cref="Func{TResult}"/> that wraps func.  The first
+    /// call to the resulting Func&lt;A&gt; will cache the result.
     /// Subsequent calls return the cached item.
     /// </summary>
     public static Func<A> memo<A>(Func<A> func)
@@ -40,8 +40,8 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Returns a `Func<A, B>` that wraps func.  Each time the resulting
-    /// `Func<A, B>` is called with a new value, its result is memoized (cached).
+    /// Returns a <see cref="Func{T, TResult}"/> that wraps func.  Each time the resulting
+    /// `Func&lt;A, B&gt;` is called with a new value, its result is memoized (cached).
     /// Subsequent calls use the memoized value.  
     /// 
     /// Remarks: 
@@ -73,15 +73,15 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Returns a Func<T,R> that wraps func.  Each time the resulting
-    /// Func<T,R> is called with a new value, its result is memoized (cached).
+    /// Returns a <see cref="Func{T, TResult}"/> that wraps func.  Each time the resulting
+    /// Func&lt;T,R&gt; is called with a new value, its result is memoized (cached).
     /// Subsequent calls use the memoized value.  
-    /// 
-    /// Remarks: 
-    ///     No mechanism for freeing cached values and therefore can cause a
-    ///     memory leak when holding onto the Func<T,R> reference.
-    ///     Uses a ConcurrentDictionary for the cache and is thread-safe
     /// </summary>
+    /// <remarks>
+    ///     No mechanism for freeing cached values and therefore can cause a
+    ///     memory leak when holding onto the Func&lt;T,R&gt; reference.
+    ///     Uses a ConcurrentDictionary for the cache and is thread-safe
+    /// </remarks>
     public static Func<T, R> memoUnsafe<T, R>(Func<T, R> func) where T : notnull
     {
         var cache   = new ConcurrentDictionary<T, R>();
@@ -111,7 +111,7 @@ public static partial class Prelude
 
     /// <summary>
     /// Used internally by the memo function.  It wraps a concurrent dictionary that has 
-    /// its value objects wrapped in a WeakReference<OnFinalize<...>>
+    /// its value objects wrapped in a <see cref="WeakReference{T}"/>
     /// The OnFinalize type is a private class within WeakDict and does nothing but hold
     /// the value and an Action to call when its finalized.  So when the WeakReference is
     /// collected by the GC, it forces the finalizer to be called on the OnFinalize object,
@@ -171,16 +171,16 @@ public static partial class Prelude
 public static class MemoExtensions
 {
     /// <summary>
-    /// Returns a Func<T> that wraps func.  The first
-    /// call to the resulting Func<T> will cache the result.
+    /// Returns a <see cref="Func{TResult}"/> that wraps func.  The first
+    /// call to the resulting Func&lt;T&gt; will cache the result.
     /// Subsequent calls return the cached item.
     /// </summary>
     public static Func<T> Memo<T>(this Func<T> func) =>
         Prelude.memo(func);
 
     /// <summary>
-    /// Returns a Func<T,R> that wraps func.  Each time the resulting
-    /// Func<T,R> is called with a new value, its result is memoized (cached).
+    /// Returns a <see cref="Func{T, TResult}"/> that wraps func.  Each time the resulting
+    /// Func&lt;T,R&gt; is called with a new value, its result is memoized (cached).
     /// Subsequent calls use the memoized value.  
     /// 
     /// Remarks: 
@@ -190,15 +190,15 @@ public static class MemoExtensions
         Prelude.memo(func);
 
     /// <summary>
-    /// Returns a Func<T,R> that wraps func.  Each time the resulting
-    /// Func<T,R> is called with a new value, its result is memoized (cached).
+    /// Returns a <see cref="Func{T, TResult}"/> that wraps func.  Each time the resulting
+    /// Func&lt;T,R&gt; is called with a new value, its result is memoized (cached).
     /// Subsequent calls use the memoized value.  
-    /// 
-    /// Remarks: 
-    ///     No mechanism for freeing cached values and therefore can cause a
-    ///     memory leak when holding onto the Func<T,R> reference.
-    ///     Uses a ConcurrentDictionary for the cache and is thread-safe
     /// </summary>
+    /// <remarks>
+    ///     No mechanism for freeing cached values and therefore can cause a
+    ///     memory leak when holding onto the Func&lt;T,R&gt; reference.
+    ///     Uses a ConcurrentDictionary for the cache and is thread-safe
+    /// </remarks>
     public static Func<T, R> MemoUnsafe<T, R>(this Func<T, R> func) where T : notnull =>
         Prelude.memoUnsafe(func);
 

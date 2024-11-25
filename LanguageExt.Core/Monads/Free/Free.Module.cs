@@ -40,7 +40,6 @@ public static class Free
     /// `Free F` to `Free G`.
     /// </summary>
     /// <param name="fb">Free monad in F</param>
-    /// <typeparam name="N">Natural transformation</typeparam>
     /// <typeparam name="F">Functor</typeparam>
     /// <typeparam name="G">Functor</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>

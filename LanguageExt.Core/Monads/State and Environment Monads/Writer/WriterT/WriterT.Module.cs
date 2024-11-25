@@ -7,8 +7,7 @@ namespace LanguageExt;
 /// <summary>
 /// `MonadWriterT` trait implementation for `WriterT` 
 /// </summary>
-/// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
+/// <typeparam name="W">Writer type</typeparam>
 public class WriterT<W>
     where W : Monoid<W>
 {
@@ -20,7 +19,7 @@ public class WriterT<W>
 /// <summary>
 /// `MonadWriterT` trait implementation for `WriterT` 
 /// </summary>
-/// <typeparam name="S">State environment type</typeparam>
+/// <typeparam name="W">Writer type</typeparam>
 /// <typeparam name="M">Given monad trait</typeparam>
 public partial class WriterT<W, M>
 {
@@ -39,8 +38,6 @@ public partial class WriterT<W, M>
 /// <summary>
 /// `MonadWriterT` trait implementation for `WriterT` 
 /// </summary>
-/// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public class WriterT
 {
     public static WriterT<W, M, A> pure<W, M, A>(A value)  
@@ -68,6 +65,7 @@ public class WriterT
     /// </summary>
     /// <param name="item">Item to tell</param>
     /// <typeparam name="W">Writer type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <returns>Structure with the told item</returns>
     public static WriterT<W, M, Unit> tell<W, M>(W item)
         where M : Monad<M>, Choice<M>

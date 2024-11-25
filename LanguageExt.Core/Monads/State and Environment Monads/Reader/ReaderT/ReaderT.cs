@@ -64,7 +64,7 @@ public record ReaderT<Env, M, A>(Func<Env, K<M, A>> runReader) : K<ReaderT<Env, 
     /// <summary>
     /// Lifts a unit function into the transformer 
     /// </summary>
-    /// <param name="f">Function to lift</param>
+    /// <param name="ma">Function to lift</param>
     /// <returns>`ReaderT`</returns>
     public static ReaderT<Env, M, A> LiftIO(IO<A> ma) =>
         new (_ => M.LiftIO(ma));
@@ -95,6 +95,7 @@ public record ReaderT<Env, M, A>(Func<Env, K<M, A>> runReader) : K<ReaderT<Env, 
     /// </summary>
     /// <param name="f">Mapping function</param>
     /// <typeparam name="M1">Trait of the monad to map to</typeparam>
+    /// <typeparam name="B">Output bound value type</typeparam>
     /// <returns>`ReaderT`</returns>
     public ReaderT<Env, M1, B> MapM<M1, B>(Func<K<M, A>, K<M1, B>> f)
         where M1 : Monad<M1>, Alternative<M1> =>

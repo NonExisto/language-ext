@@ -126,7 +126,7 @@ public record ValidationT<F, M, A>(K<M, Validation<F, A>> runValidation) :
     /// Maps the bound value
     /// </summary>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
+    /// <typeparam name="F1">Target bound value type</typeparam>
     /// <returns>`ValidationT`</returns>
     public ValidationT<F1, M, A> MapFail<F1>(Func<F, F1> f) 
         where F1 : Monoid<F1> =>
@@ -188,7 +188,6 @@ public record ValidationT<F, M, A>(K<M, Validation<F, A>> runValidation) :
     /// Failure bind operation
     /// </summary>
     /// <param name="Fail">Failure mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`ValidationT`</returns>
     public ValidationT<F, M, A> BindFail(Func<F, ValidationT<F, M, A>> Fail) =>
         BiBind(Success, Fail);

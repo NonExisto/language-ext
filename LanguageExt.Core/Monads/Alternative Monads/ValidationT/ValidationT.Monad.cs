@@ -8,6 +8,7 @@ namespace LanguageExt;
 /// Trait implementation for `ValidationT` 
 /// </summary>
 /// <typeparam name="M">Given monad trait</typeparam>
+/// <typeparam name="F">Fail bound type</typeparam>
 public sealed partial class ValidationT<F, M> : 
     MonadT<ValidationT<F, M>, M>, 
     Fallible<F, ValidationT<F, M>>, 

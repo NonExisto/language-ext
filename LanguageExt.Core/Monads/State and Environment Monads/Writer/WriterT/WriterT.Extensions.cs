@@ -41,8 +41,12 @@ public static partial class WriterTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="A">Monad bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>
@@ -57,8 +61,12 @@ public static partial class WriterTExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Monad arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
+    /// <typeparam name="W">Writer bound type</typeparam>
+    /// <typeparam name="A">Monad bound value type</typeparam>
+    /// <typeparam name="M">Monad bound type</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
     /// <returns>`StateT`</returns>

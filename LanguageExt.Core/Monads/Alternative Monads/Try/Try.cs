@@ -9,8 +9,7 @@ namespace LanguageExt;
 /// <summary>
 /// `TryT` monad transformer, which allows for an optional result. 
 /// </summary>
-/// <param name="runEither">Transducer that represents the transformer operation</param>
-/// <typeparam name="M">Given monad trait</typeparam>
+/// <param name="runTry">Transducer that represents the transformer operation</param>
 /// <typeparam name="A">Bound value type</typeparam>
 public record Try<A>(Func<Fin<A>> runTry) : 
     Fallible<Try<A>, Try, Error, A>
@@ -42,7 +41,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Lifts a given monad into the transformer
     /// </summary>
-    /// <param name="either">Monad to lift</param>
+    /// <param name="result">Monad to lift</param>
     /// <returns>`TryT`</returns>
     public static Try<A> Lift(Fin<A> result) =>
         new (() => result);
@@ -50,7 +49,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Lifts a given monad into the transformer
     /// </summary>
-    /// <param name="either">Monad to lift</param>
+    /// <param name="result">Monad to lift</param>
     /// <returns>`TryT`</returns>
     public static Try<A> Lift(Func<Fin<A>> result) =>
         new(() =>
@@ -68,7 +67,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Lifts a given monad into the transformer
     /// </summary>
-    /// <param name="either">Monad to lift</param>
+    /// <param name="result">Monad to lift</param>
     /// <returns>`TryT`</returns>
     public static Try<A> Lift(Func<A> result) =>
         new(() =>
@@ -108,7 +107,6 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Match the bound value and return a result (which gets packages back up inside the inner monad)
     /// </summary>
-    /// <param name="Succ">Success branch</param>
     /// <param name="Fail">Fail branch</param>
     /// <returns>Inner monad with the result of the `Succ` or `Fail` branches</returns>
     public A IfFail(Func<Error, A> Fail) =>
@@ -117,7 +115,6 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Match the bound value and return a result (which gets packages back up inside the inner monad)
     /// </summary>
-    /// <param name="Succ">Success branch</param>
     /// <param name="Fail">Fail branch</param>
     /// <returns>Inner monad with the result of the `Succ` or `Fail` branches</returns>
     public Fin<A> IfFailM(Func<Error, Fin<A>> Fail) =>
@@ -195,6 +192,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// Monad bind operation
     /// </summary>
     /// <param name="Succ">Mapping function</param>
+    /// <param name="Fail">Fail branch</param>
     /// <typeparam name="B">Target bound value type</typeparam>
     /// <returns>`TryT`</returns>
     public Try<B> BiBind<B>(Func<A, Try<B>> Succ, Func<Error, Try<B>> Fail) =>
@@ -209,8 +207,7 @@ public record Try<A>(Func<Fin<A>> runTry) :
     /// <summary>
     /// Monad bind operation
     /// </summary>
-    /// <param name="Succ">Mapping function</param>
-    /// <typeparam name="B">Target bound value type</typeparam>
+    /// <param name="Fail">Fail branch</param>
     /// <returns>`TryT`</returns>
     public Try<A> BindFail(Func<Error, Try<A>> Fail) =>
         BiBind(Succ, Fail);

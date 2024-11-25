@@ -13,9 +13,8 @@ namespace LanguageExt;
 /// <summary>
 /// Like `Either` but collects the failed values
 /// </summary>
-/// <typeparam name="MonoidFail"></typeparam>
-/// <typeparam name="F"></typeparam>
-/// <typeparam name="A"></typeparam>
+/// <typeparam name="F">Fail type</typeparam>
+/// <typeparam name="A">Value type</typeparam>
 [Serializable]
 public abstract record Validation<F, A> : 
     IEnumerable<A>,
@@ -101,8 +100,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Maps the value in the Validation if it's in a Success state
     /// </summary>
-    /// <typeparam name="F">Fail</typeparam>
-    /// <typeparam name="A">Success</typeparam>
     /// <typeparam name="B">Mapped Validation type</typeparam>
     /// <param name="f">Map function</param>
     /// <returns>Mapped Validation</returns>
@@ -112,8 +109,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Bi-maps the value in the Validation if it's in a Success state
     /// </summary>
-    /// <typeparam name="F">Fail</typeparam>
-    /// <typeparam name="A">Success</typeparam>
     /// <typeparam name="F1">Fail return</typeparam>
     /// <typeparam name="A1">Success return</typeparam>
     /// <param name="Succ">Success map function</param>
@@ -126,8 +121,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Monadic bind
     /// </summary>
-    /// <typeparam name="F">Fail</typeparam>
-    /// <typeparam name="A">Success</typeparam>
     /// <typeparam name="B">Resulting bound value</typeparam>
     /// <param name="f">Bind function</param>
     /// <returns>Bound Validation</returns>
@@ -162,7 +155,7 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Explicit conversion operator from `` to `R`
     /// </summary>
-    /// <param name="value">Value, must not be null.</param>
+    /// <param name="ma">Value, must not be null.</param>
     /// <exception cref="InvalidOperationException">Value is not in a Right state</exception>
     [Pure]
     public static explicit operator A(Validation<F, A> ma) =>
@@ -171,21 +164,21 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Explicit conversion operator from `Validation` to `L`
     /// </summary>
-    /// <param name="value">Value, must not be null.</param>
+    /// <param name="ma">Value, must not be null.</param>
     /// <exception cref="InvalidOperationException">Value is not in a Fail state</exception>
     [Pure]
     public static explicit operator F(Validation<F, A> ma) =>
         ma.FailValue;
 
     /// <summary>
-    /// Implicit conversion operator from `A` to `Validation<F, A>`
+    /// Implicit conversion operator from `A` to <see cref="Validation{F,A}"/>
     /// </summary>
     [Pure]
     public static implicit operator Validation<F, A>(A value) =>
         new Validation.Success<F, A>(value);
 
     /// <summary>
-    /// Implicit conversion operator from `F` to `Validation<F, A>`
+    /// Implicit conversion operator from `F` to <see cref="Validation{F,A}"/>
     /// </summary>
     [Pure]
     public static implicit operator Validation<F, A>(F value) =>
@@ -275,7 +268,7 @@ public abstract record Validation<F, A> :
     public IEnumerator<A> GetEnumerator() => Match<IEnumerable<A>>(a => [a], _ => []).GetEnumerator();
 
     /// <summary>
-    /// Project the value into a `Lst<F>`
+    /// Project the value into a <see cref="Lst{F}"/>
     /// </summary>
     /// <returns>If in a Fail state, a `Lst` of `L` with one item.  A zero length `Lst` of `L` otherwise</returns>
     [Pure]
@@ -283,7 +276,7 @@ public abstract record Validation<F, A> :
         new(FailSpan());
 
     /// <summary>
-    /// Project into an `Arr<F>`
+    /// Project into an <see cref="Arr{F}"/>
     /// </summary>
     /// <returns>If in a Fail state, a `Arr` of `L` with one item.  A zero length `Arr` of `L` otherwise</returns>
     [Pure]
@@ -291,14 +284,14 @@ public abstract record Validation<F, A> :
         new(FailSpan());
 
     /// <summary>
-    /// Project into a `Lst<A>`
+    /// Project into a <see cref="Lst{F}"/>
     /// </summary>
     /// <returns>If in a Success state, a `Lst` of `R` with one item.  A zero length `Lst` of `R` otherwise</returns>
     public Lst<A> ToList() =>
         new(SuccessSpan());
 
     /// <summary>
-    /// Project into an `Arr<A>`
+    /// Project into an <see cref="Arr{F}"/>
     /// </summary>
     /// <returns>If in a Success state, an `Arr` of `R` with one item.  A zero length `Arr` of `R` otherwise</returns>
     public Arr<A> ToArray() =>
@@ -372,7 +365,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Validation<F, A> lhs, Fail<F> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -382,7 +375,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Validation<F, A> lhs, Fail<F> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -392,7 +385,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Validation<F, A> lhs, Fail<F> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -402,7 +395,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Validation<F, A> lhs, Fail<F> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -412,7 +405,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Validation<F, A> lhs, Pure<A> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -422,7 +415,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Validation<F, A> lhs, Pure<A> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -432,7 +425,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Validation<F, A> lhs, Pure<A> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -442,7 +435,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Validation<F, A> lhs, Pure<A> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -453,7 +446,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Fail<F> lhs, Validation<F, A> rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) < 0;
@@ -463,7 +456,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Fail<F>  lhs, Validation<F, A> rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) <= 0;
@@ -473,7 +466,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Fail<F> lhs, Validation<F, A>rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) > 0;
@@ -483,7 +476,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Fail<F> lhs, Validation<F, A>  rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) >= 0;
@@ -493,7 +486,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Pure<A> lhs, Validation<F, A>  rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) < 0;
@@ -503,7 +496,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Pure<A> lhs, Validation<F, A> rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) <= 0;
@@ -513,7 +506,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Pure<A> lhs, Validation<F, A> rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) > 0;
@@ -523,7 +516,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Pure<A> lhs, Validation<F, A> rhs) =>
         ((Validation<F, A>)lhs).CompareTo(rhs) >= 0;
@@ -533,7 +526,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs < rhs</returns>
+    /// <returns>True if lhs &lt; rhs</returns>
     [Pure]
     public static bool operator <(Validation<F, A> lhs, Validation<F, A> rhs) =>
         lhs.CompareTo(rhs) < 0;
@@ -543,7 +536,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs <= rhs</returns>
+    /// <returns>True if lhs ≤ rhs</returns>
     [Pure]
     public static bool operator <=(Validation<F, A> lhs, Validation<F, A> rhs) =>
         lhs.CompareTo(rhs) <= 0;
@@ -553,7 +546,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs > rhs</returns>
+    /// <returns>True if lhs &gt; rhs</returns>
     [Pure]
     public static bool operator >(Validation<F, A> lhs, Validation<F, A> rhs) =>
         lhs.CompareTo(rhs) > 0;
@@ -563,7 +556,7 @@ public abstract record Validation<F, A> :
     /// </summary>
     /// <param name="lhs">The left hand side of the operation</param>
     /// <param name="rhs">The right hand side of the operation</param>
-    /// <returns>True if lhs >= rhs</returns>
+    /// <returns>True if lhs ≥ rhs</returns>
     [Pure]
     public static bool operator >=(Validation<F, A> lhs, Validation<F, A> rhs) =>
         lhs.CompareTo(rhs) >= 0;
@@ -875,9 +868,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Invokes a predicate on the values 
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
-    /// <param name="self">Either to forall</param>
     /// <param name="Succ">Predicate</param>
     /// <param name="Fail">Predicate</param>
     /// <returns>True if either Predicate returns true</returns>
@@ -934,8 +924,7 @@ public abstract record Validation<F, A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
-    /// <typeparam name="F">Applicative functor trait</typeparam>
+    /// <typeparam name="AF">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
     public K<AF, Validation<F, B>> Traverse<AF, B>(Func<A, K<AF, B>> f) 
@@ -945,8 +934,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Maps the value in the Either if it's in a Left state
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="F1">Mapped Either type</typeparam>
     /// <param name="f">Map function</param>
     /// <returns>Mapped Either</returns>
@@ -958,8 +945,6 @@ public abstract record Validation<F, A> :
     /// <summary>
     /// Monadic bind
     /// </summary>
-    /// <typeparam name="L">Left</typeparam>
-    /// <typeparam name="R">Right</typeparam>
     /// <typeparam name="B"></typeparam>
     /// <param name="f"></param>
     /// <returns>Bound Either</returns>
@@ -1046,7 +1031,7 @@ public abstract record Validation<F, A> :
     /// Monadic bind and project
     /// </summary>
     /// <param name="bind">Bind function</param>
-    /// <param name="project">Project function</param>
+    /// <param name="_">Project function</param>
     [Pure]
     public Validation<F, C> SelectMany<B, C>(Func<A, Fail<F>> bind, Func<A, B, C> _) =>
         Bind(x => Validation<F, C>.Fail(bind(x).Value));
@@ -1058,9 +1043,9 @@ public abstract record Validation<F, A> :
     /// <param name="project">Project function</param>
     [Pure]
     public Validation<F, C> SelectMany<C>(
-        Func<A, Guard<F, Unit>> f,
+        Func<A, Guard<F, Unit>> bind,
         Func<A, Unit, C> project) =>
-        SelectMany(a => f(a).ToValidation(), project);
+        SelectMany(a => bind(a).ToValidation(), project);
     
     [Pure]
     public static implicit operator Validation<F, A>(Pure<A> mr) =>
@@ -1089,7 +1074,7 @@ public struct ValidationContext<F, A, B>
     /// <summary>
     /// Fail match
     /// </summary>
-    /// <param name="Fail"></param>
+    /// <param name="fail"></param>
     /// <returns>Result of the match</returns>
     [Pure]
     public B Fail(Func<F, B> fail) =>

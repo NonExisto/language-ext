@@ -7,8 +7,7 @@ namespace LanguageExt;
 /// <summary>
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
-/// <typeparam name="S">State environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
+/// <typeparam name="W">Writer type</typeparam>
 public sealed partial class Writer<W> : 
     Monad<Writer<W>>, 
     Writable<Writer<W>, W>,

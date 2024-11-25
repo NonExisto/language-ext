@@ -96,8 +96,6 @@ public static partial class Validation
         /// <summary>
         /// Maps the value in the Validation if it's in a Success state
         /// </summary>
-        /// <typeparam name="F">Fail</typeparam>
-        /// <typeparam name="A">Success</typeparam>
         /// <typeparam name="B">Mapped Validation type</typeparam>
         /// <param name="f">Map function</param>
         /// <returns>Mapped Validation</returns>
@@ -108,8 +106,6 @@ public static partial class Validation
         /// <summary>
         /// Bi-maps the value in the Validation if it's in a Success state
         /// </summary>
-        /// <typeparam name="F">Fail</typeparam>
-        /// <typeparam name="A">Success</typeparam>
         /// <typeparam name="L2">Fail return</typeparam>
         /// <typeparam name="R2">Success return</typeparam>
         /// <param name="Succ">Success map function</param>
@@ -122,8 +118,6 @@ public static partial class Validation
         /// <summary>
         /// Monadic bind
         /// </summary>
-        /// <typeparam name="F">Fail</typeparam>
-        /// <typeparam name="A">Success</typeparam>
         /// <typeparam name="B">Resulting bound value</typeparam>
         /// <param name="f">Bind function</param>
         /// <returns>Bound Validation</returns>
