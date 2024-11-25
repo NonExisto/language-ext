@@ -77,6 +77,7 @@ public static class Stack
     /// <summary>
     /// Peek and match
     /// </summary>
+    /// <param name="stack">Stack</param>
     /// <param name="Some">Handler if there is a value on the top of the stack</param>
     /// <param name="None">Handler if the stack is empty</param>
     /// <returns>Untouched stack</returns>
@@ -87,7 +88,9 @@ public static class Stack
     /// <summary>
     /// Peek and match
     /// </summary>
+    /// <typeparam name="T">Source item type</typeparam>
     /// <typeparam name="R">Return type</typeparam>
+    /// <param name="stack">Stack</param>
     /// <param name="Some">Handler if there is a value on the top of the stack</param>
     /// <param name="None">Handler if the stack is empty</param>
     /// <returns>Return value from Some or None</returns>
@@ -124,6 +127,7 @@ public static class Stack
     /// <summary>
     /// Pop and match
     /// </summary>
+    /// <param name="stack">Stack</param>
     /// <param name="Some">Handler if there is a value on the top of the stack</param>
     /// <param name="None">Handler if the stack is empty</param>
     /// <returns>Popped stack</returns>
@@ -134,7 +138,9 @@ public static class Stack
     /// <summary>
     /// Pop and match
     /// </summary>
+    /// <typeparam name="T">Source item type</typeparam>
     /// <typeparam name="R">Return type</typeparam>
+    /// <param name="stack">Stack</param>
     /// <param name="Some">Handler if there is a value on the top of the stack</param>
     /// <param name="None">Handler if the stack is empty</param>
     /// <returns>Return value from Some or None</returns>
@@ -145,6 +151,7 @@ public static class Stack
     /// <summary>
     /// Push an item onto the stack
     /// </summary>
+    /// <param name="stack">Stack</param>
     /// <param name="value">Item to push</param>
     /// <returns>New stack with the pushed item on top</returns>
     [Pure]
@@ -193,6 +200,7 @@ public static class Stack
     /// the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
+    /// <typeparam name="U">Result item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -206,6 +214,7 @@ public static class Stack
     /// An index value is passed through to the selector function also.
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
+    /// <typeparam name="U">Result item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -233,6 +242,7 @@ public static class Stack
     /// of 'rhs' will be the top of the newly created stack.  'this' stack
     /// will be under the 'rhs' stack.
     /// </summary>
+    /// <param name="lhs">Source stack</param>
     /// <param name="rhs">Stack to append</param>
     /// <returns>Appended stacks</returns>
     [Pure]
@@ -489,6 +499,7 @@ public static class Stack
     /// <summary>
     /// Return an enumerable with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EQ">item comparison type</typeparam>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <returns>An enumerable with all duplicate values removed</returns>
@@ -500,10 +511,13 @@ public static class Stack
     /// Return an enumerable with all duplicate values removed
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
+    /// <typeparam name="K">Key item type</typeparam>
     /// <param name="stack">Stack</param>
+    /// <param name="keySelector">Key selector</param>
+    /// <param name="compare">Optional comparison function</param>
     /// <returns>An enumerable with all duplicate values removed</returns>
     [Pure]
-    public static Stck<T> distinct<T, K>(Stck<T> stack, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default(Option<Func<K, K, bool>>)) =>
+    public static Stck<T> distinct<T, K>(Stck<T> stack, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default) =>
         toStackRev(List.distinct(stack, keySelector, compare));
 
     /// <summary>
@@ -523,7 +537,7 @@ public static class Stack
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static Stck<T> takeWhile<T>(Stck<T> stack, Func<T, bool> pred) =>
@@ -535,7 +549,7 @@ public static class Stack
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static Stck<T> takeWhile<T>(Stck<T> stack, Func<T, int, bool> pred) =>

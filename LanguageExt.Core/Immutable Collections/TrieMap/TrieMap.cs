@@ -1843,6 +1843,7 @@ internal sealed class TrieMap<K, V> :
     /// the results
     /// </summary>
     /// <param name="other">Other set to union with</param>
+    /// <param name="equalityComparer">Value equality comparer</param>
     /// <returns>A set which contains all items from both sets</returns>
     public (TrieMap<K, V> Map, TrieMap<K, Change<V>> Changes) UnionWithLog(IEnumerable<(K, V)> other, IEqualityComparer<V> equalityComparer) =>
         TryAddRangeWithLog(other, equalityComparer);

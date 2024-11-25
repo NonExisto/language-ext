@@ -869,7 +869,7 @@ public readonly struct Map<K, V> :
         new(lhs.Value - rhs.Value);
     
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -877,7 +877,7 @@ public readonly struct Map<K, V> :
         obj is Map<K, V> m && Equals(m);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -885,7 +885,7 @@ public readonly struct Map<K, V> :
         Value.Equals(other.Value, EqualityComparer<K>.Default, EqualityComparer<V>.Default);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -38,6 +38,7 @@ internal sealed class SetInternal<A> :
     /// Ctor that takes a root element
     /// </summary>
     /// <param name="root"></param>
+    /// <param name="comparer">Item comparer</param>
     internal SetInternal(SetItem<A> root, IComparer<A>? comparer)
     {
         set = root;
@@ -51,12 +52,14 @@ internal sealed class SetInternal<A> :
         this(items, SetModule.AddOpt.TryAdd, comparer)
     {
     }
-   
+
 
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    /// <param name="items"></param>
+    /// <param name="items">Data source</param>
+    /// <param name="option">Duplicate strategy</param>
+    /// <param name="comparer">Item comparer</param>
     internal SetInternal(IEnumerable<A> items, SetModule.AddOpt option, IComparer<A>? comparer)
     {
         set = SetItem<A>.Empty;
@@ -72,7 +75,9 @@ internal sealed class SetInternal<A> :
     /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    /// <param name="items"></param>
+    /// <param name="items">Data source</param>
+    /// <param name="option">Duplicate strategy</param>
+    /// <param name="comparer">Item comparer</param>
     internal SetInternal(ReadOnlySpan<A> items, SetModule.AddOpt option, IComparer<A>? comparer)
     {
         set = SetItem<A>.Empty;
@@ -445,8 +450,9 @@ internal sealed class SetInternal<A> :
     /// Maps the values of this set into a new set of values using the
     /// mapper function to transform the source values.
     /// </summary>
-    /// <typeparam name="R">Mapped element type</typeparam>
+    /// <typeparam name="B">Mapped element type</typeparam>
     /// <param name="f">Mapping function</param>
+    /// <param name="comparer">Optional item comparer</param>
     /// <returns>Mapped Set</returns>
     [Pure]
     public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B>? comparer)  =>
@@ -456,7 +462,6 @@ internal sealed class SetInternal<A> :
     /// Maps the values of this set into a new set of values using the
     /// mapper function to transform the source values.
     /// </summary>
-    /// <typeparam name="R">Mapped element type</typeparam>
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped Set</returns>
     [Pure]
@@ -627,9 +632,7 @@ internal sealed class SetInternal<A> :
     /// <summary>
     /// Returns True if other overlaps this set
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <param name="setA">Set A</param>
-    /// <param name="setB">Set B</param>
+    /// <param name="other">Other collection to check</param>
     /// <returns>True if other overlaps this set</returns>
     [Pure]
     public bool Overlaps(IEnumerable<A> other)

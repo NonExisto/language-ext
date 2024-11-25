@@ -65,16 +65,11 @@ public readonly struct Set<A> :
         value = set;
 
     /// <summary>
-    /// Ctor that takes a root element
-    /// </summary>
-    /// <param name="root"></param>
-    internal Set(SetItem<A> root, IComparer<A>? comparer) =>
-        value = new SetInternal<A>(root, comparer);
-
-    /// <summary>
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
-    /// <param name="items"></param>
+    /// <param name="items">Data source</param>
+    /// <param name="tryAdd">Duplicate handling strategy</param>
+    /// <param name="comparer">Optional item comparer</param>
     public Set(IEnumerable<A> items, bool tryAdd, IComparer<A>? comparer) =>
         value = new SetInternal<A>(
             items, 
@@ -87,6 +82,8 @@ public readonly struct Set<A> :
     /// Ctor that takes an initial (distinct) set of items
     /// </summary>
     /// <param name="items"></param>
+    /// <param name="tryAdd">Duplicate handling strategy</param>
+    /// <param name="comparer">Optional item comparer</param>
     public Set(ReadOnlySpan<A> items, bool tryAdd, IComparer<A>? comparer) =>
         value = new SetInternal<A>(
             items, 
@@ -135,7 +132,7 @@ public readonly struct Set<A> :
     ///
     ///     Empty collection     = null
     ///     Singleton collection = A
-    ///     More                 = (A, Seq<A>)   -- head and tail
+    ///     More                 = (A, Seq&lt;A&gt;)   -- head and tail
     ///
     ///     var res = set.Case switch
     ///     {
@@ -364,7 +361,7 @@ public readonly struct Set<A> :
     /// <summary>
     /// Removes a range of items from the set (if they exist)
     /// </summary>
-    /// <param name="value">Value to remove</param>
+    /// <param name="values">Values to remove</param>
     /// <returns>New set with items removed</returns>
     [Pure]
     public Set<A> RemoveRange(IEnumerable<A> values)
@@ -393,8 +390,9 @@ public readonly struct Set<A> :
     /// Maps the values of this set into a new set of values using the
     /// mapper function to transform the source values.
     /// </summary>
-    /// <typeparam name="R">Mapped element type</typeparam>
-    /// <param name="mapper">Mapping function</param>
+    /// <typeparam name="B">Mapped element type</typeparam>
+    /// <param name="map">Mapping function</param>
+    /// <param name="comparer">Optional mapped element comparer</param>
     /// <returns>Mapped Set</returns>
     [Pure]
     public Set<B> Map<B>(Func<A, B> map, IComparer<B>? comparer = null) =>
@@ -405,7 +403,6 @@ public readonly struct Set<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="F">Applicative functor trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -418,7 +415,6 @@ public readonly struct Set<A> :
     /// left to right, and collect the results.
     /// </summary>
     /// <param name="f"></param>
-    /// <param name="ta">Traversable structure</param>
     /// <typeparam name="M">Monad trait</typeparam>
     /// <typeparam name="B">Bound value (output)</typeparam>
     [Pure]
@@ -531,9 +527,7 @@ public readonly struct Set<A> :
     /// <summary>
     /// Returns True if other overlaps this set
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <param name="setA">Set A</param>
-    /// <param name="setB">Set B</param>
+    /// <param name="other">Other collection to check</param>
     /// <returns>True if other overlaps this set</returns>
     [Pure]
     public bool Overlaps(IEnumerable<A> other) =>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
+using LanguageExt.ClassInstances;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -739,7 +740,7 @@ public readonly struct HashMap<K, V> :
         Empty;
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -747,7 +748,7 @@ public readonly struct HashMap<K, V> :
         lhs.Equals(rhs);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// In-equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1011,7 +1012,7 @@ public readonly struct HashMap<K, V> :
 
     
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1020,7 +1021,7 @@ public readonly struct HashMap<K, V> :
 
   
     /// <summary>
-    /// Equality of keys and values with default `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with default <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1028,7 +1029,7 @@ public readonly struct HashMap<K, V> :
         Value.Equals(other.Value);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault&lt;V&gt;` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

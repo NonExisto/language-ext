@@ -50,6 +50,7 @@ public static class StackExtensions
     /// the results for each element where the function returns Some(f(x)).
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
+    /// <typeparam name="U">Result item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -63,6 +64,7 @@ public static class StackExtensions
     /// An index value is passed through to the selector function also.
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
+    /// <typeparam name="U">Result item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <param name="selector">Selector function</param>
     /// <returns>Mapped and filtered enumerable</returns>
@@ -310,6 +312,7 @@ public static class StackExtensions
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>An enumerable with all duplicate values removed</returns>
     [Pure]
     public static bool ForAll<T>(this Stck<T> stack, Func<T, bool> pred) =>
@@ -328,6 +331,7 @@ public static class StackExtensions
     /// <summary>
     /// Return an enumerable with all duplicate values removed
     /// </summary>
+    /// <typeparam name="EQ">item comparison type</typeparam>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
     /// <returns>An enumerable with all duplicate values removed</returns>
@@ -338,11 +342,14 @@ public static class StackExtensions
     /// <summary>
     /// Return an enumerable with all duplicate values removed
     /// </summary>
+    /// <typeparam name="K">Key item type</typeparam>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
+    /// <param name="keySelector">Key selector</param>
+    /// <param name="compare">Optional comparison function</param>
     /// <returns>An enumerable with all duplicate values removed</returns>
     [Pure]
-    public static Stck<T> Distinct<T, K>(this Stck<T> stack, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default(Option<Func<K, K, bool>>)) =>
+    public static Stck<T> Distinct<T, K>(this Stck<T> stack, Func<T, K> keySelector, Option<Func<K, K, bool>> compare = default) =>
         toStackRev(List.distinct(stack, keySelector, compare));
 
     /// <summary>
@@ -362,7 +369,7 @@ public static class StackExtensions
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static Stck<T> TakeWhile<T>(this Stck<T> stack, Func<T, bool> pred) =>
@@ -374,7 +381,7 @@ public static class StackExtensions
     /// </summary>
     /// <typeparam name="T">Stack item type</typeparam>
     /// <param name="stack">Stack</param>
-    /// <param name="count">Number of items to take</param>
+    /// <param name="pred">Predicate</param>
     /// <returns>A new enumerable with the first items that match the predicate</returns>
     [Pure]
     public static Stck<T> TakeWhile<T>(this Stck<T> stack, Func<T, int, bool> pred) =>

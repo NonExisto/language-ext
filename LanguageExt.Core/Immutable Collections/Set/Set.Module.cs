@@ -46,6 +46,7 @@ public sealed partial class Set
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
     /// <param name="range">Range of items</param>
+    /// <param name="comparer">Item comparer to use</param>
     /// <returns>Set</returns>
     [Pure]
     public static Set<T> createRange<T>(IEnumerable<T> range, IComparer<T> comparer) =>
@@ -54,7 +55,7 @@ public sealed partial class Set
     /// <summary>
     /// Create a new set pre-populated with the items in range
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
+    /// <typeparam name="A">Element type</typeparam>
     /// <param name="range">Range of items</param>
     /// <returns>Set</returns>
     [Pure]
@@ -66,8 +67,9 @@ public sealed partial class Set
 /// <summary>
     /// Create a new set pre-populated with the items in range
     /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
+    /// <typeparam name="A">Element type</typeparam>
     /// <param name="range">Range of items</param>
+    /// <param name="comparer">Item comparer to use</param>
     /// <returns>Set</returns>
     [Pure]
     public static Set<A> createRange<A>(ReadOnlySpan<A> range, IComparer<A> comparer) =>
@@ -124,6 +126,7 @@ public sealed partial class Set
     /// Atomically adds a range of items to the set.
     /// </summary>
     /// <remarks>Null is not allowed for a Key</remarks>
+    /// <param name="set">Target set</param>
     /// <param name="range">Range of keys to add</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if any of the keys already exist</exception>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if any of the keys are null</exception>
@@ -136,6 +139,7 @@ public sealed partial class Set
     /// Atomically adds a range of items to the set.  If an item already exists, it's ignored.
     /// </summary>
     /// <remarks>Null is not allowed for a Key</remarks>
+    /// <param name="set">Target set</param>
     /// <param name="range">Range of keys to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if any of the keys are null</exception>
     /// <returns>New Set with the items added</returns>
@@ -147,6 +151,7 @@ public sealed partial class Set
     /// Atomically adds a range of items to the set.  If an item already exists then replace it.
     /// </summary>
     /// <remarks>Null is not allowed for a Key</remarks>
+    /// <param name="set">Target set</param>
     /// <param name="range">Range of keys to add</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if any of the keys are null</exception>
     /// <returns>New Set with the items added</returns>

@@ -230,6 +230,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">delegate to return a new map if the item can't be found</param>
     /// <exception cref="Exception">Throws Exception if None returns null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -242,6 +244,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// put it back.  If it doesn't exist, add a new one based on None result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">a new value if the item can't be found</param>
     /// <exception cref="ArgumentNullException">Throws ArgumentNullException if None is null</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -378,6 +382,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// result.
     /// </summary>
     /// <param name="key">Key to find</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
+    /// <param name="None">delegate to return a new map if the item can't be found</param>
     /// <returns>Found value</returns>
     [Pure]
     public R Find<R>(K key, Func<V, R> Some, Func<R> None) =>
@@ -456,6 +462,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// put it back.
     /// </summary>
     /// <param name="key">Key to set</param>
+    /// <param name="Some">delegate to map the existing value to a new one before setting</param>
     /// <exception cref="ArgumentException">Throws ArgumentException if the item isn't found</exception>
     /// <exception cref="Exception">Throws Exception if Some returns null</exception>
     /// <returns>New map with the mapped value</returns>
@@ -502,6 +509,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// Checks for existence of a key in the map
     /// </summary>
     /// <param name="key">Key to check</param>
+    /// <param name="value">Value to check</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool Contains(K key, V value) =>
@@ -520,6 +528,7 @@ public readonly struct TrackingHashMap<K, V> :
     /// Checks for existence of a value in the map
     /// </summary>
     /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">Optional value comparer</param>
     /// <returns>True if an item with the value supplied is in the map</returns>
     [Pure]
     public bool Contains(V value, IEqualityComparer<V> equalityComparer) =>
@@ -529,6 +538,8 @@ public readonly struct TrackingHashMap<K, V> :
     /// Checks for existence of a key in the map
     /// </summary>
     /// <param name="key">Key to check</param>
+    /// <param name="value">Value to check</param>
+    /// <param name="equalityComparer">Optional value comparer</param>
     /// <returns>True if an item with the key supplied is in the map</returns>
     [Pure]
     public bool Contains(K key, V value, IEqualityComparer<V> equalityComparer) =>
@@ -735,14 +746,14 @@ public readonly struct TrackingHashMap<K, V> :
         Empty;
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     public static bool operator ==(TrackingHashMap<K, V> lhs, TrackingHashMap<K, V> rhs) =>
         lhs.Equals(rhs);
 
     /// <summary>
-    /// In-equality of keys and values with `EqDefault<V>` used for values
+    /// In-equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     public static bool operator !=(TrackingHashMap<K, V> lhs, TrackingHashMap<K, V> rhs) =>
@@ -924,11 +935,11 @@ public readonly struct TrackingHashMap<K, V> :
     /// Finds the union of two sets and produces a new set with 
     /// the results
     /// </summary>
-    /// <param name="other">Other set to union with</param>
+    /// <param name="rhs">Other set to union with</param>
     /// <returns>A set which contains all items from both sets</returns>
     [Pure]
     public TrackingHashMap<K, V> Union(IEnumerable<(K, V)> rhs) =>
-        this.TryAddRange(rhs);
+        TryAddRange(rhs);
 
     /// <summary>
     /// Union two maps.  
@@ -959,14 +970,14 @@ public readonly struct TrackingHashMap<K, V> :
         Wrap(Value.UnionWithLog(other, static (_, v) => v, MapRight, Merge, ValueEqualityComparer, v => v));
         
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     public override bool Equals(object? obj) =>
         obj is TrackingHashMap<K, V> hm && Equals(hm);
 
     /// <summary>
-    /// Equality of keys and values with `EqDefault<V>` used for values
+    /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
     /// </summary>
     [Pure]
     public bool Equals(TrackingHashMap<K, V> other) =>
