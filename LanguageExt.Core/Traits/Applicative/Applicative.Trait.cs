@@ -11,7 +11,6 @@ namespace LanguageExt.Traits;
 /// Applicative functor 
 /// </summary>
 /// <typeparam name="F">Functor trait type</typeparam>
-/// <typeparam name="A">Bound value type</typeparam>
 public interface Applicative<F> : Functor<F>
     where F : Applicative<F>
 {
@@ -49,18 +48,18 @@ public interface Applicative<F> : Functor<F>
     /// <remarks>
     /// Because this is an abstract chaining of actions, it can't actually run anything, and so if your
     /// actions are expected to have side-effects (IO effects, for example), then you won't see them until
-    /// the resulting `K<F, A>` is 'run'.
+    /// the resulting <see cref="K{F,A}"/> is 'run'.
     ///
     /// This matters for infinite streams, where the result of `Actions` isn't realised at all, and so to
     /// avoid nothing happening (no side-effects), you should override this function and unpack the IO
     /// type within, then run that enumerable of IOs.
     ///
-    /// A good example is with the `Eff` type.  It's a `ReaderT<IO, A>` internally:
+    /// A good example is with the `Eff` type.  It's a <see cref="ReaderT{IO,A}"/> internally:
     ///
-    ///     static K<Eff<RT>, A> Actions<A>(IEnumerable<K<Eff<RT>, A>> fas) =>
-    ///         new Eff<RT, A>(
-    ///             new ReaderT<RT, IO, A>(
-    ///                 rt => fas.Select(fa => fa.RunIO(rt)).Actions()));
+    ///     static K&lt;Eff&lt;RT&gt;, A&gt; Actions&lt;A&gt;(IEnumerable&lt;K&lt;Eff&lt;RT&gt;, A&gt;&gt; fas) =&gt;
+    ///         new Eff&lt;RT, A&gt;(
+    ///             new ReaderT&lt;RT, IO, A&gt;(
+    ///                 rt =&gt; fas.Select(fa =&gt; fa.RunIO(rt)).Actions()));
     ///  
     /// </remarks>
     /// <param name="fas">Actions to chain</param>
@@ -76,18 +75,18 @@ public interface Applicative<F> : Functor<F>
     /// <remarks>
     /// Because this is an abstract chaining of actions, it can't actually run anything, and so if your
     /// actions are expected to have side-effects (IO effects, for example), then you won't see them until
-    /// the resulting `K<F, A>` is 'run'.
+    /// the resulting <see cref="K{F,A}"/> is 'run'.
     ///
     /// This matters for infinite streams, where the result of `Actions` isn't realised at all, and so to
     /// avoid nothing happening (no side-effects), you should override this function and unpack the IO
     /// type within, then run that enumerable of IOs.
     ///
-    /// A good example is with the `Eff` type.  It's a `ReaderT<IO, A>` internally:
+    /// A good example is with the `Eff` type.  It's a <see cref="ReaderT{IO,A}"/> internally:
     ///
-    ///     static K<Eff<RT>, A> Actions<A>(IEnumerable<K<Eff<RT>, A>> fas) =>
-    ///         new Eff<RT, A>(
-    ///             new ReaderT<RT, IO, A>(
-    ///                 rt => fas.Select(fa => fa.RunIO(rt)).Actions()));
+    ///     static K&lt;Eff&lt;RT&gt;, A&gt; Actions&lt;A&gt;(IEnumerable&lt;K&lt;Eff&lt;RT&gt;, A&gt;&gt; fas) =&gt;
+    ///         new Eff&lt;RT, A&gt;(
+    ///             new ReaderT&lt;RT, IO, A&gt;(
+    ///                 rt =&gt; fas.Select(fa =&gt; fa.RunIO(rt)).Actions()));
     ///  
     /// </remarks>
     /// <param name="fas">Actions to chain</param>
@@ -103,18 +102,18 @@ public interface Applicative<F> : Functor<F>
     /// <remarks>
     /// Because this is an abstract chaining of actions, it can't actually run anything, and so if your
     /// actions are expected to have side effects (IO effects, for example), then you won't see them until
-    /// the resulting `K<F, A>` is 'run'.
+    /// the resulting <see cref="K{F,A}"/> is 'run'.
     ///
     /// This matters for infinite streams, where the result of `Actions` isn't realised at all, and so to
     /// avoid nothing happening (no side effects), you should override this function and unpack the IO
     /// type within, then run that enumerable of IOs.
     ///
-    /// A good example is with the `Eff` type.  It's a `ReaderT<IO, A>` internally:
+    /// A good example is with the `Eff` type.  It's a <see cref="ReaderT{IO,A}"/> internally:
     ///
-    ///     static K<Eff<RT>, A> Actions<A>(IEnumerable<K<Eff<RT>, A>> fas) =>
-    ///         new Eff<RT, A>(
-    ///             new ReaderT<RT, IO, A>(
-    ///                 rt => fas.Select(fa => fa.RunIO(rt)).Actions()));
+    ///     static K&lt;Eff&lt;RT&gt;, A&gt; Actions&lt;A&gt;(IEnumerable&lt;K&lt;Eff&lt;RT&gt;, A&gt;&gt; fas) =&gt;
+    ///         new Eff&lt;RT, A&gt;(
+    ///             new ReaderT&lt;RT, IO, A&gt;(
+    ///                 rt =&gt; fas.Select(fa =&gt; fa.RunIO(rt)).Actions()));
     ///  
     /// </remarks>
     /// <param name="fas">Actions to chain</param>
@@ -140,18 +139,18 @@ public interface Applicative<F> : Functor<F>
     /// <remarks>
     /// Because this is an abstract chaining of actions, it can't actually run anything, and so if your
     /// actions are expected to have side effects (IO effects, for example), then you won't see them until
-    /// the resulting `K<F, A>` is 'run'.
+    /// the resulting <see cref="K{F,A}"/> is 'run'.
     ///
     /// This matters for infinite streams, where the result of `Actions` isn't realised at all, and so to
     /// avoid nothing happening (no side effects), you should override this function and unpack the IO
     /// type within, then run that enumerable of IOs.
     ///
-    /// A good example is with the `Eff` type.  It's a `ReaderT<IO, A>` internally:
+    /// A good example is with the `Eff` type.  It's a <see cref="ReaderT{IO,A}"/> internally:
     ///
-    ///     static K<Eff<RT>, A> Actions<A>(IEnumerable<K<Eff<RT>, A>> fas) =>
-    ///         new Eff<RT, A>(
-    ///             new ReaderT<RT, IO, A>(
-    ///                 rt => fas.Select(fa => fa.RunIO(rt)).Actions()));
+    ///     static K&lt;Eff&lt;RT&gt;, A&gt; Actions&lt;A&gt;(IEnumerable&lt;K&lt;Eff&lt;RT&gt;, A&gt;&gt; fas) =&gt;
+    ///         new Eff&lt;RT, A&gt;(
+    ///             new ReaderT&lt;RT, IO, A&gt;(
+    ///                 rt =&gt; fas.Select(fa =&gt; fa.RunIO(rt)).Actions()));
     ///  
     /// </remarks>
     /// <param name="fas">Actions to chain</param>

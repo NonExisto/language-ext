@@ -46,5 +46,4 @@ public interface Fallible<E, F> : Trait
 /// Trait for higher-kinded structures that have a failure state `E`
 /// </summary>
 /// <typeparam name="F">Higher-kinded structure</typeparam>
-/// <typeparam name="E">Failure type</typeparam>
 public interface Fallible<F> : Fallible<Error, F>;

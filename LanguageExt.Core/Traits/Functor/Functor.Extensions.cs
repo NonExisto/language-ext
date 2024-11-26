@@ -17,16 +17,17 @@ public static partial class FunctorExtensions
     public static K<F, Unit> IgnoreF<F, A>(this K<F, A> fa)
         where F : Functor<F> =>
         fa.Map(_ => default(Unit));
-    
+
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Functor arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
     /// <typeparam name="F">Functor trait</typeparam>
     /// <typeparam name="A">Initial bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>M<C></returns>
+    /// <returns>Arrow kind</returns>
     public static K<F, C> SelectMany<F, A, C>(
         this K<F, A> ma,
         Func<A, Guard<Error, Unit>> bind,
@@ -41,12 +42,13 @@ public static partial class FunctorExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Functor arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
     /// <typeparam name="F">Functor trait</typeparam>
     /// <typeparam name="A">Initial bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>M<C></returns>
+    /// <returns>Arrow kind</returns>
     public static K<F, C> SelectMany<F, A, C>(
         this K<F, A> ma,
         Func<A, Guard<Fail<Error>, Unit>> bind,
@@ -61,12 +63,13 @@ public static partial class FunctorExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Functor arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
     /// <typeparam name="F">Functor trait</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>M<C></returns>
+    /// <returns>Arrow kind</returns>
     public static K<F, C> SelectMany<F, B, C>(
         this Guard<Error, Unit> ma,
         Func<Unit, K<F, B>> bind,
@@ -81,12 +84,13 @@ public static partial class FunctorExtensions
     /// <summary>
     /// Monad bind operation
     /// </summary>
+    /// <param name="ma">Functor arrow kind</param>
     /// <param name="bind">Monadic bind function</param>
     /// <param name="project">Projection function</param>
     /// <typeparam name="F">Functor trait</typeparam>
     /// <typeparam name="B">Intermediate bound value type</typeparam>
     /// <typeparam name="C">Target bound value type</typeparam>
-    /// <returns>M<C></returns>
+    /// <returns>Arrow kind</returns>
     public static K<F, C> SelectMany<F, B, C>(
         this Guard<Fail<Error>, Unit> ma,
         Func<Unit, K<F, B>> bind,
@@ -107,7 +111,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, B> Map<Fnctr, A, B>(
         this K<Fnctr, A> ma, Func<A, B> f) 
@@ -125,7 +128,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="value">Ignore the bound value and map to this</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, B> Map<Fnctr, A, B>(
         this K<Fnctr, A> ma, B value) 
@@ -141,7 +143,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, B> Select<Fnctr, A, B>(
         this K<Fnctr, A> ma, Func<A, B> f) 
@@ -157,7 +158,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, B> Map<Fnctr, A, B>(
         this Func<A, B> f, K<Fnctr, A> ma) 
@@ -182,7 +182,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, C>> Map<Fnctr, A, B, C>(
         this Func<A, B, C> f, K<Fnctr, A> ma) 
@@ -207,7 +206,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, D>>> Map<Fnctr, A, B, C, D>(
         this Func<A, B, C, D> f, K<Fnctr, A> ma) 
@@ -232,7 +230,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, E>>>> Map<Fnctr, A, B, C, D, E>(
         this Func<A, B, C, D, E> f, K<Fnctr, A> ma) 
@@ -257,7 +254,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, F>>>>> Map<Fnctr, A, B, C, D, E, F>(
         this Func<A, B, C, D, E, F> f, K<Fnctr, A> ma) 
@@ -282,7 +278,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, G>>>>>> Map<Fnctr, A, B, C, D, E, F, G>(
         this Func<A, B, C, D, E, F, G> f, K<Fnctr, A> ma) 
@@ -307,7 +302,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, H>>>>>>> Map<Fnctr, A, B, C, D, E, F, G, H>(
         this Func<A, B, C, D, E, F, G, H> f, K<Fnctr, A> ma) 
@@ -332,7 +326,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, I>>>>>>>> Map<Fnctr, A, B, C, D, E, F, G, H, I>(
         this Func<A, B, C, D, E, F, G, H, I> f, K<Fnctr, A> ma) 
@@ -357,7 +350,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, Func<I, J>>>>>>>>> Map<Fnctr, A, B, C, D, E, F, G, H, I, J>(
         this Func<A, B, C, D, E, F, G, H, I, J> f, K<Fnctr, A> ma) 
@@ -382,7 +374,6 @@ public static partial class FunctorExtensions
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, Func<I, Func<J, K>>>>>>>>>> Map<Fnctr, A, B, C, D, E, F, G, H, I, J, K>(
         this Func<A, B, C, D, E, F, G, H, I, J, K> f, K<Fnctr, A> ma) 

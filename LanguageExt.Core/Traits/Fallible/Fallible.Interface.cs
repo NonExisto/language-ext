@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using LanguageExt.Attributes;
 
 namespace LanguageExt.Traits;
 
@@ -13,10 +14,11 @@ namespace LanguageExt.Traits;
 /// Primarily makes `@catch` work nicely, but is generally beneficial.  
 /// </remarks>
 /// <typeparam name="FA">'Self' type, for example <see cref="Either{L,R}"/></typeparam>
-/// <typeparam name="F">Trait implementation, for example `Either<L>`</typeparam>
+/// <typeparam name="F">Trait implementation, for example <see cref="Either{L}"/></typeparam>
 /// <typeparam name="E">Failure type, for example `L`</typeparam>
 /// <typeparam name="A">Bound value type, for example `R`</typeparam>
-public interface Fallible<FA, F, E, A> : K<F, A>
+[Trait("Fail*")]
+public interface Fallible<FA, F, E, A> : K<F, A>, Trait
     where FA : 
         Fallible<FA, F, E, A>
     where F :

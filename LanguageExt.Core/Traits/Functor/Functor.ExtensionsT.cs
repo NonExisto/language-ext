@@ -15,18 +15,17 @@ public static partial class FunctorExtensions
     /// excessive generic arguments all the way down the chain.
     /// </remarks>
     /// <example>
-    ///
-    ///    var mx = Seq<Option<int>>(Some(1), Some(2), Some(3));
+    /// <code>
+    ///    var mx = Seq&lt;Option&lt;int&gt;&gt;(Some(1), Some(2), Some(3));
     ///         
-    ///    var ma = mx.KindT<Seq, Option, Option<int>, int>()
-    ///               .BindT(a => Some(a + 1))
-    ///               .MapT(a => a + 1);
-    ///               .AsT<Seq, Option, Option<int>, int>();
-    ///
+    ///    var ma = mx.KindT&lt;Seq, Option, Option&lt;int&gt;, int&gt;()
+    ///               .BindT(a =&gt; Some(a + 1))
+    ///               .MapT(a =&gt; a + 1);
+    ///               .AsT&lt;Seq, Option, Option&lt;int&gt;, int&gt;();
+    /// </code>
     /// </example>
     /// <param name="mna">Nested functor value</param>
     /// <param name="f">Bind function</param>
-    /// <typeparam name="NA">`N<A>`</typeparam>
     /// <typeparam name="M">Outer functor trait</typeparam>
     /// <typeparam name="N">Inner functor trait</typeparam>
     /// <typeparam name="A">Input bound value</typeparam>

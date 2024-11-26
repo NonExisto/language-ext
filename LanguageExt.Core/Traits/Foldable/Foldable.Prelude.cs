@@ -478,6 +478,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="f">Predicate function</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Partitioned structure</returns>
     public static (Seq<A> True, Seq<A> False) partition<T, A>(Func<A, bool> f, K<T, A> ta)

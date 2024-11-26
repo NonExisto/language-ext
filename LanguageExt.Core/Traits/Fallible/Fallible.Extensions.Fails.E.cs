@@ -11,6 +11,7 @@ public static partial class FallibleExtensionsE
     /// <typeparam name="F">Foldable type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <param name="fma">Foldable of fallible monadic values</param>
     /// <returns>A collection of `E` values</returns>
     public static K<M, Seq<E>> Fails<E, F, M, A>(
@@ -26,6 +27,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>
@@ -39,6 +41,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>
@@ -52,6 +55,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>
@@ -65,6 +69,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>
@@ -78,6 +83,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>
@@ -91,6 +97,7 @@ public static partial class FallibleExtensionsE
     /// Partitions a collection of effects into successes and failures,
     /// and returns only the failures.
     /// </summary>
+    /// <typeparam name="E">Failure type</typeparam>
     /// <typeparam name="M">Fallible monadic type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <param name="fma">Collection of fallible monadic values</param>

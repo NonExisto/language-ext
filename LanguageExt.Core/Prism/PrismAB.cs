@@ -52,7 +52,7 @@ namespace LanguageExt
         }
 
         /// <summary>
-        /// Implicit conversion operator from Lens<A,B> to Prism<A,B>
+        /// Implicit conversion operator from <see cref="Lens{A,B}"/> to Prism&lt;A,B&gt;
         /// </summary>
         /// <param name="value">Value</param>
         [Pure]
@@ -60,7 +60,7 @@ namespace LanguageExt
             New(value);
 
         /// <summary>
-        /// Implicit conversion operator from Option<A> to Result<A>
+        /// Implicit conversion operator from <see cref="Option{A}"/> to Prism&lt;A,B&gt;
         /// </summary>
         /// <param name="value">Value</param>
         [Pure]

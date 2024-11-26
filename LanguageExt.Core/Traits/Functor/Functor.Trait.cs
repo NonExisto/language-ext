@@ -6,8 +6,8 @@ namespace LanguageExt.Traits;
 /// Functor trait
 /// </summary>
 /// <remarks>
-/// `Map` is used to apply a function of type `Func<A, B>` to a value of type `K<F, A>`
-/// where `F` is a functor, to produce a value of type `K<F, B>`.
+/// `Map` is used to apply a function of type <see cref="Func{A,B}"/> to a value of type <see cref="K{F,A}"/>
+/// where `F` is a functor, to produce a value of type `K&lt;F, B&gt;`.
 ///
 /// Note that for any type with more than one parameter (e.g., `Either`), only the
 /// last type parameter can be modified with `Map` (e.g. `R` in <see cref="Either{L,R}"/>).
@@ -28,7 +28,6 @@ public interface Functor<F>
     /// </remarks>
     /// <param name="f">Mapping function</param>
     /// <param name="ma">Functor to map</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static abstract K<F, B> Map<A, B>(Func<A, B> f, K<F, A> ma);
 }

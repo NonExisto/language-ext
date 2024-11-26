@@ -5,8 +5,6 @@ namespace LanguageExt.Traits;
 /// <summary>
 /// Module for higher-kinded structures that have a failure state `E`
 /// </summary>
-/// <typeparam name="F">Higher-kinded structure</typeparam>
-/// <typeparam name="E">Failure type</typeparam>
 public static class Fallible
 {
     /// <summary>
@@ -38,7 +36,6 @@ public static class Fallible
     /// <param name="error">Error to raise</param>
     /// <typeparam name="F">Fallible trait</typeparam>
     /// <typeparam name="E">Error type</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns></returns>
     public static K<F, Unit> fail<E, F>(E error)
         where F : Fallible<E, F> =>
@@ -49,8 +46,6 @@ public static class Fallible
     /// </summary>
     /// <param name="error">Error to raise</param>
     /// <typeparam name="F">Fallible trait</typeparam>
-    /// <typeparam name="E">Error type</typeparam>
-    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns></returns>
     public static K<F, Unit> error<F>(Error error)
         where F : Fallible<Error, F> =>

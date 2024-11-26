@@ -306,9 +306,10 @@ public static class ApplicativeExtensions
     /// Sum the bound values of the applicative structures provided
     /// </summary>
     /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Add<NumA, F, A>(this K<F, A> fa, K<F, A> fb)
@@ -319,10 +320,10 @@ public static class ApplicativeExtensions
     /// <summary>
     /// Sum the bound values of the applicative structures provided
     /// </summary>
-    /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Add<F, A>(this K<F, A> fa, K<F, A> fb)
@@ -334,9 +335,10 @@ public static class ApplicativeExtensions
     /// Subtract the bound values of the applicative structures provided
     /// </summary>
     /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Subtract<NumA, F, A>(this K<F, A> fa, K<F, A> fb)
@@ -347,10 +349,10 @@ public static class ApplicativeExtensions
     /// <summary>
     /// Subtract the bound values of the applicative structures provided
     /// </summary>
-    /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Subtract<F, A>(this K<F, A> fa, K<F, A> fb)
@@ -362,9 +364,10 @@ public static class ApplicativeExtensions
     /// Multiply the bound values of the applicative structures provided
     /// </summary>
     /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Multiply<NumA, F, A>(this K<F, A> fa, K<F, A> fb)
@@ -375,10 +378,10 @@ public static class ApplicativeExtensions
     /// <summary>
     /// Multiply the bound values of the applicative structures provided
     /// </summary>
-    /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Multiply<F, A>(this K<F, A> fa, K<F, A> fb)
@@ -390,9 +393,10 @@ public static class ApplicativeExtensions
     /// Multiply the bound values of the applicative structures provided
     /// </summary>
     /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Divide<NumA, F, A>(this K<F, A> fa, K<F, A> fb)
@@ -403,10 +407,10 @@ public static class ApplicativeExtensions
     /// <summary>
     /// Multiply the bound values of the applicative structures provided
     /// </summary>
-    /// <typeparam name="NumA">Num of A</typeparam>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
-    /// <param name="fx">Left hand side of the operation</param>
-    /// <param name="fy">Right hand side of the operation</param>
+    /// <param name="fa">Left hand side of the operation</param>
+    /// <param name="fb">Right hand side of the operation</param>
     /// <returns>An applicative structure with the arithmetic operation applied to the bound values.</returns>
     [Pure]
     public static K<F, A> Divide<F, A>(this K<F, A> fa, K<F, A> fb)
@@ -476,6 +480,7 @@ public static class ApplicativeExtensions
     /// <typeparam name="B">Second applicative's bound value type</typeparam>
     /// <typeparam name="C">Third applicative's bound value type</typeparam>
     /// <typeparam name="D">Fourth applicative's bound value type</typeparam>
+    /// <typeparam name="E">5th applicative bound value type</typeparam>
     /// <returns>Zipped applicative</returns>
     public static K<F, (A First, B Second, C Third, D Fourth, E Fifth)> Zip<F, A, B, C, D, E>(
         this (K<F, A> First, K<F, B> Second, K<F, C> Third, K<F, D> Fourth, K<F, E> Fifth) tuple)
@@ -553,6 +558,7 @@ public static class ApplicativeExtensions
     /// <typeparam name="B">Second applicative's bound value type</typeparam>
     /// <typeparam name="C">Third applicative's bound value type</typeparam>
     /// <typeparam name="D">Fourth applicative's bound value type</typeparam>
+    /// <typeparam name="E">5th applicative bound value type</typeparam>
     /// <returns>Zipped applicative</returns>
     public static K<F, (A First, B Second, C Third, D Fourth, E Fifth)> Zip<F, A, B, C, D, E>(
         this K<F, A> First, K<F, B> Second, K<F, C> Third, K<F, D> Fourth, K<F, E> Fifth)

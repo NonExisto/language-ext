@@ -25,7 +25,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, B> map<Fnctr, A, B>(
         Func<A, B> f, K<Fnctr, A> ma) 
@@ -50,7 +49,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, C>> map<Fnctr, A, B, C>(
         Func<A, B, C> f, K<Fnctr, A> ma) 
@@ -75,7 +73,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, D>>> map<Fnctr, A, B, C, D>(
         Func<A, B, C, D> f, K<Fnctr, A> ma) 
@@ -100,7 +97,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, E>>>> map<Fnctr, A, B, C, D, E>(
         Func<A, B, C, D, E> f, K<Fnctr, A> ma) 
@@ -125,7 +121,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, F>>>>> map<Fnctr, A, B, C, D, E, F>(
         Func<A, B, C, D, E, F> f, K<Fnctr, A> ma) 
@@ -150,7 +145,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, G>>>>>> map<Fnctr, A, B, C, D, E, F, G>(
         Func<A, B, C, D, E, F, G> f, K<Fnctr, A> ma) 
@@ -175,7 +169,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, H>>>>>>> map<Fnctr, A, B, C, D, E, F, G, H>(
         Func<A, B, C, D, E, F, G, H> f, K<Fnctr, A> ma) 
@@ -200,7 +193,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, I>>>>>>>> map<Fnctr, A, B, C, D, E, F, G, H, I>(
         Func<A, B, C, D, E, F, G, H, I> f, K<Fnctr, A> ma) 
@@ -225,7 +217,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, Func<I, J>>>>>>>>> map<Fnctr, A, B, C, D, E, F, G, H, I, J>(
         Func<A, B, C, D, E, F, G, H, I, J> f, K<Fnctr, A> ma) 
@@ -250,7 +241,6 @@ public static partial class Prelude
     /// </remarks>
     /// <param name="ma">Functor to map</param>
     /// <param name="f">Mapping function</param>
-    /// <typeparam name="Fnctr">Trait of the functor</typeparam>
     /// <returns>Mapped functor</returns>
     public static K<Fnctr, Func<B, Func<C, Func<D, Func<E, Func<F, Func<G, Func<H, Func<I, Func<J, K>>>>>>>>>> map<Fnctr, A, B, C, D, E, F, G, H, I, J, K>(
         Func<A, B, C, D, E, F, G, H, I, J, K> f, K<Fnctr, A> ma) 

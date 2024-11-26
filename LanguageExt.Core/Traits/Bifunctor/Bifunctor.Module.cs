@@ -13,7 +13,6 @@ public static class Bifunctor
     /// <param name="first">Mapping function</param>
     /// <param name="second">Mapping function</param>
     /// <param name="fab">Bifunctor structure</param>
-    /// <typeparam name="F">Bifunctor trait</typeparam>
     /// <returns>Mapped bifunctor</returns>
     public static K<F, Q, B> bimap<F, P, A, Q, B>(Func<P, Q> first, Func<A, B> second, K<F, P, A> fab) 
         where F : Bifunctor<F> =>
@@ -24,7 +23,6 @@ public static class Bifunctor
     /// </summary>
     /// <param name="first">Mapping function</param>
     /// <param name="fab">Bifunctor structure</param>
-    /// <typeparam name="F">Bifunctor trait</typeparam>
     /// <returns>Mapped bifunctor</returns>
     public static K<F, Q, A> first<F, P, A, Q>(Func<P, Q> first, K<F, P, A> fab) 
         where F : Bifunctor<F> =>
@@ -35,7 +33,6 @@ public static class Bifunctor
     /// </summary>
     /// <param name="second">Mapping function</param>
     /// <param name="fab">Bifunctor structure</param>
-    /// <typeparam name="F">Bifunctor trait</typeparam>
     /// <returns>Mapped bifunctor</returns>
     public static K<F, P, B> second<F, P, A, B>(Func<A, B> second, K<F, P, A> fab) 
         where F : Bifunctor<F> =>

@@ -6,7 +6,6 @@ namespace LanguageExt.Traits;
 /// <summary>
 /// Extensions for higher-kinded structures that have a failure state `Error`
 /// </summary>
-/// <typeparam name="F">Higher-kinded structure</typeparam>
 public static partial class FallibleExtensions
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +21,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Predicate">Predicate to test any failure values</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -40,6 +40,7 @@ public static partial class FallibleExtensions
     /// <param name="ma">`Fallible` structure</param>
     /// <param name="Predicate">Predicate to test any failure values</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -58,6 +59,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Predicate">Predicate to test any failure values</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -76,6 +78,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Predicate">Predicate to test any failure values</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -91,8 +94,9 @@ public static partial class FallibleExtensions
     /// against the catch structure and run its action if a match.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
-    /// <param name="@catch">Catch structure created by the `@catch` functions.  Contains the
+    /// <param name="catch">Catch structure created by the `@catch` functions.  Contains the
     /// match predicate and action</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of running the catch structure's action if `fa` is in
     /// a failed state and the</returns>
@@ -115,6 +119,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Match">Error to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -133,6 +138,7 @@ public static partial class FallibleExtensions
     /// <param name="ma">`Fallible` structure</param>
     /// <param name="Match">Error to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -151,6 +157,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Match">Error to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -169,6 +176,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Match">Error to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -192,6 +200,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Code">Error code to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -210,6 +219,7 @@ public static partial class FallibleExtensions
     /// <param name="ma">`Fallible` structure</param>
     /// <param name="Code">Error code to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -228,6 +238,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Code">Error code to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -246,6 +257,7 @@ public static partial class FallibleExtensions
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Code">Error code to match to</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -268,6 +280,7 @@ public static partial class FallibleExtensions
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -284,6 +297,7 @@ public static partial class FallibleExtensions
     /// </summary>
     /// <param name="ma">`Fallible` structure</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -300,6 +314,7 @@ public static partial class FallibleExtensions
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -316,6 +331,7 @@ public static partial class FallibleExtensions
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
     /// <param name="Fail">Handler when in failed state</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Either `fa` or the result of `Fail` if `fa` is in a failed state and the
     /// predicate returns true for the failure value</returns>
@@ -324,55 +340,65 @@ public static partial class FallibleExtensions
         Func<Error, A> Fail) 
         where F : Fallible<F>, Applicative<F> =>
         F.Catch(fa, _ => true, e => F.Pure(Fail(e)));
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 
     //  Catch all errors and provide alternative values 
     //
-    
+
     /// <summary>
     /// Run the `Fallible` structure.  If in a failed state, replace the failure value with `fail`.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
+    /// <param name="fail">Failed state replacement</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     public static K<F, A> Catch<F, A>(this K<F, A> fa, Fail<Error> fail) 
         where F : Fallible<F>, Applicative<F> =>
         F.Catch(fa, _ => true, _ => F.Fail<A>(fail.Value));
-    
+
     /// <summary>
     /// Run the `Fallible` structure.  If in a failed state, replace the failure value with `fail`.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
+    /// <param name="fail">Fail state error replacement</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     public static K<F, A> Catch<F, A>(this K<F, A> fa, Error fail) 
         where F : Fallible<F>, Applicative<F> =>
         F.Catch(fa, _ => true, _ => F.Fail<A>(fail));
-    
+
     /// <summary>
     /// Run the `Fallible` structure.  If in a failed state, replace the failure value with
     /// the success value and cancelling the failure.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
+    /// <param name="value">Fail state value replacement</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     public static K<F, A> Catch<F, A>(this K<F, A> fa, Pure<A> value) 
         where F : Fallible<F>, Applicative<F> =>
         F.Catch(fa, _ => true, _ => F.Pure(value.Value));
-    
+
     /// <summary>
     /// Run the `Fallible` structure.  If in a failed state, replace the failure value with
     /// the success value and cancelling the failure.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
+    /// <param name="value">Fail state value replacement</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     public static K<F, A> Catch<F, A>(this K<F, A> fa, A value) 
         where F : Fallible<F>, Applicative<F> =>
         F.Catch(fa, _ => true, _ => F.Pure(value));
-    
+
     /// <summary>
     /// Run the `Fallible` structure.  If in a failed state, replace the failure value with
     /// the `alternative` computation, which may succeed or fail.
     /// </summary>
     /// <param name="fa">`Fallible` structure</param>
+    /// <param name="alternative">Fail state fallible applicative replacement</param>
+    /// <typeparam name="F">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     public static K<F, A> Catch<F, A>(this K<F, A> fa, K<F, A> alternative) 
         where F : Fallible<F>, Applicative<F> =>

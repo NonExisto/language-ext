@@ -13,6 +13,7 @@ public static partial class FoldableExtensions
     /// <param name="f">Fold function</param>
     /// <param name="initialState">Initial state for the fold</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Aggregated value</returns>
@@ -29,6 +30,7 @@ public static partial class FoldableExtensions
     /// <param name="f">Fold function</param>
     /// <param name="initialState">Initial state for the fold</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Aggregated value</returns>
@@ -45,6 +47,7 @@ public static partial class FoldableExtensions
     /// <param name="f">Fold function</param>
     /// <param name="initialState">Initial state for the fold</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Aggregated value</returns>
@@ -61,6 +64,7 @@ public static partial class FoldableExtensions
     /// <param name="f">Fold function</param>
     /// <param name="initialState">Initial state for the fold</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Aggregated value</returns>
@@ -768,6 +772,7 @@ public static partial class FoldableExtensions
     /// </summary>
     /// <param name="f">Predicate function</param>
     /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="T">Higher-kinded structure</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Partitioned structure</returns>
     public static (Seq<A> True, Seq<A> False) Partition<T, A>(this K<T, A> ta, Func<A, bool> f)

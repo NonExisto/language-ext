@@ -58,8 +58,8 @@ public static partial class Trait
     /// <param name="x">The value for which we are calculating the logarithm.</param>
     /// <returns>The value of <c>log b (x)</c>.</returns>
     [Pure]
-    public static A logBase<FLOAT, A>(A x, A y) where FLOAT : Floating<A> =>
-        FLOAT.LogBase(x, y);
+    public static A logBase<FLOAT, A>(A b, A x) where FLOAT : Floating<A> =>
+        FLOAT.LogBase(b, x);
 
     /// <summary>
     /// Calculates the sine of an angle.

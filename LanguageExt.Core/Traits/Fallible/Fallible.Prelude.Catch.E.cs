@@ -9,26 +9,28 @@ namespace LanguageExt;
 /// exception catching and matching.
 /// </summary>
 /// <example>
+/// <code>
 /// 
-///      public class TimeoutExample<RT>
+///      public class TimeoutExample&lt;RT&gt;
 ///          where RT : struct,
-///          HasTime<RT>,
-///          HasCancel<RT>,
-///          HasConsole<RT>
+///          HasTime&lt;RT&gt;,
+///          HasCancel&lt;RT&gt;,
+///          HasConsole&lt;RT&gt;
 ///      {
-///          public static Eff<RT, Unit> main =>
+///          public static Eff&lt;RT, Unit&gt; main =&gt;
 ///              from _1 in timeout(60 * seconds, longRunning)
 ///                       | @catch(Errors.TimedOut, unitEff)
-///              from _2 in Console<RT>.writeLine("done")
+///              from _2 in Console&lt;RT&gt;.writeLine("done")
 ///              select unit;
 ///      
-///          static Aff<RT, Unit> longRunning =>
-///              (from tm in Time<RT>.now
-///               from _1 in Console<RT>.writeLine(tm.ToLongTimeString())
+///          static Aff&lt;RT, Unit&gt; longRunning =&gt;
+///              (from tm in Time&lt;RT&gt;.now
+///               from _1 in Console&lt;RT&gt;.writeLine(tm.ToLongTimeString())
 ///               select unit)
 ///             .ToAff()
 ///             .Repeat(Schedule.Fibonacci(1 * second));
 ///      }
+/// </code>
 /// </example>
 public static partial class Prelude
 {

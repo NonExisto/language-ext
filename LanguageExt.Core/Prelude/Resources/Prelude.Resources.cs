@@ -16,6 +16,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="acquire">Computation that acquires the resource</param>
     /// <param name="release">Action to release the resource</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Acquired resource</returns>
     [Pure]
@@ -64,6 +65,7 @@ public static partial class Prelude
     /// </summary>
     /// <param name="acquire">Computation that acquires the resource</param>
     /// <param name="release">Action to release the resource</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Acquired resource</returns>
     [Pure]
@@ -122,6 +124,7 @@ public static partial class Prelude
     /// code with `@using`.
     /// </summary>
     /// <param name="acquire">Computation that acquires the resource</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Acquired resource</returns>
     [Pure]
@@ -138,6 +141,7 @@ public static partial class Prelude
     /// code with `@using`.
     /// </summary>
     /// <param name="acquire">Computation that acquires the resource</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Acquired resource</returns>
     [Pure]
@@ -165,6 +169,7 @@ public static partial class Prelude
     /// are automatically released.  Imagine this as the ultimate `using` statement.
     /// </summary>
     /// <param name="computation">Computation to run in a local scope</param>
+    /// <typeparam name="M">Monad type</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Result of computation</returns>
     [Pure]
@@ -203,7 +208,7 @@ public static partial class Prelude
     /// <param name="Acq">Acquire resource</param>
     /// <param name="Use">Function to use the acquired resource</param>
     /// <param name="Catch">Function called when an `Error` is raised within the `Acq` computation</param>
-    /// <param name="Finally">Function to invoke to release the resource</param>
+    /// <param name="Fin">Function to invoke to release the resource</param>
     [Pure]
     [MethodImpl(Opt.Default)]
     public static K<M, C> bracketIO<M, A, B, C>(K<M, A> Acq, Func<A, IO<C>> Use, Func<Error, IO<C>> Catch, Func<A, IO<B>> Fin)

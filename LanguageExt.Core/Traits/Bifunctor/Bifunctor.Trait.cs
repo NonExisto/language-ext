@@ -16,7 +16,6 @@ public interface Bifunctor<F>
     /// <param name="first">Mapping function</param>
     /// <param name="second">Mapping function</param>
     /// <param name="fab">Functor structure</param>
-    /// <typeparam name="F">Functor trait</typeparam>
     /// <returns>Mapped functor</returns>
     public static abstract K<F, Q, B> BiMap<P, A, Q, B>(Func<P, Q> first, Func<A, B> second, K<F, P, A> fab);
 
@@ -25,7 +24,6 @@ public interface Bifunctor<F>
     /// </summary>
     /// <param name="first">Mapping function</param>
     /// <param name="fab">Bifunctor structure</param>
-    /// <typeparam name="F">Bifunctor trait</typeparam>
     /// <returns>Mapped bifunctor</returns>
     public static virtual K<F, Q, A> First<P, A, Q>(Func<P, Q> first, K<F, P, A> fab) =>
         F.BiMap(first, identity, fab);
@@ -35,7 +33,6 @@ public interface Bifunctor<F>
     /// </summary>
     /// <param name="second">Mapping function</param>
     /// <param name="fab">Bifunctor structure</param>
-    /// <typeparam name="F">Bifunctor trait</typeparam>
     /// <returns>Mapped bifunctor</returns>
     public static virtual K<F, P, B> Second<P, A, B>(Func<A, B> second, K<F, P, A> fab) =>
         F.BiMap(identity, second, fab);

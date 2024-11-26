@@ -11,6 +11,7 @@ public static partial class Prelude
     /// Construct an applicative structure from a pure value  
     /// </summary>
     /// <param name="value">Pure value to lift into the applicative structure</param>
+    /// <typeparam name="F">Applicative of A</typeparam>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Applicative structure</returns>
     [Pure]
@@ -149,6 +150,7 @@ public static partial class Prelude
     /// <typeparam name="B">Second applicative's bound value type</typeparam>
     /// <typeparam name="C">Third applicative's bound value type</typeparam>
     /// <typeparam name="D">Fourth applicative's bound value type</typeparam>
+    /// <typeparam name="E">5th applicative bound value type</typeparam>
     /// <returns>Zipped applicative</returns>
     public static K<F, (A First, B Second, C Third, D Fourth, E Fifth)> zip<F, A, B, C, D, E>(
         (K<F, A> First, K<F, B> Second, K<F, C> Third, K<F, D> Fourth, K<F, E> Fifth) tuple)
@@ -225,6 +227,7 @@ public static partial class Prelude
     /// <typeparam name="B">Second applicative's bound value type</typeparam>
     /// <typeparam name="C">Third applicative's bound value type</typeparam>
     /// <typeparam name="D">Fourth applicative's bound value type</typeparam>
+    /// <typeparam name="E">5th applicative bound value type</typeparam>
     /// <returns>Zipped applicative</returns>
     public static K<F, (A First, B Second, C Third, D Fourth, E Fifth)> zip<F, A, B, C, D, E>(
         K<F, A> First, K<F, B> Second, K<F, C> Third, K<F, D> Fourth, K<F, E> Fifth)
