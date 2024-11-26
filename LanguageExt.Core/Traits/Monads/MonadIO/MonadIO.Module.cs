@@ -8,7 +8,7 @@ namespace LanguageExt.Traits;
 public static class MonadIO
 {
     /// <summary>
-    /// Embeds the `IO` monad into the `M<A>` monad.  NOTE: This will fail if the monad transformer
+    /// Embeds the `IO` monad into the `M&lt;A&gt;` monad.  NOTE: This will fail if the monad transformer
     /// stack doesn't have an `IO` monad as its innermost monad.
     /// </summary>
     public static K<M, A> liftIO<M, A>(IO<A> ma) 
@@ -16,7 +16,7 @@ public static class MonadIO
         M.LiftIO(ma);
     
     /// <summary>
-    /// Embeds the `IO` monad into the `M<A>` monad.  NOTE: This will fail if the monad transformer
+    /// Embeds the `IO` monad into the `M&lt;A&gt;` monad.  NOTE: This will fail if the monad transformer
     /// stack doesn't have an `IO` monad as its innermost monad.
     /// </summary>
     public static K<M, A> liftIO<M, A>(K<IO, A> ma) 

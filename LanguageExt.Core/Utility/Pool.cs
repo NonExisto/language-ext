@@ -24,7 +24,7 @@ namespace LanguageExt
     /// <summary>
     /// Thread-safe pooling 
     /// Manages a concurrent stack of values that will grow as needed
-    /// When spent new objects are allocated used the `New<A>` trait
+    /// When spent new objects are allocated used the `New&lt;A&gt;` trait
     /// </summary>
     internal static class Pool<NewA, A> where NewA : New<A>
     {
@@ -42,7 +42,7 @@ namespace LanguageExt
     /// <summary>
     /// Thread-safe pooling 
     /// Manages a concurrent stack of values that will grow as needed
-    /// When spent new objects are allocated used the `New<A>` trait
+    /// When spent new objects are allocated used the `New&lt;A&gt;` trait
     /// </summary>
     internal static class Pool<NewA, A, B> where NewA : New<A, B>
     {

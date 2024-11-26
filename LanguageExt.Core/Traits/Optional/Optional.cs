@@ -34,6 +34,7 @@ public interface Optional<OA, A> : Trait
     /// <summary>
     /// Match the two states of the Option A
     /// </summary>
+    /// <param name="opt">Optional</param>
     /// <param name="Some">Some match operation</param>
     /// <param name="None">None match operation</param>
     public static abstract Unit Match(OA opt, Action<A> Some, Action None);

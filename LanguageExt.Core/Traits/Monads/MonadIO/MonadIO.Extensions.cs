@@ -6,7 +6,6 @@ namespace LanguageExt;
 /// <summary>
 /// Monad that is either the IO monad or a transformer with the IO monad in its stack
 /// </summary>
-/// <typeparam name="M">Self referring trait</typeparam>
 public static class MonadIOExtensions
 {
     /// <summary>

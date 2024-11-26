@@ -8,7 +8,6 @@ public interface Semigroup<A>
     /// <summary>
     /// An associative binary operation.
     /// </summary>
-    /// <param name="this">The first operand to the operation</param>
     /// <param name="rhs">The second operand to the operation</param>
     /// <returns>The result of the operation</returns>
     [Pure]

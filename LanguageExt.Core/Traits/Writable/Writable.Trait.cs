@@ -24,7 +24,6 @@ public interface Writable<M, W>
     /// Tell is an action that produces the writer output
     /// </summary>
     /// <param name="item">Item to tell</param>
-    /// <typeparam name="W">Writer type</typeparam>
     /// <returns>Structure with the told item</returns>
     public static abstract K<M, Unit> Tell(W item);
 

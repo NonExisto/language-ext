@@ -12,6 +12,7 @@ public static partial class MonoidK
     /// <summary>
     /// Identity
     /// </summary>
+    /// <typeparam name="F">Monoid type type</typeparam>
     /// <typeparam name="A"></typeparam>
     /// <returns></returns>
     [Pure]

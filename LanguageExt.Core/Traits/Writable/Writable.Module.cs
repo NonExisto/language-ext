@@ -8,7 +8,8 @@ public static partial class Writable
     /// Tell is an action that produces the writer output
     /// </summary>
     /// <param name="item">Item to tell</param>
-    /// <typeparam name="W">Writer type</typeparam>
+    /// <typeparam name="M">Writer type</typeparam>
+    /// <typeparam name="W">Monoid type</typeparam>
     /// <returns>Structure with the told item</returns>
     public static K<M, Unit> tell<M, W>(W item)
         where M : Writable<M, W>

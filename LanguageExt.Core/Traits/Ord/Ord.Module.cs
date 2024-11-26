@@ -95,7 +95,6 @@ public static partial class Ord
     /// Find the minimum value between a set of values
     /// </summary>
     /// <param name="x">First value</param>
-    /// <param name="y">Second value</param>
     /// <param name="tail">Remaining values</param>
     /// <returns>When ordering the values in ascending order, this is the first of those</returns>
     [Pure]
@@ -117,7 +116,6 @@ public static partial class Ord
     /// Find the maximum value between a set of values
     /// </summary>
     /// <param name="x">First value</param>
-    /// <param name="y">Second value</param>
     /// <param name="tail">Remaining values</param>
     /// <returns>When ordering the values in ascending order, this is the last of those</returns>
     [Pure]

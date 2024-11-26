@@ -6,7 +6,6 @@ namespace LanguageExt;
 /// <summary>
 /// A monoid on applicative functors
 /// </summary>
-/// <typeparam name="F">Applicative functor</typeparam>
 public static class MonoidKExtensions
 {
     /// <summary>

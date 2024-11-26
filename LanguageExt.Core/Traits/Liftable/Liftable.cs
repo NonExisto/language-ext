@@ -10,12 +10,13 @@ namespace LanguageExt.Traits;
 /// </para>
 /// </summary>
 /// <typeparam name="A">The type to be lifted</typeparam>
+/// <typeparam name="LA">The lifted type</typeparam>
 [Trait("Lift*")]
 public interface Liftable<out LA, in A> : Trait
 {
     /// <summary>
-    /// Lift value A into a Liftable<A>
-    /// <summary>
+    /// Lift value A into a Liftable&lt;A&gt;
+    /// </summary>
     [Pure]
     public static abstract LA Lift(A x);
 }

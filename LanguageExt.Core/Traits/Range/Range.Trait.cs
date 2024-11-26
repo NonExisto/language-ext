@@ -52,8 +52,8 @@ public interface Range<SELF, NumOrdA, A> : IEnumerable<A>, K<SELF, A>
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
-    /// <param name="to">The maximum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
+    /// <param name="max">The maximum value in the range</param>
     /// <param name="step">The size of each step in the range</param>
     [Pure]
     public static SELF FromMinMax(A min, A max, A step) =>
@@ -62,7 +62,7 @@ public interface Range<SELF, NumOrdA, A> : IEnumerable<A>, K<SELF, A>
     /// <summary>
     /// Construct a new range
     /// </summary>
-    /// <param name="from">The minimum value in the range</param>
+    /// <param name="min">The minimum value in the range</param>
     /// <param name="count">The number of items in the range</param>
     /// <param name="step">The size of each step in the range</param>
     [Pure]

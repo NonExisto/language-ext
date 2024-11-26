@@ -108,6 +108,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<M, A> Then, K<M, A> Else)
@@ -121,6 +122,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<M, A> Then, K<IO, A> Else)
@@ -134,6 +136,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<IO, A> Then, K<M, A> Else)
@@ -147,6 +150,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<IO, A> Then, K<IO, A> Else)
@@ -160,6 +164,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<M, A> Then, Pure<A> Else)
@@ -173,6 +178,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, Pure<A> Then, K<M, A> Else)
@@ -186,6 +192,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, Pure<A> Then, Pure<A> Else)
@@ -199,6 +206,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, Pure<A> Then, K<IO, A> Else)
@@ -212,6 +220,7 @@ public static partial class Monad
     /// <param name="Then">Computation</param>
     /// <param name="Else">Computation</param>
     /// <typeparam name="M">Monad</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Unit monad</returns>
     [Pure]
     public static K<M, A> iff<M, A>(K<M, bool> Pred, K<IO, A> Then, Pure<A> Else)

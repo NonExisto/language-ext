@@ -11,7 +11,6 @@ namespace LanguageExt;
 /// A more detailed description of what same shape means, the various methods, how traversals
 /// are constructed, and example advanced use-cases can be found in the Overview section of Data.Traversable.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public static partial class TraversableExtensions
 {
     public static K<F, K<T, B>> Traverse<T, F, A, B>(

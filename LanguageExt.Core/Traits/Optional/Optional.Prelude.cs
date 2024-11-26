@@ -30,6 +30,7 @@ public static partial class Optional
     /// is in a None state, otherwise the bound Some(x) value is returned.
     /// </summary>
     /// <remarks>Will not accept a null return value from the None operation</remarks>
+    /// <param name="opt">Optional</param>
     /// <param name="None">Operation to invoke if the structure is in a None state</param>
     /// <returns>Result of invoking the None() operation if the optional 
     /// is in a None state, otherwise the bound Some(x) value is returned.</returns>
@@ -43,6 +44,7 @@ public static partial class Optional
     /// the bound Some(x) value is returned.
     /// </summary>
     /// <remarks>Will not accept a null noneValue</remarks>
+    /// <param name="opt">Optional</param>
     /// <param name="noneValue">Value to return if in a None state</param>
     /// <returns>noneValue if the optional is in a None state, otherwise
     /// the bound Some(x) value is returned</returns>
@@ -55,7 +57,11 @@ public static partial class Optional
     /// Match operation with an untyped value for Some. This can be
     /// useful for serialisation and dealing with the IOptional interface
     /// </summary>
+    /// <typeparam name="OPT">Bound optional type transformer</typeparam>
+    /// <typeparam name="OA">Bound optional type</typeparam>
     /// <typeparam name="R">The return type</typeparam>
+    /// <typeparam name="A">Bound value type</typeparam>
+    /// <param name="ma">Optional</param>
     /// <param name="Some">Operation to perform if the option is in a Some state</param>
     /// <param name="None">Operation to perform if the option is in a None state</param>
     /// <returns>The result of the match operation</returns>
@@ -92,6 +98,8 @@ public static partial class Optional
     /// Convert the Option to an enumerable of zero or one items
     /// </summary>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="OPT">Bound optional type transformer</typeparam>
+    /// <typeparam name="OA">Bound optional type</typeparam>
     /// <param name="ma">Option</param>
     /// <returns>An enumerable of zero or one items</returns>
     [Pure]

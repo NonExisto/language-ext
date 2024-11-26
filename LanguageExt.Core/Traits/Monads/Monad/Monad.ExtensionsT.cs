@@ -19,12 +19,12 @@ public static partial class MonadExtensions
     /// </remarks>
     /// <example>
     ///
-    ///    var mx = Seq<Option<int>>(Some(1), Some(2), Some(3));
+    ///    var mx = Seq&lt;Option&lt;int&gt;&gt;(Some(1), Some(2), Some(3));
     ///         
-    ///    var ma = mx.KindT<Seq, Option, Option<int>, int>()
-    ///               .BindT(a => Some(a + 1))
-    ///               .MapT(a => a + 1);
-    ///               .AsT<Seq, Option, Option<int>, int>();
+    ///    var ma = mx.KindT&lt;Seq, Option, Option&lt;int&gt;, int&gt;()
+    ///               .BindT(a =&gt; Some(a + 1))
+    ///               .MapT(a =&gt; a + 1);
+    ///               .AsT&lt;Seq, Option, Option&lt;int&gt;, int&gt;();
     ///
     /// </example>
     /// <param name="mna">Nested monadic value</param>
@@ -50,12 +50,12 @@ public static partial class MonadExtensions
     /// </remarks>
     /// <example>
     ///
-    ///    var mx = Seq<Option<int>>(Some(1), Some(2), Some(3));
+    ///    var mx = Seq&lt;Option&lt;int&gt;&gt;(Some(1), Some(2), Some(3));
     ///         
-    ///    var ma = mx.KindT<Seq, Option, Option<int>, int>()
-    ///               .BindT(a => Seq(Some(a + 1)))
-    ///               .MapT(a => a + 1);
-    ///               .AsT<Seq, Option, Option<int>, int>();
+    ///    var ma = mx.KindT&lt;Seq, Option, Option&lt;int&gt;, int&gt;()
+    ///               .BindT(a =&gt; Seq(Some(a + 1)))
+    ///               .MapT(a =&gt; a + 1);
+    ///               .AsT&lt;Seq, Option, Option&lt;int&gt;, int&gt;();
     ///
     /// </example>
     /// <param name="mna">Nested monadic value</param>
