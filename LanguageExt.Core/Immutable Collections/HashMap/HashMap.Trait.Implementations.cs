@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using LanguageExt.Traits;
 
@@ -10,17 +9,8 @@ public sealed partial class HashMap<Key> :
     Functor<HashMap<Key>>, 
     MonoidK<HashMap<Key>>
 {
-    static K<HashMap<Key>, B> Functor<HashMap<Key>>.Map<A, B>(Func<A, B> f, K<HashMap<Key>, A> ma)
-    {
-        return new HashMap<Key, B>(Go());
-        IEnumerable<(Key, B)> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return (x.Key, f(x.Value));
-            }
-        }
-    }
+    static K<HashMap<Key>, B> Functor<HashMap<Key>>.Map<A, B>(Func<A, B> f, K<HashMap<Key>, A> ma)=> 
+        ma.As().Map(f);
     
     static S Foldable<HashMap<Key>>.FoldWhile<A, S>(Func<A, Func<S, S>> f, Func<(S State, A Value), bool> predicate, S state, K<HashMap<Key>, A> ta)
     {

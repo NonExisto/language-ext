@@ -7,18 +7,9 @@ namespace LanguageExt;
 
 public sealed partial class Map<Key> : Foldable<Map<Key>>, Functor<Map<Key>>, MonoidK<Map<Key>>
 {
-    static K<Map<Key>, B> Functor<Map<Key>>.Map<A, B>(Func<A, B> f, K<Map<Key>, A> ma)
-    {
-        return new Map<Key, B>(Go());
-        IEnumerable<(Key, B)> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return (x.Key, f(x.Value));
-            }
-        }
-    }
-    
+    static K<Map<Key>, B> Functor<Map<Key>>.Map<A, B>(Func<A, B> f, K<Map<Key>, A> ma) => 
+        ma.As().Map(f);
+
     static S Foldable<Map<Key>>.FoldWhile<A, S>(Func<A, Func<S, S>> f, Func<(S State, A Value), bool> predicate, S state, K<Map<Key>, A> ta)
     {
         foreach (var x in ta.As())

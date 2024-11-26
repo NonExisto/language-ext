@@ -16,7 +16,7 @@ public sealed partial class Set : Monad<Set>, Alternative<Set>, Traversable<Set>
         singleton(value);
 
     static K<Set, B> Applicative<Set>.Apply<A, B>(K<Set, Func<A, B>> mf, K<Set, A> ma) => 
-        new Set<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
+        mf.Bind(f => ma.Map(f));
 
     static K<Set, B> Applicative<Set>.Action<A, B>(K<Set, A> ma, K<Set, B> mb) => 
         mb;

@@ -19,7 +19,7 @@ public sealed partial class Seq :
         singleton(value);
 
     static K<Seq, B> Applicative<Seq>.Apply<A, B>(K<Seq, Func<A, B>> mf, K<Seq, A> ma) =>
-        new Seq<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
+        mf.Bind(f => ma.Map(f));
 
     static K<Seq, B> Applicative<Seq>.Action<A, B>(K<Seq, A> ma, K<Seq, B> mb)
     {

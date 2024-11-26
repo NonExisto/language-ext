@@ -10,32 +10,11 @@ public sealed partial class HashSet :
     Alternative<HashSet>, 
     Traversable<HashSet>
 {
-    static K<HashSet, B> Monad<HashSet>.Bind<A, B>(K<HashSet, A> ma, Func<A, K<HashSet, B>> f)
-    {
-        return new HashSet<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                foreach (var y in f(x).As())
-                {
-                    yield return y;
-                }
-            }
-        }
-    }
+    static K<HashSet, B> Monad<HashSet>.Bind<A, B>(K<HashSet, A> ma, Func<A, K<HashSet, B>> f) => 
+        new HashSet<B>(ma.As().SelectMany(x => f(x).As()));
 
-    static K<HashSet, B> Functor<HashSet>.Map<A, B>(Func<A, B> f, K<HashSet, A> ma)
-    {
-        return new HashSet<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var x in ma.As())
-            {
-                yield return f(x);
-            }
-        }
-    }
+    static K<HashSet, B> Functor<HashSet>.Map<A, B>(Func<A, B> f, K<HashSet, A> ma) => 
+        ma.As().Map(f);
 
     static K<HashSet, A> Applicative<HashSet>.Pure<A>(A value) =>
         singleton(value);

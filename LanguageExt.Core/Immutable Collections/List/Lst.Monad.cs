@@ -20,7 +20,7 @@ public sealed class Lst:
         List.singleton(value);
 
     static K<Lst, B> Applicative<Lst>.Apply<A, B>(K<Lst, Func<A, B>> mf, K<Lst, A> ma) => 
-        new Lst<B>(mf.As().SelectMany(f => ma.As().Select(a => f(a))));
+        mf.Bind(f => ma.Map(f));
 
     static K<Lst, B> Applicative<Lst>.Action<A, B>(K<Lst, A> ma, K<Lst, B> mb) =>
         mb;
