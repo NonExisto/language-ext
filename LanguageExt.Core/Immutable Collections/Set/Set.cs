@@ -109,7 +109,7 @@ public readonly struct Set<A> :
     /// </summary>
     [Pure]
     public static Lens<Set<A>, Set<A>> map(Lens<A, A> lens) => Lens<Set<A>, Set<A>>.New(
-        Get: la => la.Map(lens.Get, Comparer<A>.Default),
+        Get: la => la.Map(lens.Get, getRegisteredOrderComparerOrDefault<A>()),
         Set: lb => la =>
                    {
                        foreach (var item in lb)
@@ -703,7 +703,7 @@ public readonly struct Set<A> :
 
     [Pure]
     public Set<B> Select<B>(Func<A, B> f) =>
-        Map(f, Comparer<B>.Default);
+        Map(f, getRegisteredOrderComparerOrDefault<B>());
 
     [Pure]
     public Set<A> Where(Func<A, bool> pred) =>
@@ -724,7 +724,7 @@ public readonly struct Set<A> :
                 }
             }
         }
-        return new Set<B>(Yield(), true, Comparer<B>.Default);
+        return new Set<B>(Yield(), true, getRegisteredOrderComparerOrDefault<B>());
     }
 
     [Pure]
@@ -742,7 +742,7 @@ public readonly struct Set<A> :
                 }
             }
         }
-        return new Set<C>(Yield(), true, Comparer<C>.Default);
+        return new Set<C>(Yield(), true, getRegisteredOrderComparerOrDefault<C>());
     }
 
     [Pure]

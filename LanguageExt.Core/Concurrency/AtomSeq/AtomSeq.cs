@@ -1274,7 +1274,7 @@ public class AtomSeq<A> :
     /// </summary>
     [Pure]
     public int CompareTo(Seq<A> other) =>
-        CompareTo(other, Comparer<A>.Default);
+        CompareTo(other, getRegisteredOrderComparerOrDefault<A>());
 
     /// <summary>
     /// Compare to another sequence
@@ -1283,7 +1283,7 @@ public class AtomSeq<A> :
     public int CompareTo(AtomSeq<A>? other) =>
         other is null 
             ? 1
-            : CompareTo(other, Comparer<A>.Default);
+            : CompareTo(other, getRegisteredOrderComparerOrDefault<A>());
 
     /// <summary>
     /// Compare to another sequence

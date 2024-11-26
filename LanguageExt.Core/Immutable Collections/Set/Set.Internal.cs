@@ -110,7 +110,7 @@ internal sealed class SetInternal<A> :
 
     public override int GetHashCode() =>
         hashCode == 0
-            ? hashCode = FNV32.Hash(EqualityComparer<A>.Default, AsIterable())
+            ? hashCode = FNV32.Hash(getRegisteredEqualityComparerOrDefault<A>(), AsIterable())
             : hashCode;
 
     public Iterable<A> AsIterable()

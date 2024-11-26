@@ -295,7 +295,7 @@ public struct Arr<A> :
     [Pure]
     public readonly int IndexOf(A item, int index = 0, int count = -1, IEqualityComparer<A>? equalityComparer = null)
     {
-        var eq = equalityComparer ?? EqualityComparer<A>.Default;
+        var eq = equalityComparer ?? getRegisteredEqualityComparerOrDefault<A>();
 
         var arr = Value;
         for (; index >= 0 && index < arr.Length && count != 0; index++, count--)
@@ -311,7 +311,7 @@ public struct Arr<A> :
     [Pure]
     public readonly int LastIndexOf(A item, int index = -1, int count = -1, IEqualityComparer<A>? equalityComparer = null)
     {
-        var eq = equalityComparer ?? EqualityComparer<A>.Default;
+        var eq = equalityComparer ?? getRegisteredEqualityComparerOrDefault<A>();
 
         var arr = Value;
         index = index < 0 ? arr.Length - 1 : index;

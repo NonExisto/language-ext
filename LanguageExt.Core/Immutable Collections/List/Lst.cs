@@ -641,7 +641,7 @@ public readonly struct Lst<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Lst<A> other) =>
-        Value.CompareTo(other.Value, Comparer<A>.Default);
+        Value.CompareTo(other.Value, getRegisteredOrderComparerOrDefault<A>());
 
     /// <summary>
     /// Implicit conversion from an untyped empty list

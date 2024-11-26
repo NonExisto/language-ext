@@ -157,7 +157,7 @@ internal sealed class LstInternal<A> :
                     ? Count
                     : count;
 
-        equalityComparer ??= EqualityComparer<A>.Default;
+        equalityComparer ??= Prelude.getRegisteredEqualityComparerOrDefault<A>();
 
         if (count == 0) return -1;
         if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
@@ -211,7 +211,7 @@ internal sealed class LstInternal<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LstInternal<A> Remove(A value) => 
-        Remove(value, EqualityComparer<A>.Default);
+        Remove(value, Prelude.getRegisteredEqualityComparerOrDefault<A>());
 
     /// <summary>
     /// Remove all items that match `value` from the list

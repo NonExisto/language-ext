@@ -301,7 +301,7 @@ public sealed partial class Set
     /// <returns>Mapped enumerable</returns>
     [Pure]
     public static Set<R> map<T, R>(Set<T> set, Func<T, R> mapper) =>
-        set.Map(mapper, Comparer<R>.Default);
+        set.Map(mapper, Prelude.getRegisteredOrderComparerOrDefault<R>());
 
     /// <summary>
     /// Returns True if the value is in the set

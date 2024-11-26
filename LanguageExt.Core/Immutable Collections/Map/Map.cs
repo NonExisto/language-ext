@@ -882,7 +882,7 @@ public readonly struct Map<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Map<K, V> other) =>
-        Value.Equals(other.Value, EqualityComparer<K>.Default, EqualityComparer<V>.Default);
+        Value.Equals(other.Value, getRegisteredEqualityComparerOrDefault<K>(), getRegisteredEqualityComparerOrDefault<V>());
 
     /// <summary>
     /// Equality of keys and values with <see cref="EqDefault{V}"/> used for values
@@ -1278,7 +1278,7 @@ public readonly struct Map<K, V> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Map<K, V> other) =>
-        Value.CompareTo(other.Value, Comparer<V>.Default);
+        Value.CompareTo(other.Value, getRegisteredOrderComparerOrDefault<V>());
 
     /// <summary>
     /// Compare keys and values (values use `OrdV` for ordering)
