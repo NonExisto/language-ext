@@ -62,8 +62,8 @@ public sealed class EntryMapped<A, B> :
     /// </summary>
     public B To { get; }
 
-    public override bool Equals(Change<B>? obj) =>
-        obj is EntryMapped<A, B> rhs && Equals(rhs);
+    public override bool Equals(Change<B>? other) =>
+        other is EntryMapped<A, B> rhs && Equals(rhs);
 
     public bool Equals(EntryMapped<A, B>? other) =>
         other is not null &&

@@ -24,7 +24,7 @@ public partial class EitherT<L, M>
         EitherT<L, M, A>.Lift(M.LiftIO(ma));
 }
 
-public partial class EitherT
+public sealed partial class EitherT
 {
     public static EitherT<L, M, A> Right<L, M, A>(A value)  
         where M : Monad<M> =>

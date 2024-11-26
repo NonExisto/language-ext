@@ -19,8 +19,8 @@ public sealed class EntryRemoved<A> :
     internal EntryRemoved(A oldValue) =>
         OldValue = oldValue;
 
-    public override bool Equals(Change<A>? obj) =>
-        obj is EntryRemoved<A> rhs && Equals(rhs);
+    public override bool Equals(Change<A>? other) =>
+        other is EntryRemoved<A> rhs && Equals(rhs);
 
     public override int GetHashCode() => 
         OldValue?.GetHashCode() ?? FNV32.OffsetBasis;

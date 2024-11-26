@@ -17,20 +17,14 @@ namespace LanguageExt;
 public static class STM
 {
     static long refIdNext;
-    static readonly AtomHashMap<long, RefState> state;
-    static readonly AsyncLocal<Transaction?> transaction;
-
-    static STM()
-    {
-        state       = AtomHashMap<long, RefState>(Traits.Eq.Comparer<EqLong, long>());
-        transaction = new AsyncLocal<Transaction?>();
-    }
+    static readonly AtomHashMap<long, RefState> state = AtomHashMap<long, RefState>(Traits.Eq.Comparer<EqLong, long>());
+    static readonly AsyncLocal<Transaction?> transaction= new();
 
     static void OnChange(TrieMap<long, Change<RefState>> patch) 
     {
-        foreach (var change in patch)
+        foreach (var (_Key, Value) in patch)
         {
-            if (change.Value is EntryMappedTo<RefState> update)
+            if (Value is EntryMappedTo<RefState> update)
             {
                 update.To.OnChange(update.To.UntypedValue);
             }
@@ -45,7 +39,7 @@ public static class STM
         var id = Interlocked.Increment(ref refIdNext);
         var r = new Ref<A>(id);
         var v = new RefState<A>(0, value, validator, r);
-        state.Add(id, v, null);
+        _ = state.Add(id, v, null);
         return r;
     }
         
@@ -289,7 +283,7 @@ public static class STM
         }
 
         // Attempt to apply the changes atomically
-        state.SwapInternal(s =>
+        _ = state.SwapInternal(s =>
         {
             if (isolation == Isolation.Serialisable)
             {
@@ -338,14 +332,7 @@ public static class STM
                 throw new RefValidationFailedException();
             }
 
-            if (s[write].Version == newState.Version)
-            {
-                s = s.SetItem(write, newState.Inc());
-            }
-            else
-            {
-                throw new ConflictException();
-            }
+            s = s[write].Version == newState.Version ? s.SetItem(write, newState.Inc()) : throw new ConflictException();
         }
 
         return s;
@@ -453,7 +440,7 @@ public static class STM
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static A Commute<X, A>(long id, X x, Func<X, A, A> f) =>
-        Commute<A>(id, (a => f(x, a)));
+        Commute<A>(id, a => f(x, a));
 
     /// <summary>
     /// Must be called in a transaction. Sets the in-transaction-value of
@@ -475,7 +462,7 @@ public static class STM
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static A Commute<X, Y, A>(long id, X x, Y y, Func<X, Y, A, A> f) =>
-        Commute<A>(id, (a => f(x, y, a)));
+        Commute<A>(id, a => f(x, y, a));
 
     /// <summary>
     /// Make sure Refs are cleaned up
@@ -487,7 +474,7 @@ public static class STM
     /// <summary>
     /// Conflict exception for internal use
     /// </summary>
-    class ConflictException : Exception;
+    sealed class ConflictException : Exception;
 
     /// <summary>
     /// Wraps a (A -> A) predicate as (object -> object)
@@ -508,7 +495,7 @@ public static class STM
     /// <summary>
     /// Transaction snapshot
     /// </summary>
-    class Transaction
+    sealed class Transaction
     {
         static long transactionIdNext;
         public readonly long transactionId;
@@ -529,7 +516,7 @@ public static class STM
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object ReadValue(long id)
         {
-            reads.Add(id);
+            _ = reads.Add(id);
             return state[id].UntypedValue;
         }
 
@@ -539,7 +526,7 @@ public static class STM
             var oldState = state[id];
             var newState = oldState.SetValue(value);
             state = state.SetItem(id, newState);
-            writes.Add(id);
+            _ = writes.Add(id);
             var change = changes.Find(id);
             if (change.IsSome)
             {
@@ -579,7 +566,7 @@ public static class STM
         public abstract object UntypedValue { get; }
     }
 
-    record RefState<A>(long Version, A Value, Func<A, bool>? Validator, Ref<A> Ref) : RefState(Version)
+    sealed record RefState<A>(long Version, A Value, Func<A, bool>? Validator, Ref<A> Ref) : RefState(Version)
     {
         public override bool Validate(RefState refState) =>
             Validator?.Invoke(((RefState<A>)refState).Value) ?? true;

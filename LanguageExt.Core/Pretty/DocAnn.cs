@@ -31,7 +31,7 @@ public static class DocAnn
             ? DocEmpty<A>.Default
             : text.Length == 1
                 ? Char<A>(text[0])
-                : text.Contains("\n")
+                : text.Contains('\n', StringComparison.Ordinal)
                     ? text.Split('\n')
                           .AsIterable() 
                           .Map(Text<A>)

@@ -13,7 +13,7 @@ namespace LanguageExt;
 /// shared.
 /// </summary>
 [method: MethodImpl(MethodImplOptions.AggressiveInlining)]
-internal class Enum<A>(IEnumerable<A> ma) : IDisposable
+internal sealed class Enum<A>(IEnumerable<A> ma) : IDisposable
 {
     const int DefaultCapacity = 32;
     A[] data = new A[DefaultCapacity];

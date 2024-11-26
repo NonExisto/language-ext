@@ -2,7 +2,7 @@ using System.Text;
 
 namespace LanguageExt.Pretty
 {
-    internal class FastSpace
+    internal sealed class FastSpace
     {
         public static string Show(int n) =>
             (n < 0 ? 0 : n) switch

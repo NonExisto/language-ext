@@ -30,7 +30,7 @@ public class Resources : IDisposable
     {
         foreach (var (_, Value) in resources)
         {
-            Value.Release().Run(envIO);
+            _ = Value.Release().Run(envIO);
         }
         return default;
     }
@@ -66,11 +66,7 @@ public class Resources : IDisposable
     {
         ArgumentNullException.ThrowIfNull(value);
         return resources.Find(value)
-                        .Match(Some: f =>
-                                     {
-                                         resources.Remove(value);
-                                         return f.Release();
-                                     },
+                        .Match(Some: f => resources.Remove(value).Return(f.Release()),
                                None: () => parent is null 
                                                ? unitIO
                                                : parent.Release(value));
@@ -83,7 +79,7 @@ public class Resources : IDisposable
                         {
                             foreach (var (Key, Value) in r)
                             {
-                                Value.Release().Run(envIO);
+                                _ = Value.Release().Run(envIO);
                             }
                             return [];
                         })

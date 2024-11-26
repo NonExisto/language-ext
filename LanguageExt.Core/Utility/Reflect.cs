@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace LanguageExt
 {
-    class Reflect
+    static class Reflect
     {
         static bool Intersects<A>(A[] ma, A[] mb)
         {
@@ -54,7 +54,7 @@ namespace LanguageExt
                                     .OrderBy(p => p.MetadataToken)
 #endif
                                     .Where(f => f.IsPrivate &&
-                                                publicPropNames.AsIterable().Exists(p => f.Name.StartsWith($"<{p.Name}>")))
+                                                publicPropNames.AsIterable().Exists(p => f.Name.StartsWith($"<{p.Name}>", StringComparison.Ordinal)))
                                     .ToArray();
 
             return EnumerableOptimal.ConcatFast(publicFields, backingFields);
@@ -75,7 +75,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicStaticMethod(Type type, string name, Type argA) =>
             type.GetTypeInfo()
                 .DeclaredMethods
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -83,14 +83,13 @@ namespace LanguageExt
                     if (ps.Length != 1) return false;
                     if (ps[0].ParameterType != argA) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredMethods
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -98,14 +97,13 @@ namespace LanguageExt
                     if (ps.Length != 1) return false;
                     if (ps[0].ParameterType != argA) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A>(string name) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredMethods
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -113,14 +111,13 @@ namespace LanguageExt
                     if (ps.Length != 1) return false;
                     if (ps[0].ParameterType != typeof(A)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A, B>(string name) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredMethods
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -129,14 +126,13 @@ namespace LanguageExt
                     if (ps[0].ParameterType != typeof(A)) return false;
                     if (ps[1].ParameterType != typeof(B)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA, Type argB) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredMethods
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -145,27 +141,25 @@ namespace LanguageExt
                     if (ps[0].ParameterType != argA) return false;
                     if (ps[1].ParameterType != argB) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .GetAllMethods(includeBase)
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
                     if (x.GetParameters().Length != 0) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .GetAllMethods(includeBase)
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -173,15 +167,14 @@ namespace LanguageExt
                     if (ps.Length != 1) return false;
                     if (ps[0].ParameterType != typeof(A)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
 
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A, B>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .GetAllMethods(includeBase)
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -190,26 +183,24 @@ namespace LanguageExt
                     if (ps[0].ParameterType != typeof(A)) return false;
                     if (ps[1].ParameterType != typeof(B)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicInstanceMethod(Type type, string name, bool includeBase) =>
             type.GetTypeInfo()
                 .GetAllMethods(includeBase)
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
                     if (x.GetParameters().Length != 0) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, Type arg1, Type arg2, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .GetAllMethods(includeBase)
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -218,40 +209,37 @@ namespace LanguageExt
                     if (ps[0].ParameterType != arg1) return false;
                     if (ps[1].ParameterType != arg2) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<ConstructorInfo> GetConstructor<TYPE>() =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredConstructors
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.GetParameters().Length != 0) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A>() =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredConstructors
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
                     if (ps.Length != 1) return false;
                     if (ps[0].ParameterType != typeof(A)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B>() =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredConstructors
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -259,14 +247,13 @@ namespace LanguageExt
                     if (ps[0].ParameterType != typeof(A)) return false;
                     if (ps[1].ParameterType != typeof(B)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C>() =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredConstructors
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -275,14 +262,13 @@ namespace LanguageExt
                     if (ps[1].ParameterType != typeof(B)) return false;
                     if (ps[2].ParameterType != typeof(C)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C, D>() =>
             typeof(TYPE)
                 .GetTypeInfo()
                 .DeclaredConstructors
-                .Where(x =>
+.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -292,8 +278,7 @@ namespace LanguageExt
                     if (ps[2].ParameterType != typeof(C)) return false;
                     if (ps[3].ParameterType != typeof(D)) return false;
                     return true;
-                })
-                .FirstOrDefault();
+                });
 
         public static bool IsFunc(Type? type) =>
             type != null && typeof(MulticastDelegate).IsAssignableFrom(type);
@@ -301,8 +286,8 @@ namespace LanguageExt
         public static bool IsAnonymous(Type? type) =>
             type != null && 
             Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false) && 
-            type.IsGenericType && type.Name.Contains("AnonymousType") &&
-            (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$")) &&
+            type.IsGenericType && type.Name.Contains("AnonymousType", StringComparison.Ordinal) &&
+            (type.Name.StartsWith("<>", StringComparison.Ordinal) || type.Name.StartsWith("VB$", StringComparison.Ordinal)) &&
             type.Attributes.HasFlag(TypeAttributes.NotPublic);
     }
 }

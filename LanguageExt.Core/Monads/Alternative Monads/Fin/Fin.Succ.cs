@@ -98,11 +98,11 @@ public partial class Fin
         /// <summary>
         /// Maps the value in the structure
         /// </summary>
-        /// <param name="Succ">Map function</param>
+        /// <param name="f">Map function</param>
         /// <returns>Mapped structure</returns>
         [Pure]
-        public override Fin<B> Map<B>(Func<A, B> Succ) =>
-            new Succ<B>(Succ(Value));
+        public override Fin<B> Map<B>(Func<A, B> f) =>
+            new Succ<B>(f(Value));
 
         /// <summary>
         /// Maps the value in the structure

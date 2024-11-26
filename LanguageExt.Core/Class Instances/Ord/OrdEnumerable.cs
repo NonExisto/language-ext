@@ -11,8 +11,6 @@ namespace LanguageExt.ClassInstances;
 public struct OrdEnumerable<OrdA, A> : Ord<IEnumerable<A>>
     where OrdA : Ord<A>
 {
-    public static readonly OrdEnumerable<OrdA, A> Inst = default(OrdEnumerable<OrdA, A>);
-
     /// <summary>
     /// Equality test
     /// </summary>
@@ -37,8 +35,8 @@ public struct OrdEnumerable<OrdA, A> : Ord<IEnumerable<A>>
     public static int Compare(IEnumerable<A> x, IEnumerable<A> y)
     {
         if (ReferenceEquals(x, y)) return 0;
-        if (ReferenceEquals(x, null)) return -1;
-        if (ReferenceEquals(y, null)) return 1;
+        if (x is null) return -1;
+        if (y is null) return 1;
 
         using var enumx = x.GetEnumerator();
         using var enumy = y.GetEnumerator();

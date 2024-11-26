@@ -26,7 +26,7 @@ namespace LanguageExt;
 /// </summary>
 /// <param name="runIO">The lifted thunk that is the IO operation</param>
 /// <typeparam name="A">Bound value</typeparam>
-sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
+sealed partial record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
 {
 
     public IO<A> ToAsync() =>
@@ -176,7 +176,7 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
                 var reg = env.Token.Register(() => tsrc.Cancel());
 
                 // Gather our resources for clean-up
-                var cleanup = new CleanUp(tsrc, reg);
+                var cleanup = new CancellationTokenCleanUp(tsrc, reg);
 
                 var parentResources = env.Resources;
 
@@ -471,24 +471,11 @@ sealed record IOSync<A>(Func<EnvIO, IOResponse<A>> runIO) : IO<A>
     public override string ToString() => 
         "IO";
 
-    async static Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
+    static async Task<IOResponse<A>> AwaitAsync(Task<IOResponse<A>> t, EnvIO envIO, CancellationToken token, CancellationTokenSource source)
     {
         envIO.Token.ThrowIfCancellationRequested();
         token.ThrowIfCancellationRequested();
         await using var reg = envIO.Token.Register(source.Cancel);
         return await t;        
-    }
-    
-    record CleanUp(CancellationTokenSource Src, CancellationTokenRegistration Reg) : IDisposable
-    {
-        volatile int disposed;
-        public void Dispose()
-        {
-            if (Interlocked.Exchange(ref disposed, 1) == 0)
-            {
-                try{Src.Dispose();} catch { /* not important */ } 
-                try{Reg.Dispose();} catch { /* not important */ }
-            }
-        }
     }
 }

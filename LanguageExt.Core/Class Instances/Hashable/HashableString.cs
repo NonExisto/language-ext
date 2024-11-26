@@ -18,7 +18,7 @@ public struct HashableString : Hashable<string>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetHashCode(string x) =>
-        x == null ? 0 : x.GetHashCode();
+        x == null ? 0 : x.GetHashCode(StringComparison.Ordinal);
 }
     
 /// <summary>

@@ -66,7 +66,7 @@ public static partial class Prelude
                        {
                            res = cache.GetOrAdd(inp, func);
                        }
-                       syncMap.TryRemove(inp, out sync);
+                       _ = syncMap.TryRemove(inp, out sync);
                        return res;
                    }
                };
@@ -119,9 +119,9 @@ public static partial class Prelude
     /// That means that both the key and value are collected when the GC fires rather than 
     /// just the value.  Mitigates memory leak of keys.
     /// </summary>
-    private class WeakDict<T, R> where T : notnull
+    private sealed class WeakDict<T, R> where T : notnull
     {
-        private class OnFinalize<V>(Action onFinalize, V value)
+        private sealed class OnFinalize<V>(Action onFinalize, V value)
         {
             public readonly V Value = value;
 

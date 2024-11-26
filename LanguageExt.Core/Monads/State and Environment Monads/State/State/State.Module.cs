@@ -15,7 +15,7 @@ public partial class State<S>
 /// <summary>
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
-public class State
+public sealed class State
 {
     public static State<S, A> pure<S, A>(A value) =>  
         State<S, A>.Pure(value);

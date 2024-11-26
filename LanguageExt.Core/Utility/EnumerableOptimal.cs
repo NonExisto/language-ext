@@ -30,7 +30,7 @@ public static class EnumerableOptimal
             ? System.Linq.Enumerable.Empty<B>()
             : new BindEnum<A, B>(ma, a => f(a).AsIterable());
 
-    internal class ConcatEnum<A>(Seq<IEnumerable<A>> ms) : IEnumerable<A>
+    internal sealed class ConcatEnum<A>(Seq<IEnumerable<A>> ms) : IEnumerable<A>
     {
         internal readonly Seq<IEnumerable<A>> ms = ms;
 
@@ -47,7 +47,7 @@ public static class EnumerableOptimal
             new ConcatIter<A>(ms);
     }
 
-    internal class BindEnum<A, B> : IEnumerable<B>
+    internal sealed class BindEnum<A, B> : IEnumerable<B>
     {
         readonly IEnumerable<A> ma;
         readonly Func<A, IEnumerable<B>> f;
@@ -59,7 +59,7 @@ public static class EnumerableOptimal
         }
 
         public BindIter<A, B> GetEnumerator() =>
-            new BindIter<A, B>(ma, f);
+            new(ma, f);
 
         IEnumerator<B> IEnumerable<B>.GetEnumerator() =>
             new BindIter<A, B>(ma, f);
@@ -70,7 +70,7 @@ public static class EnumerableOptimal
 
     internal struct ConcatIter<A> : IEnumerator<A>
     {
-        Seq<IEnumerable<A>> ms;
+        readonly Seq<IEnumerable<A>> ms;
         IEnumerator<A> iter;
         int index;
         A? current;
@@ -89,7 +89,7 @@ public static class EnumerableOptimal
         readonly object? IEnumerator.Current => 
             current;
 
-        public void Dispose() =>
+        public readonly void Dispose() =>
             iter?.Dispose();
 
         public bool MoveNext()
@@ -148,13 +148,13 @@ public static class EnumerableOptimal
             current = default;
         }
 
-        public B Current =>
+        public readonly B Current =>
             current!;
 
-        object? IEnumerator.Current =>
+        readonly object? IEnumerator.Current =>
             current;
 
-        public void Dispose()
+        public readonly void Dispose()
         {
             ma?.Dispose();
             mb?.Dispose();

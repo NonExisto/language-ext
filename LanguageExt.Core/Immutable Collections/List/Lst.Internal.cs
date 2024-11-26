@@ -391,7 +391,7 @@ internal sealed class LstInternal<A> :
     public bool Equals(LstInternal<A>? other)
     {
         if (ReferenceEquals(this, other)) return true;
-        if (ReferenceEquals(other, null)) return false;
+        if (other is null) return false;
         return Count == other.Count && EqEnumerable<A>.Equals(this, other);
     }
 

@@ -81,7 +81,7 @@ public sealed class EnvIO : IDisposable
     {
         if (Interlocked.CompareExchange(ref disposed, 1, 0) == 0)
         {
-            if ((Own & 2) == 2) Resources.DisposeU(this);
+            if ((Own & 2) == 2) _ = Resources.DisposeU(this);
             if ((Own & 1) == 1) Source.Dispose();
             Registration?.Dispose();
         }

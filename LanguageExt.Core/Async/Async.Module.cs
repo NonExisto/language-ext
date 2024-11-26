@@ -51,7 +51,7 @@ public static class Async
             }
             else if (operation.IsFaulted)
             {
-                operation.Exception.Rethrow();
+                _ = operation.Exception.Rethrow();
             }
             else if (operation.IsCompleted)
             {

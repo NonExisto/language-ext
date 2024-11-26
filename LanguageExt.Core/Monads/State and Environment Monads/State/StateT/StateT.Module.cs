@@ -8,7 +8,7 @@ namespace LanguageExt;
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
 /// <typeparam name="S">State environment type</typeparam>
-public class StateT<S>
+public sealed class StateT<S>
 {
     public static StateT<S, M, A> lift<M, A>(K<M, A> ma)  
         where M : Monad<M>, Choice<M> => 
@@ -37,7 +37,7 @@ public partial class StateT<S, M>
 /// <summary>
 /// `MonadStateT` trait implementation for `StateT` 
 /// </summary>
-public class StateT
+public sealed class StateT
 {
     public static StateT<S, M, A> pure<S, M, A>(A value)  
         where M : Monad<M>, Choice<M> => 

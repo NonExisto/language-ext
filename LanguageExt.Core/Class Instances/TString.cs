@@ -74,7 +74,7 @@ public struct TStringOrdinalIgnoreCase : Ord<string>
     /// <returns>Hash code of x</returns>
     [Pure]
     public static int GetHashCode(string x) => 
-        x.IsNull() ? 0 : x.GetHashCode();
+        x.IsNull() ? 0 : x.GetHashCode(System.StringComparison.OrdinalIgnoreCase);
 }
 
 public struct TStringOrdinal : Ord<string>
@@ -111,7 +111,7 @@ public struct TStringOrdinal : Ord<string>
     /// <returns>Hash code of x</returns>
     [Pure]
     public static int GetHashCode(string x) =>
-        x.GetHashCode();
+        x.GetHashCode(System.StringComparison.Ordinal);
 }
 
 public struct TStringCurrentCultureIgnoreCase : Ord<string>
@@ -148,7 +148,7 @@ public struct TStringCurrentCultureIgnoreCase : Ord<string>
     /// <returns>Hash code of x</returns>
     [Pure]
     public static int GetHashCode(string x) =>
-        x.IsNull() ? 0 : x.GetHashCode();
+        x.IsNull() ? 0 : x.GetHashCode(System.StringComparison.CurrentCultureIgnoreCase);
 }
 
 public struct TStringCurrentCulture : Ord<string>
@@ -185,5 +185,5 @@ public struct TStringCurrentCulture : Ord<string>
     /// <returns>Hash code of x</returns>
     [Pure]
     public static int GetHashCode(string x) =>
-        x.IsNull() ? 0 : x.GetHashCode();
+        x.IsNull() ? 0 : x.GetHashCode(System.StringComparison.CurrentCulture);
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using LanguageExt;
 using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
+namespace LanguageExt;
 public static class ValueTuple2Extensions
 {
     /// <summary>
@@ -124,7 +124,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -134,7 +134,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -153,7 +153,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -163,7 +163,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -182,7 +182,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -192,7 +192,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -211,7 +211,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -221,7 +221,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -240,7 +240,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -250,7 +250,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -269,7 +269,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f((a, b))
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function
@@ -279,7 +279,7 @@ public static class ValueTuple2Extensions
         from a in tuple.ma
         from b in tuple.mb
         let r = f(a, b)
-        select (r.Item1, r.Item2);
+        select (r.c, r.d);
 
     /// <summary>
     /// Flip the tuple monads from inside the tuple to outside and apply a transformation function

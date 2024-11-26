@@ -53,7 +53,7 @@ namespace LanguageExt.Pretty
 
     public record DocFail<A> : Doc<A>
     {
-        public readonly static Doc<A> Default = new DocFail<A>();
+        public static readonly Doc<A> Default = new DocFail<A>();
 
         public override Doc<B> ReAnnotate<B>(Func<A, B> f) =>
             DocFail<B>.Default;
@@ -67,7 +67,7 @@ namespace LanguageExt.Pretty
         
     public record DocEmpty<A> : Doc<A>
     {
-        public readonly static Doc<A> Default = new DocEmpty<A>();
+        public static readonly Doc<A> Default = new DocEmpty<A>();
 
         public override Doc<B> ReAnnotate<B>(Func<A, B> f) =>
             DocEmpty<B>.Default;
@@ -130,7 +130,7 @@ namespace LanguageExt.Pretty
     /// </summary>
     public record DocLine<A> : Doc<A>
     {
-        public readonly static Doc<A> Default = new DocLine<A>();
+        public static readonly Doc<A> Default = new DocLine<A>();
 
         public override Doc<B> ReAnnotate<B>(Func<A, B> f) =>
             DocLine<B>.Default;

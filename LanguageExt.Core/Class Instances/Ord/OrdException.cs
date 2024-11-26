@@ -4,7 +4,9 @@ using LanguageExt.Traits;
 
 namespace LanguageExt.ClassInstances;
 
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
 public struct OrdException : Ord<Exception>
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
 {
     [Pure]
     public static int GetHashCode(Exception x) =>
@@ -18,8 +20,8 @@ public struct OrdException : Ord<Exception>
     public static int Compare(Exception x, Exception y)
     {
         if (ReferenceEquals(x, y)) return 0;
-        if (ReferenceEquals(x, null)) return -1;
-        if (ReferenceEquals(y, null)) return 1;
+        if (x is null) return -1;
+        if (y is null) return 1;
         return string.Compare(x.GetType().FullName, y.Message.GetType().FullName, StringComparison.Ordinal);
     }
 }

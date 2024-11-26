@@ -2,7 +2,7 @@
 
 namespace LanguageExt;
 
-public partial class Reader
+public sealed partial class Reader
 {
     public static Reader<Env, A> pure<Env, A>(A value) =>  
         Reader<Env, A>.Pure(value);

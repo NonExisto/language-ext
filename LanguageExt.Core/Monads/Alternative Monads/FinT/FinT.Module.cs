@@ -25,7 +25,7 @@ public partial class FinT<M>
         FinT<M, A>.Lift(M.LiftIO(ma));
 }
 
-public partial class FinT
+public sealed partial class FinT
 {
     public static FinT<M, B> bind<M, A, B>(FinT<M, A> ma, Func<A, FinT<M, B>> f) 
         where M : Monad<M> =>

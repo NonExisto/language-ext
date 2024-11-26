@@ -1,6 +1,6 @@
 ﻿namespace LanguageExt;
 
-public class UnitsOfMeasure
+public sealed class UnitsOfMeasure
 {
     /// <summary>
     /// Millimetre

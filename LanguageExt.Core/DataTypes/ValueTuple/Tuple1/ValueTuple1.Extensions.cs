@@ -1,8 +1,8 @@
 ﻿using System;
-using LanguageExt;
 using System.Diagnostics.Contracts;
 using LanguageExt.Traits;
 
+namespace LanguageExt;
 public static class ValueTuple1Extensions
 {
     /// <summary>

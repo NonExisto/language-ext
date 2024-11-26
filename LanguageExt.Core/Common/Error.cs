@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 
@@ -208,7 +207,7 @@ public abstract record Error : Monoid<Error>
             (ManyErrors e1, ManyErrors e2) => new ManyErrors(e1.Errors + e2.Errors), 
             (ManyErrors e1, var e2)        => new ManyErrors(e1.Errors.Add(e2)), 
             (var e1,        ManyErrors e2) => new ManyErrors(e1.Cons(e2.Errors)), 
-            (var e1,        var e2)        => new ManyErrors(Seq(e1, e2)) 
+            (var e1,        var e2)        => new ManyErrors(Seq(e1, e2))            
         };
 
     [Pure]
@@ -403,12 +402,10 @@ public abstract record Error : Monoid<Error>
 
     protected virtual bool PrintMembers(StringBuilder builder)
     {
-        builder.Append("Message = ");
-        builder.Append(Message);
+        builder = builder.Append("Message = ").Append(Message);
         if (Code != 0)
         {
-            builder.Append(", Code = ");
-            builder.Append(Code);
+            _ = builder.Append(", Code = ").Append(Code);
         }
         return true;
     }
@@ -513,7 +510,7 @@ public record Exceptional(string Message, int Code) : Error
     /// value will be `null`.  This is intentional to stop exceptions leaking over application boundaries. 
     /// </summary>
     [IgnoreDataMember]
-    readonly Exception? Value;
+    private readonly Exception? Value;
     
     /// <summary>
     /// Construct from an exception
@@ -673,7 +670,7 @@ public sealed record BottomError() : Exceptional(BottomException.Default)
 [DataContract]
 public sealed record ManyErrors([property: DataMember] Seq<Error> Errors) : Error
 {
-    public new static Error Empty { get; } =
+    public static new Error Empty { get; } =
         new ManyErrors(Seq.empty<Error>()); 
 
     public override int Code => 

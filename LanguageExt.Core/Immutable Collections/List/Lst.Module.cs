@@ -1235,7 +1235,7 @@ public static class List
     }
 }
 
-class EqCompare<T> : IEqualityComparer<T>
+sealed class EqCompare<T> : IEqualityComparer<T>
 {
     readonly Func<T, T, bool> compare;
     readonly Option<Func<T, int>> hashCode = None;
@@ -1251,7 +1251,7 @@ class EqCompare<T> : IEqualityComparer<T>
 
     [Pure]
     public bool Equals(T? x, T? y) =>
-        isnull(x) && isnull(y) || (!isnull(x) && !isnull(y) && compare(x!, y!));
+        (isnull(x) && isnull(y)) || (!isnull(x) && !isnull(y) && compare(x!, y!));
 
     [Pure]
     public int GetHashCode(T obj) =>

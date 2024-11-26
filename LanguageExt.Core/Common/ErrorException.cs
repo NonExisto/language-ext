@@ -366,7 +366,7 @@ public sealed class WrappedErrorExceptionalException(Error Error) :
 /// <param name="errors">Errors</param>
 public sealed class ManyExceptions(Seq<ErrorException> errors) : ErrorException(0)
 {
-    public new static ErrorException Empty { get; } = new ManyExceptions([]);
+    public static new ErrorException Empty { get; } = new ManyExceptions([]);
 
     public readonly Seq<ErrorException> Errors = errors;
 
@@ -441,13 +441,10 @@ public sealed class ManyExceptions(Seq<ErrorException> errors) : ErrorException(
 /// Value is bottom
 /// </summary>
 [Serializable]
-public class BottomException() : 
+public class BottomException() :
     ExceptionalException(Errors.BottomText, Errors.BottomCode)
 {
-    public static readonly BottomException Default;
-
-    static BottomException() => 
-        Default = new();
+    public static readonly BottomException Default = new();
 
     public override string Message =>
         Errors.BottomText;

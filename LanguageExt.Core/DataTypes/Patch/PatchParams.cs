@@ -6,7 +6,7 @@ namespace LanguageExt
     /// Parameters for injecting the default behaviour for
     /// building patches 
     /// </summary>
-    internal class PatchParams<V, O, C>
+    internal sealed class PatchParams<V, O, C>
     {
         public readonly Func<V, V, bool> equivalent;
         public readonly Func<int, V, O> delete;

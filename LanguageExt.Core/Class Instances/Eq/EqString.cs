@@ -109,8 +109,6 @@ public struct EqStringOrdinalIgnoreCase : Eq<string>
 /// </summary>
 public struct EqStringOrdinal : Eq<string>
 {
-    public static readonly EqStringOrdinal Inst = default;
-
     /// <summary>
     /// Equality test
     /// </summary>
@@ -161,8 +159,6 @@ public struct EqStringCurrentCultureIgnoreCase : Eq<string>
 /// </summary>
 public struct EqStringCurrentCulture : Eq<string>
 {
-    public static readonly EqStringCurrentCulture Inst = default;
-
     /// <summary>
     /// Equality test
     /// </summary>

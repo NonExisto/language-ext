@@ -46,15 +46,11 @@ public readonly struct EqDefault<A> : Eq<A>
 /// </summary>
 public static class EqDefault<A, B> 
 {
-    static readonly Func<A, B, bool> Eq;
-
-    static EqDefault()
-    {
-        Eq = typeof(A).FullName == typeof(B).FullName
+    private static readonly Func<A, B, bool> Eq = 
+                 typeof(A).FullName == typeof(B).FullName
                  ? (x, y) => y is A y1 && EqDefault<A>.Equals(x, y1)
                  : (_, _) => false;
-    }
-        
+
     /// <summary>
     /// Equality test
     /// </summary>

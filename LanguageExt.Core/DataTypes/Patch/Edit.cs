@@ -82,7 +82,7 @@ public abstract class Edit<EqA, A> : IEquatable<Edit<EqA, A>> where EqA : Eq<A>
     public sealed class Insert : Edit<EqA, A>, IEquatable<Insert>
     {
         public Insert(int position, A element) : base(position, element) { }
-        public static Insert New(int position, A element) => new Insert(position, element);
+        public static Insert New(int position, A element) => new(position, element);
         public override string ToString() => $"Insert({Position}, {Element})";
         internal override Edit<EqA, A> Index(Func<int, int> f) => new Insert(f(Position), Element);
         public override Edit<EqA, A> MapOld(Func<A, A> f) => this;

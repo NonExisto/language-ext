@@ -11,7 +11,7 @@ namespace LanguageExt;
 /// <remarks>
 /// See the [concurrency section](https://github.com/louthy/language-ext/wiki/Concurrency) of the wiki for more info.
 /// </remarks>
-public readonly struct CommuteRef<A>
+public readonly struct CommuteRef<A> : IEquatable<A>
 {
     internal CommuteRef(Ref<A> r) => Ref = r;
     internal readonly Ref<A> Ref;
@@ -24,7 +24,7 @@ public readonly struct CommuteRef<A>
     public override string ToString() => Value?.ToString()    ?? "[null]";
     public override int GetHashCode() => Value?.GetHashCode() ?? 0;
     public override bool Equals(object? obj) => obj is A val && Equals(val);
-    public bool Equals(A other) => EqDefault<A>.Equals(other, Value);
+    public bool Equals(A? other) => EqDefault<A>.Equals(other, Value);
     public A Swap(Func<A, A> f) => Ref.Swap(f);
     public IO<A> SwapIO(Func<A, A> f) => Ref.SwapIO(f);
     public CommuteRef<A> Commute(Func<A, A> f) => Ref.Commute(f);

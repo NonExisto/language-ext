@@ -19,7 +19,7 @@ public struct OrdString : Ord<string>
     /// if a equals b       : 0
     /// </returns>
     public static int Compare(string a, string b) =>
-        a?.CompareTo(b) ?? 1;
+        string.Compare(a, b, StringComparison.Ordinal);
 
     /// <summary>
     /// Equality test

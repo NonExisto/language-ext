@@ -25,7 +25,7 @@ public interface Eq<in A> : Hashable<A>, Trait
 
 public static class Eq
 {
-    class EqEqualityComparer<EqA, A> : IEqualityComparer<A>
+    sealed class EqEqualityComparer<EqA, A> : IEqualityComparer<A>
         where EqA : Eq<A>
     {
         public bool Equals(A? x, A? y) =>

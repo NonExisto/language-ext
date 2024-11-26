@@ -92,8 +92,8 @@ public abstract class Fin<A> :
     /// Equality override
     /// </summary>
     [Pure]
-    public override bool Equals(object? other) =>
-        other is Fin<A> f && Equals(f);
+    public override bool Equals(object? obj) =>
+        obj is Fin<A> f && Equals(f);
 
     [Pure]
     public abstract int GetHashCode<HashA>()
@@ -627,7 +627,7 @@ public abstract class Fin<A> :
     {
         if (IsFail)
         {
-            FailValue.Throw();
+            _ = FailValue.Throw();
         }
         return SuccValue;
     }

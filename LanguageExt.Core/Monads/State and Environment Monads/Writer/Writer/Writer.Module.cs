@@ -9,7 +9,7 @@ public partial class Writer<W>
         Writer<W, A>.Pure(value);
 }
 
-public class Writer
+public sealed class Writer
 {
     public static Writer<W, A> pure<W, A>(A value)  
         where W : Monoid<W> => 

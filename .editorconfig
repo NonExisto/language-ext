@@ -183,11 +183,22 @@ insert_final_newline = true
 
 [*.{cs,vb}]
 dotnet_diagnostic.CA1000.severity = none
-[*.{cs,vb}]
+dotnet_diagnostic.CA1002.severity = suggestion
+dotnet_diagnostic.CA1003.severity = suggestion
+dotnet_diagnostic.CA1032.severity = suggestion
+dotnet_diagnostic.CA1036.severity = suggestion
+dotnet_diagnostic.CA1051.severity = suggestion
 dotnet_diagnostic.CA2225.severity = none
-[*.{cs,vb}]
+dotnet_diagnostic.CA2001.severity = suggestion
+dotnet_diagnostic.CA2007.severity = suggestion
+dotnet_diagnostic.CA1815.severity = suggestion
 dotnet_diagnostic.CA1062.severity = none
-[*.{cs,vb}]
+dotnet_diagnostic.CA1066.severity = suggestion
+dotnet_diagnostic.CA2231.severity = suggestion
 dotnet_diagnostic.CA1708.severity = none
-[*.{cs,vb}]
+dotnet_diagnostic.CA1710.severity = none
 dotnet_diagnostic.CA1715.severity = none
+dotnet_diagnostic.CA1716.severity = suggestion
+dotnet_diagnostic.CA1724.severity = suggestion
+dotnet_diagnostic.CS1591.severity = suggestion
+

@@ -41,7 +41,7 @@ public static class ObservableExt
         CancellationToken token) =>
         Observe<A>.Run(observable, token);
 
-    class Observe<A> : IObserver<A>
+    sealed class Observe<A> : IObserver<A>
     {
         readonly AutoResetEvent wait;
         readonly ConcurrentQueue<Fin<A>> queue;
@@ -58,18 +58,18 @@ public static class ObservableExt
         {
             using var wait  = new AutoResetEvent(false);
             var       queue = new ConcurrentQueue<Fin<A>>();
-            observable.Subscribe(new Observe<A>(wait, queue));
+            using var sub = observable.Subscribe(new Observe<A>(wait, queue));
 
             while (true)
             {
-                await wait.WaitOneAsync(token).ConfigureAwait(false);
+                _ = await wait.WaitOneAsync(token).ConfigureAwait(false);
                 while (queue.TryDequeue(out var item))
                 {
                     if (item.IsFail)
                     {
                         if (item.FailValue == Errors.None) yield break;
                         if (item.FailValue == Errors.Cancelled) throw new OperationCanceledException();
-                        item.FailValue.Throw();
+                        _ = item.FailValue.Throw();
                     }
                     else
                     {
@@ -82,19 +82,19 @@ public static class ObservableExt
         public void OnCompleted()
         {
             queue.Enqueue(Errors.None);
-            wait.Set();
+            _ = wait.Set();
         }
 
         public void OnError(Exception error)
         {
             queue.Enqueue(Error.New(error));
-            wait.Set();
+            _ = wait.Set();
         }
 
         public void OnNext(A value)
         {
             queue.Enqueue(value);
-            wait.Set();
+            _ = wait.Set();
         }
     }
 }

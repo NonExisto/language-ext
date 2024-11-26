@@ -78,7 +78,7 @@ public static class WaitAsync
         }
         finally
         {
-            registeredHandle?.Unregister(null);
+            _ = registeredHandle?.Unregister(null);
             tokenRegistration.Dispose();
         }
     }
@@ -101,7 +101,7 @@ public static class WaitAsync
         }
         finally
         {
-            registeredHandle?.Unregister(null);
+            _ = registeredHandle?.Unregister(null);
         }
     }
 

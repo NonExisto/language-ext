@@ -6,7 +6,7 @@ namespace LanguageExt;
 
 public static class AsyncEnumerableExtensions
 {
-    public static StreamT<M, A> AsStream<M, A>(this IAsyncEnumerable<A> ma) 
+    public static StreamT<M, A> AsStream<M, A>(this IAsyncEnumerable<A> ma)
         where M : Monad<M> =>
         StreamT.lift<M, A>(ma);
     
@@ -35,7 +35,10 @@ public static class AsyncEnumerableExtensions
     {
         await foreach (var a in ma)
         {
-            if(f(a)) yield return a;
+            if(f(a))
+            {
+                yield return a;
+            }
         }
     }
 }

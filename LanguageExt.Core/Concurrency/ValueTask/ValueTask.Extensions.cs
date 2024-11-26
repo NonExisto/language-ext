@@ -79,7 +79,7 @@ public static class ValueTaskExtensions
     /// Standard LINQ SelectMany implementation for Task
     /// </summary>
     [Pure]
-    public async static ValueTask<U> SelectMany<T, U>(this ValueTask<T> self,
+    public static async ValueTask<U> SelectMany<T, U>(this ValueTask<T> self,
         Func<T, ValueTask<U>> bind) =>
         await bind(await self.ConfigureAwait(false)).ConfigureAwait(false);
 
@@ -104,7 +104,7 @@ public static class ValueTaskExtensions
     {
         try
         {
-            await self.ConfigureAwait(false);
+            _ = await self.ConfigureAwait(false);
             return 1;
         }
         catch (Exception)

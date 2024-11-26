@@ -31,7 +31,7 @@ public partial class TryT<M>
         TryT<M, A>.Lift(M.LiftIO(ma));
 }
 
-public class TryT
+public sealed class TryT
 {
     public static TryT<M, A> Succ<M, A>(A value)  
         where M : Monad<M> =>

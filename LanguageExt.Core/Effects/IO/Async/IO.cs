@@ -62,7 +62,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 var token = envIO.Token;
                 foreach (var delay in schedule.Run())
                 {
-                    await IO.yieldFor(delay, token);
+                    _ = await IO.yieldFor(delay, token);
                     r     = await RunAsync(envIO);
                     state = folder(state, r);
                     if (predicate((state, r))) return IOResponse.Complete(state);
@@ -103,12 +103,12 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                                          }
                                          finally
                                          {
-                                             wait.Set();
+                                             _ = wait.Set();
                                          }
                                      },
                                      null);
 
-                await wait.WaitOneAsync(env.Token);
+                _ = await wait.WaitOneAsync(env.Token);
                 env.Token.ThrowIfCancellationRequested();
                 error?.Rethrow<A>();
                 return IOResponse.Complete(value!);
@@ -167,7 +167,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 }
                 finally
                 {
-                    (await Finally(x).RunAsync(env))?.Ignore();
+                    _ = await Finally(x).RunAsync(env);
                 }
             });
 
@@ -221,7 +221,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 var reg = env.Token.Register(() => tsrc.Cancel());
 
                 // Gather our resources for clean-up
-                var cleanup = new CleanUp(tsrc, reg);
+                var cleanup = new CancellationTokenCleanUp(tsrc, reg);
 
                 var parentResources = env.Resources;
 
@@ -357,17 +357,17 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                     var result = await RunAsync(lenv);
                     
                     // free any resources acquired during a repeat
-                    await lenv.Resources.ReleaseAll().RunAsync(env);
+                    _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                     
                     if (predicate(result)) return IOResponse.Complete(result);
 
                     foreach (var delay in schedule.Run())
                     {
-                        await IO.yieldFor(delay, token);
+                        _ = await IO.yieldFor(delay, token);
                         result = await RunAsync(lenv);
                         
                         // free any resources acquired during a repeat
-                        await lenv.Resources.ReleaseAll().RunAsync(env);
+                        _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                         
                         if (predicate(result)) return IOResponse.Complete(result);
                     }
@@ -377,7 +377,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 finally
                 {
                     // free any resources acquired during a repeat
-                    await lenv.Resources.ReleaseAll().RunAsync(env);
+                    _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                 }
             });
     
@@ -403,7 +403,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                         var result = await RunAsync(lenv);
                         
                         // free any resources acquired during a repeat
-                        await lenv.Resources.ReleaseAll().RunAsync(env);
+                        _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                         
                         if (predicate(result)) return IOResponse.Complete(result);
                     }
@@ -411,7 +411,7 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 finally
                 {
                     // free any resources acquired during a repeat
-                    await lenv.Resources.ReleaseAll().RunAsync(env);
+                    _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                 }
             });
     
@@ -446,14 +446,14 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                     var r = await RunAsync(lenv);
                     
                     // Any resources that were acquired should be propagated through to the `env`
-                    env.Resources.Merge(lenv.Resources);
+                    _ = env.Resources.Merge(lenv.Resources);
 
                     return IOResponse.Complete(r);
                 }
                 catch (Exception e)
                 {
                     // Any resources created whilst trying should be removed for the retry
-                    await lenv.Resources.ReleaseAll().RunAsync(env);
+                    _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                     
                     if (predicate(Error.New(e))) throw;
                     lastError = e;
@@ -461,20 +461,20 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                 
                 foreach(var delay in schedule.Run())
                 {
-                    await IO.yieldFor(delay, token);
+                    _ = await IO.yieldFor(delay, token);
                     try
                     {
                         var r = await RunAsync(lenv);
                         
                         // Any resources that were acquired should be propagated through to the `env`
-                        env.Resources.Merge(lenv.Resources);
+                        _ = env.Resources.Merge(lenv.Resources);
 
                         return IOResponse.Complete(r);
                     }
                     catch (Exception e)
                     {
                         // Any resources created whilst trying should be removed for the retry
-                        await lenv.Resources.ReleaseAll().RunAsync(env);
+                        _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                         
                         if (predicate(Error.New(e))) throw;
                         lastError = e;
@@ -509,14 +509,14 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                         var r = await RunAsync(lenv);
                         
                         // Any resources that were acquired should be propagated through to the `env`
-                        env.Resources.Merge(lenv.Resources);
+                        _ = env.Resources.Merge(lenv.Resources);
 
                         return IOResponse.Complete(r);
                     }
                     catch (Exception e)
                     {
                         // Any resources created whilst trying should be removed for the retry
-                        await lenv.Resources.ReleaseAll().RunAsync(env);
+                        _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                         
                         if (predicate(Error.New(e))) throw;
                     }
@@ -536,19 +536,6 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
         await using var reg = envIO.Token.Register(source.Cancel);
         return await t;        
     }
-    
-    record CleanUp(CancellationTokenSource Src, CancellationTokenRegistration Reg) : IDisposable
-    {
-        volatile int disposed;
-        public void Dispose()
-        {
-            if (Interlocked.Exchange(ref disposed, 1) == 0)
-            {
-                try{Src.Dispose();} catch { /* not important */ } 
-                try{Reg.Dispose();} catch { /* not important */ }
-            }
-        }
-    }
 
     /// <summary>
     /// Catches any error thrown by invoking this IO computation, passes it through a predicate,
@@ -565,12 +552,12 @@ sealed record IOAsync<A>(Func<EnvIO, Task<IOResponse<A>>> runIO) : IO<A>
                           try
                           {
                               var r = await RunAsync(lenv);
-                              env.Resources.Merge(lenv.Resources);
+                              _ = env.Resources.Merge(lenv.Resources);
                               return IOResponse.Complete(r);
                           }
                           catch(Exception ex)
                           {
-                              await lenv.Resources.ReleaseAll().RunAsync(env);
+                              _ = await lenv.Resources.ReleaseAll().RunAsync(env);
                               var err = Error.New(ex);
                               if (Predicate(err)) return IOResponse.Complete(await Fail(err).As().RunAsync(env));
                               throw;

@@ -39,7 +39,7 @@ public readonly struct HashSet<A> :
         _value = value;
     }
 
-    HashSet<A> Wrap(TrieSet<A> value) =>
+    static HashSet<A> Wrap(TrieSet<A> value) =>
         new (value);
 
     /// <summary>
@@ -135,7 +135,7 @@ public readonly struct HashSet<A> :
     /// </returns>
     public HashSet<A> Do(Action<A> f)
     {
-        this.Iter(f);
+        _ = this.Iter(f);
         return this;
     }
 

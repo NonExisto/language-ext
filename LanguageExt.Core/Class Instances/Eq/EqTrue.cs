@@ -24,6 +24,6 @@ public struct EqTrue<A> : Eq<A>
     {
         public static IEqualityComparer<A> Default => new _();
         public bool Equals(A? x, A? y) => true;
-        public int GetHashCode([DisallowNull] A obj) => throw new System.NotSupportedException();
+        public int GetHashCode([DisallowNull] A obj) => 100;
     }
 }

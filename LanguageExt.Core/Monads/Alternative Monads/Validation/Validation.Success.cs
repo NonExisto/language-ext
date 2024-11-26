@@ -111,12 +111,12 @@ public static partial class Validation
         /// <typeparam name="L2">Left return</typeparam>
         /// <typeparam name="R2">Success return</typeparam>
         /// <param name="Succ">Success map function</param>
-        /// <param name="Left">Left map function</param>
+        /// <param name="Fail">Left map function</param>
         /// <returns>Mapped Validation</returns>
         [Pure]
         public override Validation<L2, R2> BiMap<L2, R2>(
             Func<A, R2> Succ, 
-            Func<F, L2> Left) =>
+            Func<F, L2> Fail) =>
             new Success<L2, R2>(Succ(Value));
 
         /// <summary>

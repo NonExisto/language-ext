@@ -8,8 +8,6 @@ namespace LanguageExt.ClassInstances;
 /// </summary>
 public struct OrdChar : Ord<char>
 {
-    public static readonly OrdChar Inst = default(OrdChar);
-
     /// <summary>
     /// Equality test
     /// </summary>

@@ -1,6 +1,6 @@
 ﻿namespace LanguageExt;
 
-internal class Change
+internal static class Change
 {
     public const string UseToArrayInstead =
         "Use ToArray() instead";

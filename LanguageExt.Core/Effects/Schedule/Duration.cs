@@ -28,7 +28,7 @@ public readonly struct Duration :
     /// <summary>
     /// Zero magnitude duration (instant)
     /// </summary>
-    public static Duration Zero =
+    public static readonly Duration Zero =
         new(0);
 
     /// <summary>

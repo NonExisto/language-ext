@@ -25,6 +25,6 @@ internal static class SingletonRandom
     internal static double Uniform(double a, double b, Option<int> seed = default)
     {
         if (a.Equals(b)) return a;
-        return a + (b - a) * NextDouble(seed);
+        return a + ((b - a) * NextDouble(seed));
     }
 }

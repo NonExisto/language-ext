@@ -24,7 +24,7 @@ public partial class OptionT<M>
         OptionT<M, A>.Lift(M.LiftIO(ma));
 }
 
-public partial class OptionT
+public sealed partial class OptionT
 {
     public static OptionT<M, B> bind<M, A, B>(OptionT<M, A> ma, Func<A, OptionT<M, B>> f) 
         where M : Monad<M> =>

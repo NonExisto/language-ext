@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+namespace LanguageExt;
 public readonly struct Temperature :
     IComparable<Temperature>,
     IEquatable<Temperature>,
@@ -14,9 +15,9 @@ public readonly struct Temperature :
     readonly UnitType Type;
     readonly double Value;
 
-    public static Temperature AbsoluteZero = default;
-    public static Temperature ZeroCelsius = new (UnitType.C, 0.0);
-    public static Temperature ZeroFahrenheit = new (UnitType.F, 0.0);
+    public static readonly Temperature AbsoluteZero;
+    public static readonly Temperature ZeroCelsius = new (UnitType.C, 0.0);
+    public static readonly Temperature ZeroFahrenheit = new (UnitType.F, 0.0);
 
     internal Temperature(UnitType type, double value)
     {

@@ -8,7 +8,7 @@ namespace LanguageExt;
 /// `MonadWriterT` trait implementation for `WriterT` 
 /// </summary>
 /// <typeparam name="W">Writer type</typeparam>
-public class WriterT<W>
+public sealed class WriterT<W>
     where W : Monoid<W>
 {
     public static WriterT<W, M, A> lift<M, A>(K<M, A> ma)
@@ -38,7 +38,7 @@ public partial class WriterT<W, M>
 /// <summary>
 /// `MonadWriterT` trait implementation for `WriterT` 
 /// </summary>
-public class WriterT
+public sealed class WriterT
 {
     public static WriterT<W, M, A> pure<W, M, A>(A value)  
         where W : Monoid<W>

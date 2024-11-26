@@ -24,7 +24,7 @@ public partial class ValidationT<F, M>
         ValidationT<F, M, A>.Lift(M.LiftIO(ma));
 }
 
-public partial class ValidationT
+public sealed partial class ValidationT
 {
     public static ValidationT<L, M, A> Right<L, M, A>(A value)  
         where L : Monoid<L>

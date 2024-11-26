@@ -1247,7 +1247,7 @@ internal static class SetModule
         return successor;
     }
 
-    public class SetEnumerator<K> : IEnumerator<K>
+    public sealed class SetEnumerator<K> : IEnumerator<K>
     {
         internal struct NewStack : New<SetItem<K>[]>
         {

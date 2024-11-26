@@ -278,7 +278,7 @@ public static class Patch
         var dlength = i.Count + sizeChange(patch);
         var d       = SpanArray<A>.New(dlength);
 
-        go(patch.Edits, i, d, 0);
+        _ = go(patch.Edits, i, d, 0);
         return d.AsIterable();
  
         static Unit go(Seq<Edit<EqA, A>> edits, SpanArray<A> src, SpanArray<A> dest, int si)
@@ -296,7 +296,7 @@ public static class Patch
                     var x = edits.Head.Value!.Position - si;
                     if (x > 0)
                     {
-                        src.Take(x).UnsafeCopy(dest.Take(x));
+                        _ = src.Take(x).UnsafeCopy(dest.Take(x));
                         src  = src.Skip(x);
                         dest = dest.Skip(x);
                         si   = si + x;
@@ -437,12 +437,12 @@ public static class Patch
                                 case Edit<EqA, A>.Replace repl3 when y is Edit<EqA, A>.Delete:
                                 {
                                     var (_1, _2) = go(xs.Tail, a + offset(y), ys.Tail, b, conflict);
-                                    return (_1, (Edit<EqA, A>.Delete.New(repl3.Position, repl3.ReplaceElement)).Index(i => i + b).Cons(_2));
+                                    return (_1, Edit<EqA, A>.Delete.New(repl3.Position, repl3.ReplaceElement).Index(i => i + b).Cons(_2));
                                 }
                                 case Edit<EqA, A>.Delete when y is Edit<EqA, A>.Replace repl4:
                                 {
                                     var (_1, _2) = go(xs.Tail, a, ys.Tail, b + offset(x), conflict);
-                                    return ((Edit<EqA, A>.Delete.New(repl4.Position, repl4.ReplaceElement)).Index(i => i + a).Cons(_1), _2);
+                                    return (Edit<EqA, A>.Delete.New(repl4.Position, repl4.ReplaceElement).Index(i => i + a).Cons(_1), _2);
                                 }
                                 case Edit<EqA, A>.Delete when y is Edit<EqA, A>.Delete:
                                     return go(xs.Tail, a + offset(y), ys.Tail, b + offset(x), conflict);
@@ -495,9 +495,9 @@ public static class Patch
         static Seq<Edit<EqA, A>> adjust(int o, Seq<Edit<EqA, A>> list) =>
             list.IsEmpty
                 ? Seq<Edit<EqA, A>>()
-                : list.Head.Value! is Edit<EqA, A>.Insert ia ? Edit<EqA, A>.Insert.New(ia.Position + o, ia.Element).Cons(adjust(o - 1, list.Tail))
-                    : list.Head.Value! is Edit<EqA, A>.Delete da ? Edit<EqA, A>.Delete.New(da.Position + o, da.Element).Cons(adjust(o + 1, list.Tail))
-                        : list.Head.Value! is Edit<EqA, A>.Replace ra ? Edit<EqA, A>.Replace.New(ra.Position + o, ra.Element, ra.ReplaceElement).Cons(adjust(o, list.Tail))
+                : list.Head.Value is Edit<EqA, A>.Insert ia ? Edit<EqA, A>.Insert.New(ia.Position + o, ia.Element).Cons(adjust(o - 1, list.Tail))
+                    : list.Head.Value is Edit<EqA, A>.Delete da ? Edit<EqA, A>.Delete.New(da.Position + o, da.Element).Cons(adjust(o + 1, list.Tail))
+                        : list.Head.Value is Edit<EqA, A>.Replace ra ? Edit<EqA, A>.Replace.New(ra.Position + o, ra.Element, ra.ReplaceElement).Cons(adjust(o, list.Tail))
                             : throw new NotSupportedException();
     }
 

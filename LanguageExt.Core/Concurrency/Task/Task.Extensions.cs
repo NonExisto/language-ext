@@ -79,7 +79,7 @@ public static class TaskExtensions
     /// Standard LINQ SelectMany implementation for Task
     /// </summary>
     [Pure]
-    public async static Task<U> SelectMany<T, U>(this Task<T> self,
+    public static async Task<U> SelectMany<T, U>(this Task<T> self,
         Func<T, Task<U>> bind) =>
         await bind(await self.ConfigureAwait(false)).ConfigureAwait(false);
 
@@ -104,7 +104,7 @@ public static class TaskExtensions
     {
         try
         {
-            await self.ConfigureAwait(false);
+            _ = await self.ConfigureAwait(false);
             return 1;
         }
         catch (Exception)

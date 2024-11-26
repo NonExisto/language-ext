@@ -62,7 +62,7 @@ public class Source<A> : IDisposable
     {
         var id  = Interlocked.Increment(ref identifier);
         var sub = new Sub<M, A>(() => subscriptions.TryRemove(id, out _));
-        subscriptions.TryAdd(id, sub);
+        _ = subscriptions.TryAdd(id, sub);
         return sub.Stream;
     }
 
@@ -83,7 +83,7 @@ public class Source<A> : IDisposable
                         return;
                 }
             }
-            wait.WaitOne();
+            _ = wait.WaitOne();
         }
     }
 
@@ -98,7 +98,7 @@ public class Source<A> : IDisposable
                     if (Interlocked.Read(ref completed) == Statuses.Running)
                     {
                         queue.Enqueue(new ValueEvent<A>(value));
-                        wait.Set();
+                        _ = wait.Set();
                     }
                     else
                     {
@@ -117,7 +117,7 @@ public class Source<A> : IDisposable
                     {
                         // Queue the completion event
                         queue.Enqueue(CompleteEvent.Default);
-                        wait.Set();
+                        _ = wait.Set();
 
                         // Wait for the subscribers to empty
                         SpinWait sw = default;

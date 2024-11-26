@@ -7,7 +7,7 @@ public abstract record MList<A> : K<MList, A>
 {
     public abstract MList<B> Map<B>(Func<A, B> f);
 
-    public readonly static MList<A> Nil = new MNil<A>();
+    public static readonly MList<A> Nil = new MNil<A>();
     
     public static MList<A> Cons<M>(A head, Func<K<M, MList<A>>> tail) 
         where M : Monad<M> => 
