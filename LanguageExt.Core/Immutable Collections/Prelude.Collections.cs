@@ -640,7 +640,7 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     public static Set<T> Set<T>() =>
-        LanguageExt.Set.create<T>();
+        LanguageExt.Set.empty<T>();
 
     /// <summary>
     /// Create an immutable set
@@ -703,7 +703,7 @@ public static partial class Prelude
     /// </summary>
     [Pure]
     public static HashSet<T> HashSet<T>() =>
-        LanguageExt.HashSet.create<T>();
+        LanguageExt.HashSet.empty<T>();
 
     /// <summary>
     /// Create an immutable hash-set

@@ -23,15 +23,6 @@ public sealed partial class Set
         [value];
 
     /// <summary>
-    /// Create a new empty set
-    /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <returns>Empty set</returns>
-    [Pure]
-    public static Set<T> create<T>() =>
-        Set<T>.Empty;
-
-    /// <summary>
     /// Create a new set pre-populated with the items in range
     /// </summary>
     /// <typeparam name="T">Element type</typeparam>
@@ -83,8 +74,8 @@ public sealed partial class Set
     /// <typeparam name="T">Element type</typeparam>
     /// <returns>Empty set</returns>
     [Pure]
-    public static Set<T> empty<T>() =>
-        Set<T>.Empty;
+    public static Set<T> empty<T>(IComparer<T>? comparer = null) =>
+        comparer is null ? Set<T>.Empty : new (comparer);
 
     /// <summary>
     /// Add an item to the set

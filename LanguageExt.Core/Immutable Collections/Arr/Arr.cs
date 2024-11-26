@@ -51,7 +51,6 @@ public struct Arr<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Arr(IEnumerable<A> initial)
     {
-        hashCode = 0;
         value = initial.ToArray();
     }
 
@@ -61,7 +60,6 @@ public struct Arr<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Arr(ReadOnlySpan<A> initial)
     {
-        hashCode = 0;
         value = initial.ToArray();
     }
 
@@ -71,7 +69,6 @@ public struct Arr<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Arr(A[] value)
     {
-        hashCode = 0;
         this.value = value;
     }
 

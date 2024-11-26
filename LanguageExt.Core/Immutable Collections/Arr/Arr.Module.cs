@@ -16,14 +16,6 @@ public sealed partial class Arr
         Arr<T>.Empty;
 
     /// <summary>
-    /// Create a new empty array
-    /// </summary>
-    /// <returns>Lst T</returns>
-    [Pure]
-    public static Arr<T> create<T>() =>
-        Arr<T>.Empty;
-
-    /// <summary>
     /// Create a singleton array
     /// </summary>
     /// <param name="value">Single value</param>

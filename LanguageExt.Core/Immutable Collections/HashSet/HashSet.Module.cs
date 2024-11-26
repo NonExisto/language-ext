@@ -25,15 +25,6 @@ public partial class HashSet
     /// <typeparam name="T">Element type</typeparam>
     /// <returns>Empty HSet</returns>
     [Pure]
-    public static HashSet<T> create<T>() =>
-        HashSet<T>.Empty;
-
-/// <summary>
-    /// Create a new empty set
-    /// </summary>
-    /// <typeparam name="T">Element type</typeparam>
-    /// <returns>Empty HSet</returns>
-    [Pure]
     public static HashSet<T> create<T>(IEqualityComparer<T> equalityComparer) =>
         new HashSet<T>(equalityComparer);
 

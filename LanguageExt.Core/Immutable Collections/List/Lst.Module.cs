@@ -41,14 +41,6 @@ public static class List
         [value];
 
     /// <summary>
-    /// Create a new empty list
-    /// </summary>
-    /// <returns>Lst T</returns>
-    [Pure]
-    public static Lst<T> create<T>() =>
-        Lst<T>.Empty;
-
-    /// <summary>
     /// Create a list from a initial set of items
     /// </summary>
     /// <param name="items">Items</param>

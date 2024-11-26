@@ -41,15 +41,6 @@ public partial class Seq
         [value];
 
     /// <summary>
-    /// Create a new empty sequence
-    /// </summary>
-    /// <returns>sequence</returns>
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Seq<A> create<A>() =>
-        Seq<A>.Empty;
-
-    /// <summary>
     /// Create a sequence from a initial set of items
     /// </summary>
     /// <param name="items">Items</param>

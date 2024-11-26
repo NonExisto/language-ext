@@ -330,7 +330,7 @@ public readonly struct Set<A> :
     /// <returns>An empty set</returns>
     [Pure]
     public Set<A> Clear() =>
-        Empty;
+        new(Value.Clear());
 
     /// <summary>
     /// Get enumerator

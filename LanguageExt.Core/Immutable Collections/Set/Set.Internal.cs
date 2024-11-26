@@ -768,6 +768,7 @@ internal sealed class SetInternal<A> :
         new SetModule.SetEnumerator<A>(set, false, 0);
 
     public override bool Equals(object? obj) => Equals(obj as SetInternal<A>);
+    public SetInternal<A> Clear() => new (_comparer);
 }
 
 [Serializable]
