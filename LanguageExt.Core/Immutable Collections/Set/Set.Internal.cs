@@ -307,7 +307,7 @@ internal sealed class SetInternal<A> :
         {
             if (Contains(item))
             {
-                root = SetModule.TryAdd<A>(root, item, _comparer);
+                root = SetModule.TryAdd(root, item, _comparer);
             }
         }
         return Wrap(root);
@@ -325,7 +325,7 @@ internal sealed class SetInternal<A> :
         {
             if (!rhs.Contains(item))
             {
-                root = SetModule.TryAdd<A>(root, item, _comparer);
+                root = SetModule.TryAdd(root, item, _comparer);
             }
         }
         return Wrap(root);
@@ -415,36 +415,6 @@ internal sealed class SetInternal<A> :
     [Pure]
     public SetInternal<A> Remove(A value) =>
         Wrap(SetModule.Remove(set, value, _comparer));
-
-    /// <summary>
-    /// Applies a function 'folder' to each element of the collection, threading an accumulator 
-    /// argument through the computation. The fold function takes the state argument, and 
-    /// applies the function 'folder' to it and the first element of the set. Then, it feeds this 
-    /// result into the function 'folder' along with the second element, and so on. It returns the 
-    /// final result. (Aggregate in LINQ)
-    /// </summary>
-    /// <typeparam name="S">State type</typeparam>
-    /// <param name="state">Initial state</param>
-    /// <param name="folder">Fold function</param>
-    /// <returns>Aggregate value</returns>
-    [Pure]
-    public S Fold<S>(S state, Func<S, A, S> folder) =>
-        SetModule.Fold(set,state,folder);
-
-    /// <summary>
-    /// Applies a function 'folder' to each element of the collection (from last element to first), 
-    /// threading an aggregate state through the computation. The fold function takes the state 
-    /// argument, and applies the function 'folder' to it and the first element of the set. Then, 
-    /// it feeds this result into the function 'folder' along with the second element, and so on. It 
-    /// returns the final result.
-    /// </summary>
-    /// <typeparam name="S">State type</typeparam>
-    /// <param name="state">Initial state</param>
-    /// <param name="folder">Fold function</param>
-    /// <returns>Aggregate value</returns>
-    [Pure]
-    public S FoldBack<S>(S state, Func<S, A, S> folder) =>
-        SetModule.FoldBack(set, state, folder);
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
@@ -816,36 +786,6 @@ internal static class SetModule
         TryAdd,
         TryUpdate
     }
-
-    [Pure]
-    public static S Fold<S, K>(SetItem<K> node, S state, Func<S, K, S> folder)
-    {
-        if (node.IsEmpty)
-        {
-            return state;
-        }
-        state = Fold(node.Left, state, folder);
-        state = folder(state, node.Key);
-        state = Fold(node.Right, state, folder);
-        return state;
-    }
-
-    [Pure]
-    public static S FoldBack<S, K>(SetItem<K> node, S state, Func<S, K, S> folder)
-    {
-        if (node.IsEmpty)
-        {
-            return state;
-        }
-        state = FoldBack(node.Right, state, folder);
-        state = folder(state, node.Key);
-        state = FoldBack(node.Left, state, folder);
-        return state;
-    }
-
-    [Pure]
-    public static bool ForAll<K>(SetItem<K> node, Func<K, bool> pred) =>
-        node.IsEmpty || pred(node.Key) && ForAll(node.Left, pred) && ForAll(node.Right, pred);
 
     [Pure]
     public static bool Exists<K>(SetItem<K> node, Func<K, bool> pred) =>
