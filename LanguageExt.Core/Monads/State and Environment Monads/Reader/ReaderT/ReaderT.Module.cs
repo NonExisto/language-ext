@@ -15,11 +15,6 @@ public sealed class ReaderT<Env>
         ReaderT<Env, M, A>.Lift(ma);
 }
 
-/// <summary>
-/// `MonadReaderT` trait implementation for `ReaderT` 
-/// </summary>
-/// <typeparam name="Env">Reader environment type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public partial class ReaderT<Env, M>
 {
     public static ReaderT<Env, M, A> pure<A>(A value) => 

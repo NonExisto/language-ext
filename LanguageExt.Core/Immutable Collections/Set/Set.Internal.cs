@@ -456,7 +456,7 @@ internal sealed class SetInternal<A> :
     /// <returns>Mapped Set</returns>
     [Pure]
     public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B>? comparer)  =>
-        new (SetModule.Map(set, f), comparer);
+        new (AsIterable().Map(f), comparer);
 
     /// <summary>
     /// Maps the values of this set into a new set of values using the
@@ -466,7 +466,7 @@ internal sealed class SetInternal<A> :
     /// <returns>Mapped Set</returns>
     [Pure]
     public SetInternal<A> Map(Func<A, A> f) =>
-        Wrap(SetModule.Map(set, f));
+        new (AsIterable().Map(f), null);
 
     /// <summary>
     /// Filters items from the set using the predicate.  If the predicate
@@ -1083,12 +1083,6 @@ internal static class SetModule
         node.IsEmpty
             ? node
             : RotLeft(Make(node.Key, node.Left, RotRight(node.Right)));
-
-    [Pure]
-    public static SetItem<B> Map<A, B>(SetItem<A> node, Func<A, B> f) =>
-        node.IsEmpty
-            ? SetItem<B>.Empty
-            : new SetItem<B>(node.Height, node.Count, f(node.Key), Map(node.Left, f), Map(node.Right, f));
 
     internal static Option<A> Max<A>(SetItem<A> node) =>
         node.Right.IsEmpty

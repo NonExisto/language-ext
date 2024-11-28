@@ -4,10 +4,6 @@ using LanguageExt.Traits;
 namespace LanguageExt;
 
 
-/// <summary>
-/// `MonadWriterT` trait implementation for `WriterT` 
-/// </summary>
-/// <typeparam name="W">Writer type</typeparam>
 public sealed class WriterT<W>
     where W : Monoid<W>
 {
@@ -16,11 +12,6 @@ public sealed class WriterT<W>
         WriterT<W, M, A>.Lift(ma);
 }
 
-/// <summary>
-/// `MonadWriterT` trait implementation for `WriterT` 
-/// </summary>
-/// <typeparam name="W">Writer type</typeparam>
-/// <typeparam name="M">Given monad trait</typeparam>
 public partial class WriterT<W, M>
 {
     public static WriterT<W, M, A> pure<A>(A value) => 
@@ -35,9 +26,6 @@ public partial class WriterT<W, M>
         WriterT<W, M, A>.LiftIO(effect);
 }
 
-/// <summary>
-/// `MonadWriterT` trait implementation for `WriterT` 
-/// </summary>
 public sealed class WriterT
 {
     public static WriterT<W, M, A> pure<W, M, A>(A value)  

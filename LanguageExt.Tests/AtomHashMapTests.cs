@@ -755,5 +755,5 @@ public class AtomHashMapTests
                 ("biz", Change<int>.Added(7)),
                 ("baz", Change<int>.Added(9))),
             state.Changes);
-    }        
+    }
 }

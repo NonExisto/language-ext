@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
-using LanguageExt.Traits;
 using LanguageExt.Common;
+using LanguageExt.Traits;
 
 namespace LanguageExt;
 
