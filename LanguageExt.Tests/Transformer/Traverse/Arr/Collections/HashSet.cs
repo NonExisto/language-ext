@@ -21,6 +21,17 @@ public class HashSetArr
     }
 
     [Fact]
+    public void HashSetTypeInvariantInMap()
+    {
+        var ma = HashSet(1,2,3,4);
+        var mb = ma.Map(x => 1);
+
+        var mc = HashSet(1);
+
+        Assert.True(mb == mc);
+    }
+
+    [Fact]
     public void HashSetArrCrossProduct()
     {
         var ma = HashSet(Array(1, 2), Array(10, 20, 30));

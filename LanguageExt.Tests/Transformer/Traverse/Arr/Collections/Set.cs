@@ -22,6 +22,17 @@ public class SetArr
     }
 
     [Fact]
+    public void SetTypeInvariantInMap()
+    {
+        var ma = Set(1,2,3,4);
+        var mb = ma.Map(x => 1);
+
+        var mc = Set(1);
+
+        Assert.True(mb == mc);
+    }
+
+    [Fact]
     public void SetArrCrossProduct()
     {
         var ma = Set(Array(1, 2), Array(10, 20, 30));
