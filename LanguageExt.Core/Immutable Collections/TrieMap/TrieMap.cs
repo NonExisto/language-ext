@@ -2242,9 +2242,13 @@ internal sealed class TrieMap<K, V> :
                 var nodeIndex = Bit.Index(NodeMap, mask);
 
                 var nodeToUpdate = Nodes[nodeIndex];
-                var (cd, newNode, ov, ch) = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
-                var (newNodes, _) = SetItem(Nodes, nodeIndex, newNode, env.Mutate);
-                return (cd, new Entries(EntryMap, NodeMap, Items, newNodes), ov, ch);
+                var (countDelta, newNode, ov, changed) = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
+                if(countDelta != 0 || changed)
+                {
+                    var (newNodes, _) = SetItem(Nodes, nodeIndex, newNode, env.Mutate);
+                    return (countDelta, new Entries(EntryMap, NodeMap, Items, newNodes), ov, changed);
+                }
+                return (0, this, default, false);
             }
             else
             {
