@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
-using System.Threading.Tasks;
 
 namespace LanguageExt;
 
@@ -14,9 +13,8 @@ public static class PreludeRx
     /// <param name="delayFor">Time span to delay for</param>
     /// <returns>IObservable T with the result</returns>
     public static IObservable<T> delay<T>(Func<T> f, TimeSpan delayFor) =>
-        delayFor.TotalMilliseconds < 1
-            ? Observable.Return(f()).Take(1)
-            : Task.Delay(delayFor).ContinueWith(_ => f()).ToObservable().Take(1);
+        Observable.Return(Prelude.unit).Delay(delayFor, TaskPoolScheduler.Default).Select(_ => f());
+        
 
     /// <summary>
     /// Execute a function at a specific time
