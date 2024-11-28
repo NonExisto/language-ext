@@ -18,15 +18,6 @@ public static class OrdResolve<A>
     static OrdResolve()
     {
         var source = typeof(A);
-
-        if(source.IsGenericType && source.GetGenericTypeDefinition() == typeof(K<,>))
-        {
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-            throw new InvalidOperationException(@"Upcast to K<M,A> is prohibited due to limitations on Ord<A> dynamic implementation.
-Please, check your code and ensure you never instantiate types with K<M,A> as generic arguments.
-You can try to provide you custom IComparer<T> implementation as alternative solution");
-#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
-        }
         
         if (typeof(Delegate).IsAssignableFrom(source))
         {

@@ -18,7 +18,8 @@ namespace LanguageExt;
 /// <typeparam name="A">Bound value type</typeparam>
 public record Identity<A>(A Value) : 
     K<Identity, A>,
-    IComparable<Identity<A>>
+    IComparable<Identity<A>>,
+    IComparable
 {
     public static Identity<A> Pure(A value) =>
         new (value);
@@ -84,4 +85,6 @@ public record Identity<A>(A Value) :
         other is { } rhs
             ? OrdDefault<A>.Compare(Value, rhs.Value)
             : 1;
+    
+    public int CompareTo(object? obj) => CompareTo(obj as Identity<A>);
 }

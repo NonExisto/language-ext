@@ -80,7 +80,7 @@ public class SetArr
 
         foreach (var set in mb)
         {
-            set.Select(item => item.Value).Should<int>().BeInDescendingOrder();
+            set.AsEnumerable().Select(item => item.Value).Should<int>().BeInDescendingOrder();
         }
     }
 

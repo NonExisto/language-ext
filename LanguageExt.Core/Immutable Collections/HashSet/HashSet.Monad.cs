@@ -19,20 +19,8 @@ public sealed partial class HashSet :
     static K<HashSet, A> Applicative<HashSet>.Pure<A>(A value) =>
         singleton(value);
 
-    static K<HashSet, B> Applicative<HashSet>.Apply<A, B>(K<HashSet, Func<A, B>> mf, K<HashSet, A> ma)
-    {
-        return new HashSet<B>(Go());
-        IEnumerable<B> Go()
-        {
-            foreach (var f in mf.As())
-            {
-                foreach (var a in ma.As())
-                {
-                    yield return f(a);
-                }
-            }
-        }
-    }    
+    static K<HashSet, B> Applicative<HashSet>.Apply<A, B>(K<HashSet, Func<A, B>> mf, K<HashSet, A> ma) => 
+        mf.Bind(f => ma.Map(f));
 
     static K<HashSet, B> Applicative<HashSet>.Action<A, B>(K<HashSet, A> ma, K<HashSet, B> mb) => 
         mb;

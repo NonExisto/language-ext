@@ -37,6 +37,6 @@ public class Set
 
         Assert.Equal(Id(Set<Rint>(1, 3, 5)), mb);
 
-        mb.As().Value.Select(x => x.Value).Should<int>().BeInDescendingOrder();
+        mb.As().Value.AsEnumerable().Select(x => x.Value).Should<int>().BeInDescendingOrder();
     }
 }

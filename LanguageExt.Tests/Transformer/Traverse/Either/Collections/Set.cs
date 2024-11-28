@@ -43,7 +43,7 @@ public class SetEither
 
         foreach (var set in mb)
         {
-            set.Select(x => x.Value).Should<int>().BeInDescendingOrder();
+            set.AsEnumerable().Select(x => x.Value).Should<int>().BeInDescendingOrder();
         }
     }
         

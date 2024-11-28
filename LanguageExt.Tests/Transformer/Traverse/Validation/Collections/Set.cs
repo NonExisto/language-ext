@@ -37,7 +37,7 @@ public class Set
 
         foreach (var set in mb.As())
         {
-            set.Select(x => x.Value).Should<int>().BeInDescendingOrder();
+            set.AsEnumerable().Select(x => x.Value).Should<int>().BeInDescendingOrder();
         }
     }
 

@@ -38,7 +38,7 @@ public class SetOption
 
 
         Assert.True(mb == Some(Set<Rint>(1, 2, 3)));
-        mb.IfSome(v => v.Select(x => x.Value).Should<int>().BeInDescendingOrder());
+        mb.IfSome(v => v.AsEnumerable().Select(x => x.Value).Should<int>().BeInDescendingOrder());
     }
         
     [Fact]
