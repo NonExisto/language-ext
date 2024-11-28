@@ -74,8 +74,7 @@ namespace LanguageExt
 
         public static Option<MethodInfo> GetPublicStaticMethod(Type type, string name, Type argA) =>
             type.GetTypeInfo()
-                .DeclaredMethods
-.FirstOrDefault(x =>
+                .DeclaredMethods.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -88,8 +87,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredMethods
-.FirstOrDefault(x =>
+                .DeclaredMethods.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -102,8 +100,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A>(string name) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredMethods
-.FirstOrDefault(x =>
+                .DeclaredMethods.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -116,8 +113,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A, B>(string name) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredMethods
-.FirstOrDefault(x =>
+                .DeclaredMethods.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -131,8 +127,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA, Type argB) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredMethods
-.FirstOrDefault(x =>
+                .DeclaredMethods.FirstOrDefault(x =>
                 {
                     if (!x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -146,8 +141,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .GetAllMethods(includeBase)
-.FirstOrDefault(x =>
+                .GetAllMethods(includeBase).FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -158,8 +152,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .GetAllMethods(includeBase)
-.FirstOrDefault(x =>
+                .GetAllMethods(includeBase).FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -173,8 +166,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A, B>(string name, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .GetAllMethods(includeBase)
-.FirstOrDefault(x =>
+                .GetAllMethods(includeBase).FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -187,8 +179,7 @@ namespace LanguageExt
 
         public static Option<MethodInfo> GetPublicInstanceMethod(Type type, string name, bool includeBase) =>
             type.GetTypeInfo()
-                .GetAllMethods(includeBase)
-.FirstOrDefault(x =>
+                .GetAllMethods(includeBase).FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -199,8 +190,7 @@ namespace LanguageExt
         public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, Type arg1, Type arg2, bool includeBase) =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .GetAllMethods(includeBase)
-.FirstOrDefault(x =>
+                .GetAllMethods(includeBase).FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.Name != name) return false;
@@ -214,8 +204,7 @@ namespace LanguageExt
         public static Option<ConstructorInfo> GetConstructor<TYPE>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors
-.FirstOrDefault(x =>
+                .DeclaredConstructors.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     if (x.GetParameters().Length != 0) return false;
@@ -225,8 +214,7 @@ namespace LanguageExt
         public static Option<ConstructorInfo> GetConstructor<TYPE, A>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors
-.FirstOrDefault(x =>
+                .DeclaredConstructors.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -238,8 +226,7 @@ namespace LanguageExt
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors
-.FirstOrDefault(x =>
+                .DeclaredConstructors.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -252,8 +239,7 @@ namespace LanguageExt
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors
-.FirstOrDefault(x =>
+                .DeclaredConstructors.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
@@ -267,8 +253,7 @@ namespace LanguageExt
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C, D>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors
-.FirstOrDefault(x =>
+                .DeclaredConstructors.FirstOrDefault(x =>
                 {
                     if (x.IsStatic) return false;
                     var ps = x.GetParameters();
