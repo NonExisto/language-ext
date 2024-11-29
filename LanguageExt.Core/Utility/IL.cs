@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
 using static LanguageExt.Prelude;
 using static LanguageExt.Reflect;
 
@@ -19,17 +18,9 @@ public static class IL
         var ctorInfo = GetConstructor<R>()
            .IfNone(() => throw new ArgumentException($"Constructor not found for type {typeof(R).FullName}"));
 
-        var dynamic = new DynamicMethod("CreateInstance",
-                                        ctorInfo.DeclaringType,
-                                        Type.EmptyTypes,
-                                        typeof(R).Module,
-                                        true);
-
-        var il = dynamic.GetILGenerator();
-        il.Emit(OpCodes.Newobj, ctorInfo);
-        il.Emit(OpCodes.Ret);
-
-        return (Func<R>)dynamic.CreateDelegate(typeof(Func<R>));
+        var expr = Expression.New(ctorInfo);
+        var lambda = Expression.Lambda<Func<R>>(expr);
+        return lambda.Compile();
     }
 
     /// <summary>

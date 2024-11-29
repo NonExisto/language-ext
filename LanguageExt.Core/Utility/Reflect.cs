@@ -1,278 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace LanguageExt
 {
     static class Reflect
     {
-        static bool Intersects<A>(A[] ma, A[] mb)
-        {
-            foreach (var a in ma)
-            {
-                foreach (var b in mb)
-                {
-                    if (a?.Equals(b) is true) return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static IEnumerable<FieldInfo> GetPublicInstanceFields<A>(bool includeBase, params Type[] excludeAttrs)
-        {
-            var excludeAttrsSet = excludeAttrs.AsIterable().Map(a => a.Name).ToArray();
-            var publicFields = typeof(A)
-                .GetTypeInfo()
-                .GetAllFields(includeBase)
-#if !COREFX13
-                .OrderBy(f => f.MetadataToken)
-#endif
-                .Where(f =>
-                {
-                    if (!f.IsPublic || f.IsStatic) return false;
-                    if (Intersects(f.CustomAttributes.AsIterable().Map(a => a.AttributeType.Name).ToArray(), excludeAttrsSet)) return false;
-                    return true;
-                });
-
-            var publicPropNames = typeof(A)
-                                    .GetTypeInfo()
-                                    .GetAllProperties(includeBase)
-#if !COREFX13
-                                    .OrderBy(p => p.MetadataToken)
-#endif
-                                    .Where(p => p.CanRead && (p.GetMethod?.IsPublic ?? false) && !IsStatic(p))
-                                    .Where(p => !Intersects(p.CustomAttributes.AsIterable().Map(a => a.AttributeType.Name).ToArray(), excludeAttrsSet))
-                                    .ToArray();
-
-            var backingFields = typeof(A)
-                                    .GetTypeInfo()
-                                    .GetAllFields(includeBase)
-#if !COREFX13
-                                    .OrderBy(p => p.MetadataToken)
-#endif
-                                    .Where(f => f.IsPrivate &&
-                                                publicPropNames.AsIterable().Exists(p => f.Name.StartsWith($"<{p.Name}>", StringComparison.Ordinal)))
-                                    .ToArray();
-
-            return EnumerableOptimal.ConcatFast(publicFields, backingFields);
-        }
-
-        /// <summary>
-        /// Returns true if the property is static by inspecting
-        /// the static property of the accessors. Note that if
-        /// there are no accessors then the property is assumed
-        /// to be **non static**. Not sure that this case is
-        /// even possible in CLR.
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public static bool IsStatic
-            (PropertyInfo p) => p.GetAccessors( true ).AsIterable().Head().Map( x => x.IsStatic ).IfNone( false );
-
-        public static Option<MethodInfo> GetPublicStaticMethod(Type type, string name, Type argA) =>
-            type.GetTypeInfo()
-                .DeclaredMethods.FirstOrDefault(x =>
-                {
-                    if (!x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 1) return false;
-                    if (ps[0].ParameterType != argA) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredMethods.FirstOrDefault(x =>
-                {
-                    if (!x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 1) return false;
-                    if (ps[0].ParameterType != argA) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A>(string name) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredMethods.FirstOrDefault(x =>
-                {
-                    if (!x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 1) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicStaticMethod<TYPE, A, B>(string name) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredMethods.FirstOrDefault(x =>
-                {
-                    if (!x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 2) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    if (ps[1].ParameterType != typeof(B)) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicStaticMethod<TYPE>(string name, Type argA, Type argB) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredMethods.FirstOrDefault(x =>
-                {
-                    if (!x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 2) return false;
-                    if (ps[0].ParameterType != argA) return false;
-                    if (ps[1].ParameterType != argB) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, bool includeBase) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .GetAllMethods(includeBase).FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    if (x.GetParameters().Length != 0) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A>(string name, bool includeBase) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .GetAllMethods(includeBase).FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 1) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    return true;
-                });
-
-
-        public static Option<MethodInfo> GetPublicInstanceMethod<TYPE, A, B>(string name, bool includeBase) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .GetAllMethods(includeBase).FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 2) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    if (ps[1].ParameterType != typeof(B)) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicInstanceMethod(Type type, string name, bool includeBase) =>
-            type.GetTypeInfo()
-                .GetAllMethods(includeBase).FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    if (x.GetParameters().Length != 0) return false;
-                    return true;
-                });
-
-        public static Option<MethodInfo> GetPublicInstanceMethod<TYPE>(string name, Type arg1, Type arg2, bool includeBase) =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .GetAllMethods(includeBase).FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.Name != name) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 2) return false;
-                    if (ps[0].ParameterType != arg1) return false;
-                    if (ps[1].ParameterType != arg2) return false;
-                    return true;
-                });
-
         public static Option<ConstructorInfo> GetConstructor<TYPE>() =>
             typeof(TYPE)
                 .GetTypeInfo()
-                .DeclaredConstructors.FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    if (x.GetParameters().Length != 0) return false;
-                    return true;
-                });
+                .DeclaredConstructors.FirstOrDefault(static x => !x.IsStatic && x.GetParameters().Length == 0);
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A>() =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredConstructors.FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 1) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    return true;
-                });
+        (   
+            from ctor in typeof(TYPE).GetTypeInfo().DeclaredConstructors
+            let args = ctor.GetParameters()
+            where !ctor.IsStatic && args.Length == 1
+                && args[0].ParameterType == typeof(A)
+            select ctor
+        ).FirstOrDefault();
+            
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B>() =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredConstructors.FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 2) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    if (ps[1].ParameterType != typeof(B)) return false;
-                    return true;
-                });
+        (   
+            from ctor in typeof(TYPE).GetTypeInfo().DeclaredConstructors
+            let args = ctor.GetParameters()
+            where !ctor.IsStatic && args.Length == 2
+                && args[0].ParameterType == typeof(A)
+                && args[1].ParameterType == typeof(B)
+            select ctor
+        ).FirstOrDefault();
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C>() =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredConstructors.FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 3) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    if (ps[1].ParameterType != typeof(B)) return false;
-                    if (ps[2].ParameterType != typeof(C)) return false;
-                    return true;
-                });
+        (   
+            from ctor in typeof(TYPE).GetTypeInfo().DeclaredConstructors
+            let args = ctor.GetParameters()
+            where !ctor.IsStatic && args.Length == 3
+                && args[0].ParameterType == typeof(A)
+                && args[1].ParameterType == typeof(B)
+                && args[2].ParameterType == typeof(C)
+            select ctor
+        ).FirstOrDefault();
 
         public static Option<ConstructorInfo> GetConstructor<TYPE, A, B, C, D>() =>
-            typeof(TYPE)
-                .GetTypeInfo()
-                .DeclaredConstructors.FirstOrDefault(x =>
-                {
-                    if (x.IsStatic) return false;
-                    var ps = x.GetParameters();
-                    if (ps.Length != 4) return false;
-                    if (ps[0].ParameterType != typeof(A)) return false;
-                    if (ps[1].ParameterType != typeof(B)) return false;
-                    if (ps[2].ParameterType != typeof(C)) return false;
-                    if (ps[3].ParameterType != typeof(D)) return false;
-                    return true;
-                });
-
-        public static bool IsFunc(Type? type) =>
-            type != null && typeof(MulticastDelegate).IsAssignableFrom(type);
-
-        public static bool IsAnonymous(Type? type) =>
-            type != null && 
-            Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false) && 
-            type.IsGenericType && type.Name.Contains("AnonymousType", StringComparison.Ordinal) &&
-            (type.Name.StartsWith("<>", StringComparison.Ordinal) || type.Name.StartsWith("VB$", StringComparison.Ordinal)) &&
-            type.Attributes.HasFlag(TypeAttributes.NotPublic);
+        (   
+            from ctor in typeof(TYPE).GetTypeInfo().DeclaredConstructors
+            let args = ctor.GetParameters()
+            where !ctor.IsStatic && args.Length == 4
+                && args[0].ParameterType == typeof(A)
+                && args[1].ParameterType == typeof(B)
+                && args[2].ParameterType == typeof(C)
+                && args[3].ParameterType == typeof(D)
+            select ctor
+        ).FirstOrDefault();
     }
 }
