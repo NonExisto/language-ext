@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections;
 using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
-using LanguageExt.Traits;
 
 namespace LanguageExt;
 
@@ -252,7 +251,7 @@ internal sealed class SetInternal<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindPredecessor(A key) => SetModule.TryFindPredecessor<A>(set, key, _comparer);
+    public Option<A> FindPredecessor(A key) => SetModule.TryFindPredecessor(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from exact key, or if not found, the predecessor item 
@@ -260,7 +259,7 @@ internal sealed class SetInternal<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindOrPredecessor(A key) => SetModule.TryFindOrPredecessor<A>(set, key, _comparer);
+    public Option<A> FindOrPredecessor(A key) => SetModule.TryFindOrPredecessor(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from next item to specified key
@@ -268,7 +267,7 @@ internal sealed class SetInternal<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindSuccessor(A key) => SetModule.TryFindSuccessor<A>(set, key, _comparer);
+    public Option<A> FindSuccessor(A key) => SetModule.TryFindSuccessor(set, key, _comparer);
 
     /// <summary>
     /// Retrieve the value from exact key, or if not found, the next item 
@@ -276,7 +275,7 @@ internal sealed class SetInternal<A> :
     /// <param name="key">Key to find</param>
     /// <returns>Found key</returns>
     [Pure]
-    public Option<A> FindOrSuccessor(A key) => SetModule.TryFindOrSuccessor<A>(set, key, _comparer);
+    public Option<A> FindOrSuccessor(A key) => SetModule.TryFindOrSuccessor(set, key, _comparer);
 
     /// <summary>
     /// Retrieve a range of values 
@@ -427,16 +426,6 @@ internal sealed class SetInternal<A> :
     [Pure]
     public SetInternal<B> Map<B>(Func<A, B> f, IComparer<B>? comparer)  =>
         new (AsIterable().Map(f), comparer);
-
-    /// <summary>
-    /// Maps the values of this set into a new set of values using the
-    /// mapper function to transform the source values.
-    /// </summary>
-    /// <param name="f">Mapping function</param>
-    /// <returns>Mapped Set</returns>
-    [Pure]
-    public SetInternal<A> Map(Func<A, A> f) =>
-        new (AsIterable().Map(f), null);
 
     /// <summary>
     /// Filters items from the set using the predicate.  If the predicate
@@ -710,7 +699,7 @@ internal sealed class SetInternal<A> :
             {
                 if (!rhs.Contains(item))
                 {
-                    root = SetModule.TryAdd<A>(root, item, _comparer);
+                    root = SetModule.TryAdd(root, item, _comparer);
                 }
             }
             return new SetInternal<A>(root, _comparer);

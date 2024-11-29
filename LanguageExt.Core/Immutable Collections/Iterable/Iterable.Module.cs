@@ -56,8 +56,6 @@ public partial class Iterable
     public static Iterable<A> create<A>(params A[] items)
     {
         if (items.Length == 0) return Iterable<A>.Empty;
-        var nitems = new A[items.Length];
-        System.Array.Copy(items, nitems, items.Length);
         return Iterable<A>.FromSpan(items);
     }
 

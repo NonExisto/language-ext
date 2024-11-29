@@ -1029,11 +1029,11 @@ internal sealed class MapInternal<K, V> :
     {
         IEnumerable<(K, U)> Yield()
         {
-            foreach (var item in this)
+            foreach (var (Key, Value) in this)
             {
-                var opt = selector(item.Key, item.Value);
+                var opt = selector(Key, Value);
                 if (opt.IsNone) continue;
-                yield return (item.Key, (U)opt);
+                yield return (Key, (U)opt);
             }
         }
         return new MapInternal<K, U>(Yield(), MapModule.AddOpt.TryAdd, _comparer);
@@ -1051,11 +1051,11 @@ internal sealed class MapInternal<K, V> :
     {
         IEnumerable<(K, U)> Yield()
         {
-            foreach (var item in this)
+            foreach (var (Key, Value) in this)
             {
-                var opt = selector(item.Value);
+                var opt = selector(Value);
                 if (opt.IsNone) continue;
-                yield return (item.Key, (U)opt);
+                yield return (Key, (U)opt);
             }
         }
         return new MapInternal<K, U>(Yield(), MapModule.AddOpt.TryAdd, _comparer);
@@ -1194,16 +1194,16 @@ internal sealed class MapInternal<K, V> :
 
         var root = MapItem<K, R>.Empty;
 
-        foreach (var right in other)
+        foreach (var (Key, Value) in other)
         {
-            var key  = right.Key;
+            var key  = Key;
             var left = Find(key);
             if (left.IsSome)
             {
                 root = MapModule.TryAdd(
                     root,
                     key,
-                    Merge(key, left.Value!, right.Value),
+                    Merge(key, left.Value!, Value),
                     _comparer);
             }
             else
@@ -1211,7 +1211,7 @@ internal sealed class MapInternal<K, V> :
                 root = MapModule.TryAdd(
                     root,
                     key,
-                    MapRight(key, right.Value),
+                    MapRight(key, Value),
                     _comparer);
             }
         }
@@ -1243,15 +1243,15 @@ internal sealed class MapInternal<K, V> :
 
         var root = MapItem<K, R>.Empty;
 
-        foreach (var right in other)
+        foreach (var (Key, Value) in other)
         {
-            var left = Find(right.Key);
+            var left = Find(Key);
             if (left.IsSome)
             {
                 root = MapModule.TryAdd(
                     root,
-                    right.Key,
-                    Merge(right.Key, left.Value!, right.Value),
+                    Key,
+                    Merge(Key, left.Value!, Value),
                     _comparer);
             }
         }
@@ -1265,14 +1265,14 @@ internal sealed class MapInternal<K, V> :
     public MapInternal<K, V> Except(MapInternal<K, V> other)
     {
         var root = MapItem<K, V>.Empty;
-        foreach(var item in this)
+        foreach(var (Key, Value) in this)
         {
-            if (!other.ContainsKey(item.Key))
+            if (!other.ContainsKey(Key))
             {
                 root = MapModule.Add(
                     root,
-                    item.Key,
-                    item.Value,
+                    Key,
+                    Value,
                     _comparer);
             }
         }
@@ -1288,26 +1288,26 @@ internal sealed class MapInternal<K, V> :
     {
         var root = MapItem<K, V>.Empty;
 
-        foreach (var left in this)
+        foreach (var (Key, Value) in this)
         {
-            if (!other.ContainsKey(left.Key))
+            if (!other.ContainsKey(Key))
             {
                 root = MapModule.Add(
                     root,
-                    left.Key,
-                    left.Value,
+                    Key,
+                    Value,
                     _comparer);
             }
         }
-        foreach (var right in other)
+        foreach (var (Key, Value) in other)
         {
-            if (!ContainsKey(right.Key))
+            if (!ContainsKey(Key))
             {
                 //map = map.Add(right.Key, right.Value);
                 root = MapModule.Add(
                     root,
-                    right.Key,
-                    right.Value,
+                    Key,
+                    Value,
                     _comparer);
             }
         }
@@ -1327,11 +1327,11 @@ internal sealed class MapInternal<K, V> :
         }
 
         var self = this;
-        foreach (var item in rhs)
+        foreach (var (Key, Value) in rhs)
         {
-            if (!self.ContainsKey(item.Key))
+            if (!self.ContainsKey(Key))
             {
-                self = self.Add(item.Key, item.Value);
+                self = self.Add(Key, Value);
             }
         }
         return self;
@@ -1358,9 +1358,9 @@ internal sealed class MapInternal<K, V> :
         if (rhs.Count < Count)
         {
             var self = this;
-            foreach (var item in rhs)
+            foreach (var (Key, Value) in rhs)
             {
-                self = self.Remove(item.Key);
+                self = self.Remove(Key);
             }
             return self;
         }
@@ -1617,11 +1617,11 @@ static class MapModule
         var cmp = comparer.Compare(key, node.KeyValue.Key);
         if (cmp < 0)
         {
-            return Balance(Make(node.KeyValue, Remove<K, V>(node.Left, key, comparer), node.Right));
+            return Balance(Make(node.KeyValue, Remove(node.Left, key, comparer), node.Right));
         }
         else if (cmp > 0)
         {
-            return Balance(Make(node.KeyValue, node.Left, Remove<K, V>(node.Right, key, comparer)));
+            return Balance(Make(node.KeyValue, node.Left, Remove(node.Right, key, comparer)));
         }
         else
         {
@@ -1650,7 +1650,7 @@ static class MapModule
                     successor = successor.Left;
                 }
 
-                var newRight = Remove<K, V>(node.Right, successor.KeyValue.Key, comparer);
+                var newRight = Remove(node.Right, successor.KeyValue.Key, comparer);
                 return Balance(Make(successor.KeyValue, node.Left, newRight));
             }
         }
@@ -1683,26 +1683,26 @@ static class MapModule
         }
         if (comparer.Compare(node.KeyValue.Key, a) < 0)
         {
-            foreach (var item in FindRange<K, V>(node.Right, a, b, comparer))
+            foreach (var item in FindRange(node.Right, a, b, comparer))
             {
                 yield return item;
             }
         }
         else if (comparer.Compare(node.KeyValue.Key, b) > 0)
         {
-            foreach (var item in FindRange<K, V>(node.Left, a, b, comparer))
+            foreach (var item in FindRange(node.Left, a, b, comparer))
             {
                 yield return item;
             }
         }
         else
         {
-            foreach (var item in FindRange<K, V>(node.Left, a, b, comparer))
+            foreach (var item in FindRange(node.Left, a, b, comparer))
             {
                 yield return item;
             }
             yield return node.KeyValue.Value;
-            foreach (var item in FindRange<K, V>(node.Right, a, b, comparer))
+            foreach (var item in FindRange(node.Right, a, b, comparer))
             {
                 yield return item;
             }
@@ -1721,26 +1721,26 @@ static class MapModule
         }
         if (comparer.Compare(node.KeyValue.Key, a) < 0)
         {
-            foreach (var item in FindRangePairs<K, V>(node.Right, a, b, comparer))
+            foreach (var item in FindRangePairs(node.Right, a, b, comparer))
             {
                 yield return item;
             }
         }
         else if (comparer.Compare(node.KeyValue.Key, b) > 0)
         {
-            foreach (var item in FindRangePairs<K, V>(node.Left, a, b, comparer))
+            foreach (var item in FindRangePairs(node.Left, a, b, comparer))
             {
                 yield return item;
             }
         }
         else
         {
-            foreach (var item in FindRangePairs<K, V>(node.Left, a, b, comparer))
+            foreach (var item in FindRangePairs(node.Left, a, b, comparer))
             {
                 yield return item;
             }
             yield return node.KeyValue;
-            foreach (var item in FindRangePairs<K, V>(node.Right, a, b, comparer))
+            foreach (var item in FindRangePairs(node.Right, a, b, comparer))
             {
                 yield return item;
             }
@@ -1765,10 +1765,6 @@ static class MapModule
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MapItem<K, V> Make<K, V>((K,V) kv, MapItem<K, V> l, MapItem<K, V> r) =>
         new ((byte)(1 + Math.Max(l.Height, r.Height)), l.Count + r.Count + 1, kv, l, r);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MapItem<K, V> Make<K, V>(K k, V v, MapItem<K, V> l, MapItem<K, V> r) =>
-        new ((byte)(1 + Math.Max(l.Height, r.Height)), l.Count + r.Count + 1, (k, v), l, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MapItem<K, V> Balance<K, V>(MapItem<K, V> node) =>

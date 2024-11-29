@@ -93,10 +93,10 @@ sealed class IterableEnumerable<A>(IEnumerable<A> runEnumerable) : Iterable<A>
     [Pure]
     public override Iterable<B> Bind<B>(Func<A, Iterable<B>> f)
     {
-        return new IterableEnumerable<B>(go(this, f));
-        static IEnumerable<B> go(Iterable<A> ma, Func<A, Iterable<B>> bnd)
+        return new IterableEnumerable<B>(go(runEnumerable, f));
+        static IEnumerable<B> go(IEnumerable<A> enumerable, Func<A, Iterable<B>> bnd)
         {
-            foreach (var a in ma.AsEnumerable())
+            foreach (var a in enumerable)
             {
                 foreach (var b in bnd(a).AsEnumerable())
                 {
@@ -112,21 +112,9 @@ sealed class IterableEnumerable<A>(IEnumerable<A> runEnumerable) : Iterable<A>
     /// <param name="f">Predicate to apply to the items</param>
     /// <returns>Filtered sequence</returns>
     [Pure]
-    public override Iterable<A> Filter(Func<A, bool> f)
-    {
-        return new IterableEnumerable<A>(Yield(this, f));
-        static IEnumerable<A> Yield(Iterable<A> items, Func<A, bool> f)
-        {
-            foreach (var item in items.AsEnumerable())
-            {
-                if (f(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-    }
-    
+    public override Iterable<A> Filter(Func<A, bool> f) => 
+        new IterableEnumerable<A>(runEnumerable.Where(f));
+
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
     /// The ellipsis is used for collections over 50 items

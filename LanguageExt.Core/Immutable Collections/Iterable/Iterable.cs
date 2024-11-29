@@ -32,7 +32,7 @@ public class Iterable<A> :
     int? hashCode;
 
     public static Iterable<A> FromSpan(ReadOnlySpan<A> ma) =>
-        new IterableEnumerable<A>(ma.ToArray().AsEnumerable());
+        new IterableEnumerable<A>(ma.ToArray());
 
     /// <summary>
     /// Number of items in the sequence.
@@ -154,7 +154,7 @@ public class Iterable<A> :
     /// Equality test
     /// </summary>
     [Pure]
-    public virtual bool Equals(Iterable<A>? other) =>
+    public bool Equals(Iterable<A>? other) =>
         other is not null && Equals<EqDefault<A>>(other);
 
     [Pure]
@@ -313,8 +313,8 @@ public class Iterable<A> :
             HashSet<A> set = new HashSet<A>(equalityComparer);
             foreach (var x in AsEnumerable())
             {
-                if(set.Contains(x!)) continue;
-                set = set.Add(x!);
+                if(set.Contains(x)) continue;
+                set = set.Add(x);
                 yield return x;
             }
         }
@@ -421,7 +421,7 @@ public class Iterable<A> :
     /// Compare to another sequence
     /// </summary>
     [Pure]
-    public virtual int CompareTo(Iterable<A>? rhs, IComparer<A> comparer) 
+    public int CompareTo(Iterable<A>? rhs, IComparer<A> comparer) 
     {
         if (rhs is null) return 1;        
         using var iterA = GetEnumerator();
@@ -461,21 +461,21 @@ public class Iterable<A> :
     /// Format the collection as `a, b, c, ...`
     /// </summary>
     [Pure]
-    public virtual string ToFullString(string separator = ", ") =>
+    public string ToFullString(string separator = ", ") =>
         CollectionFormat.ToFullString(AsEnumerable(), separator);
 
     /// <summary>
     /// Format the collection as `[a, b, c, ...]`
     /// </summary>
     [Pure]
-    public virtual string ToFullArrayString(string separator = ", ") =>
+    public string ToFullArrayString(string separator = ", ") =>
         CollectionFormat.ToFullArrayString(AsEnumerable(), separator);
 
     /// <summary>
     /// Equality test
     /// </summary>
     [Pure]
-    public virtual bool Equals<EqA>(Iterable<A> rhs) where EqA : Eq<A>
+    public bool Equals<EqA>(Iterable<A> rhs) where EqA : Eq<A>
     {
         if (ReferenceEquals(this, rhs)) return true;
         using var iterA = GetEnumerator();
@@ -562,7 +562,7 @@ public class Iterable<A> :
     }
 
     /// <summary>
-    /// Partition a list into two based on  a predicate
+    /// Partition a list into two based on a predicate
     /// </summary>
     /// <param name="predicate">True if the item goes in the first list, false for the second list</param>
     /// <returns>Pair of lists</returns>
@@ -628,7 +628,7 @@ public class Iterable<A> :
     /// </summary>
     [Pure]
     public static Iterable<A> Empty => 
-        new IterableEnumerable<A>(Enumerable.Empty<A>());
+        new Iterable<A>();
 
     /// <summary>
     /// Append operator
@@ -695,6 +695,7 @@ public class Iterable<A> :
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped sequence</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<B> Select<B>(Func<A, B> f) =>
         Map(f);
 
@@ -705,6 +706,7 @@ public class Iterable<A> :
     /// <param name="f">Mapping function</param>
     /// <returns>Mapped sequence</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<B> Select<B>(Func<A, int, B> f) =>
         Map(f);
 
@@ -714,6 +716,7 @@ public class Iterable<A> :
     /// <param name="f">Predicate to apply to the items</param>
     /// <returns>Filtered sequence</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<A> Where(Func<A, bool> f) =>
         Filter(f);
 
@@ -724,6 +727,7 @@ public class Iterable<A> :
     /// <param name="bind">Bind function</param>
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<B> SelectMany<B>(Func<A, Iterable<B>> bind) =>
         Bind(bind);
 
@@ -737,7 +741,7 @@ public class Iterable<A> :
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
     public Iterable<C> SelectMany<B, C>(Func<A, Iterable<B>> bind, Func<A, B, C> project) =>
-        Bind(x  => bind(x).Map(y => project(x, y)));
+        Bind(x => bind(x).Map(y => project(x, y)));
 
     /// <summary>
     /// Monadic bind (flatmap) of the sequence
@@ -746,6 +750,7 @@ public class Iterable<A> :
     /// <param name="bind">Bind function</param>
     /// <returns>Flat-mapped sequence</returns>
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<B> SelectMany<B>(Func<A, IEnumerable<B>> bind) =>
         Bind(bind);
 
