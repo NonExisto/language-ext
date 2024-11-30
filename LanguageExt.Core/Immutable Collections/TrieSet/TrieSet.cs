@@ -46,9 +46,13 @@ internal sealed class TrieSet<K> :
         {
             var hash    = (uint)_equalityComparer.GetHashCode(item!);
             Sec section = default;
-            var (countDelta, newRoot, _) = Root.Update(env, item, hash, section, _equalityComparer);
-            _count += countDelta;
-            Root = newRoot;
+            var changed = Root.Update(env, item, hash, section, _equalityComparer);
+            if (changed)
+            {
+                _count += changed.Value.CountDelta;
+                Root = changed.Value.Node;
+            }
+            
         }
     }
 
@@ -61,9 +65,12 @@ internal sealed class TrieSet<K> :
         {
             var hash    = (uint)_equalityComparer.GetHashCode(item!);
             Sec section = default;
-            var (countDelta, newRoot, _) = Root.Update(env, item, hash, section, _equalityComparer);
-            _count += countDelta;
-            Root = newRoot;
+            var changed = Root.Update(env, item, hash, section, _equalityComparer);
+            if (changed)
+            {
+                _count += changed.Value.CountDelta;
+                Root = changed.Value.Node;
+            }
         }
     }
 
@@ -205,10 +212,10 @@ internal sealed class TrieSet<K> :
     {
         var hash    = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot) = Root.Remove(key, hash, section, _equalityComparer);
-        return ReferenceEquals(newRoot, Root)
-                   ? this
-                   : new TrieSet<K>(_equalityComparer, newRoot, _count + countDelta);
+        var changed = Root.Remove(key, hash, section, _equalityComparer);
+        return changed
+                   ? new TrieSet<K>(_equalityComparer, changed.Value.Node, _count + changed.Value.CountDelta)
+                   : this;
     }
 
     /// <summary>
@@ -217,13 +224,7 @@ internal sealed class TrieSet<K> :
     public K this[K key]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            var (found, newKey) = FindInternal(key);
-            return found
-                       ? newKey
-                       : throw new ArgumentException($"Key doesn't exist in map: {key}");
-        }
+        get => FindInternal(key).IfNone(() => throw new ArgumentException($"Key doesn't exist in map: {key}"));
     }
 
     /// <summary>
@@ -240,25 +241,20 @@ internal sealed class TrieSet<K> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ContainsKey(K key) =>
-        FindInternal(key).Found;
+        FindInternal(key).IsSome;
 
     /// <summary>
     /// Returns the value associated with `key`.  Or None, if no key exists
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Option<K> Find(K key)
-    {
-        var (found, newKey) = FindInternal(key);
-        return found
-                   ? Optional(newKey)
-                   : default;
-    }
+    public Option<K> Find(K key) => 
+        FindInternal(key);
 
     /// <summary>
     /// Returns the value associated with `key`.  Or None, if no key exists
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    (bool Found, K Key) FindInternal(K key)
+    Option<K> FindInternal(K key)
     {
         var hash    = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
@@ -321,9 +317,9 @@ internal sealed class TrieSet<K> :
     {
         var hash    = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot, changed) = Root.Update(env, key, hash, section, _equalityComparer);
-        return countDelta != 0 || changed
-                   ? new TrieSet<K>(_equalityComparer, newRoot, _count + countDelta)
+        var changed = Root.Update(env, key, hash, section, _equalityComparer);
+        return changed
+                   ? new TrieSet<K>(_equalityComparer, changed.Value.Node, _count + changed.Value.CountDelta)
                    : this;
     }
 
@@ -514,9 +510,9 @@ internal sealed class TrieSet<K> :
     internal abstract class  Node : IEnumerable<K>
     {
         public abstract TrieTag Type { get; }
-        public abstract (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
-        public abstract (int CountDelta, Node Node, bool Changed) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
-        public abstract (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<K> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<(int CountDelta, Node Node)> Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<(int CountDelta, Node Node)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract IEnumerator<K> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -548,7 +544,7 @@ internal sealed class TrieSet<K> :
             Nodes = nodes;
         }
 
-        public override (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var hashIndex = Bit.Get(hash, section);
             var mask      = Bit.Mask(hashIndex);
@@ -568,68 +564,67 @@ internal sealed class TrieSet<K> :
                 }
                 else
                 {
-                    return (0, this);
+                    return default;
                 }
             }
             else if (Bit.Get(NodeMap, mask))
             {
                 //If key lies in a sub-node
                 var ind = Bit.Index(NodeMap, mask);
-                var (cd, subNode) = Nodes[ind].Remove(key, hash, section.Next(), equalityComparer);
-                if (cd == 0) return (0, this);
-
-                switch (subNode.Type)
+                var removed = Nodes[ind].Remove(key, hash, section.Next(), equalityComparer);
+                if (removed)
                 {
-                    case TrieTag.Entries:
+                    var (cd, subNode) = removed.Value;
 
-                        var subEntries = (Entries)subNode;
+                    switch (subNode.Type)
+                    {
+                        case TrieTag.Entries:
 
-                        if (subEntries.Items.Length == 1 && subEntries.Nodes.Length == 0)
-                        {
-                            // If the node only has one subnode, make that subnode the new node
-                            if (Items.Length == 0 && Nodes.Length == 1)
+                            var subEntries = (Entries)subNode;
+
+                            if (subEntries.Items.Length == 1 && subEntries.Nodes.Length == 0)
                             {
-                                // Build a new Entries for this level with the sublevel mask fixed
-                                return (cd, new Entries(
-                                            Bit.Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0]!), section)),
-                                            0,
-                                            Clone(subEntries.Items),
-                                            System.Array.Empty<Node>()
-                                        ));
+                                // If the node only has one subnode, make that subnode the new node
+                                if (Items.Length == 0 && Nodes.Length == 1)
+                                {
+                                    // Build a new Entries for this level with the sublevel mask fixed
+                                    return (cd, new Entries(
+                                                Bit.Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0]!), section)),
+                                                0,
+                                                Clone(subEntries.Items),
+                                                System.Array.Empty<Node>()
+                                            ));
+                                }
+                                else
+                                {
+                                    return (cd, 
+                                            new Entries(
+                                                Bit.Set(EntryMap, mask, true), 
+                                                Bit.Set(NodeMap, mask, false),
+                                                Insert(Items, Bit.Index(EntryMap, mask), subEntries.Items[0]),
+                                                RemoveAt(Nodes, ind)));
+                                }
                             }
                             else
                             {
-                                return (cd, 
-                                        new Entries(
-                                            Bit.Set(EntryMap, mask, true), 
-                                            Bit.Set(NodeMap, mask, false),
-                                            Insert(Items, Bit.Index(EntryMap, mask), subEntries.Items[0]),
-                                            RemoveAt(Nodes, ind)));
+                                var nodeCopy = Clone(Nodes);
+                                nodeCopy[ind] = subNode;
+                                return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy));
                             }
-                        }
-                        else
-                        {
-                            var nodeCopy = Clone(Nodes);
-                            nodeCopy[ind] = subNode;
-                            return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy));
-                        }
 
-                    case TrieTag.Collision:
-                        var nodeCopy2 = Clone(Nodes);
-                        nodeCopy2[ind] = subNode;
-                        return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy2));
-
-                    default:
-                        return (cd, this);
+                        case TrieTag.Collision:
+                            var nodeCopy2 = Clone(Nodes);
+                            nodeCopy2[ind] = subNode;
+                            return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy2));
+                    }
                 }
             }
-            else
-            {
-                return (0, this);
-            }
+            
+            return default;
+            
         }
 
-        public override (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<K> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {                                                                                         
             var hashIndex = Bit.Get(hash, section);
             var mask = Bit.Mask(hashIndex);
@@ -640,12 +635,10 @@ internal sealed class TrieSet<K> :
                 if (equalityComparer.Equals(Items[entryIndex], key))
                 {
                     var item = Items[entryIndex];
-                    return (true, item);
+                    return item;
                 }
-                else
-                {
-                    return default;
-                }
+                
+                return default;
             }
             else if (Bit.Get(NodeMap, mask))
             {
@@ -658,7 +651,7 @@ internal sealed class TrieSet<K> :
             }
         }
 
-        public override (int CountDelta, Node Node, bool Changed) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node)> Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var hashIndex = Bit.Get(hash, section);
             var mask = Bit.Mask(hashIndex);
@@ -678,11 +671,11 @@ internal sealed class TrieSet<K> :
                     else if (env.Type == UpdateType.TryAdd)
                     {
                         // Already added, so we don't continue to try
-                        return (0, this, false);
+                        return default;
                     }
 
                     var newItems = SetItem(Items, entryIndex, change, env.Mutate);
-                    return (0, new Entries(EntryMap, NodeMap, newItems, Nodes), true);
+                    return (0, new Entries(EntryMap, NodeMap, newItems, Nodes));
                 }
                 else
                 {
@@ -694,7 +687,7 @@ internal sealed class TrieSet<K> :
                     else if (env.Type == UpdateType.TrySetItem)
                     {
                         // Key doesn't exist, so there's nothing to set
-                        return (0, this, false);
+                        return default;
                     }
 
                     // Add
@@ -722,7 +715,7 @@ internal sealed class TrieSet<K> :
                                 newEntryMap, 
                                 newNodeMap, 
                                 newItems, 
-                                newNodes), true);
+                                newNodes));
                 }
             }
             else if (Bit.Get(NodeMap, mask))
@@ -730,13 +723,13 @@ internal sealed class TrieSet<K> :
                 var nodeIndex = Bit.Index(NodeMap, mask);
                 
                 var nodeToUpdate = Nodes[nodeIndex];
-                var (countDelta, newNode, changed) = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
-                if(countDelta != 0 || changed)
+                var changed = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
+                if(changed)
                 {
-                    var newNodes = SetItem(Nodes, nodeIndex, newNode, env.Mutate);
-                    return (countDelta, new Entries(EntryMap, NodeMap, Items, newNodes), changed);
+                    var newNodes = SetItem(Nodes, nodeIndex, changed.Value.Node, env.Mutate);
+                    return (changed.Value.CountDelta, new Entries(EntryMap, NodeMap, Items, newNodes));
                 }
-                return (0, this, false);
+                return default;
             }
             else
             {
@@ -748,14 +741,14 @@ internal sealed class TrieSet<K> :
                 else if (env.Type == UpdateType.TrySetItem)
                 {
                     // Key doesn't exist, so there's nothing to set
-                    return (0, this, false);
+                    return default;
                 }
 
                 var entryIndex = Bit.Index(EntryMap, mask);
                 var entries = Bit.Set(EntryMap, mask, true);
                 
                 var newItems = Insert(Items, entryIndex, change);
-                return (1, new Entries(entries, NodeMap, newItems, Nodes), true);
+                return (1, new Entries(entries, NodeMap, newItems, Nodes));
             }
         }
 
@@ -792,52 +785,50 @@ internal sealed class TrieSet<K> :
             Hash = hash;
         }
 
-        public override (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<K> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             foreach (var kv in Items)
             {
                 if (equalityComparer.Equals(kv, key))
                 {
-                    return (true, kv);
+                    return kv;
                 }
             }
             return default;
         }
 
-        public override (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var len = Items.Length;
-            if (len      == 0) return (0, this);
-            else if (len == 1) return (-1, EmptyNode.Default);
-            else if (len == 2)
+            if (len      == 0) return default;
+            else if (len == 1 && equalityComparer.Equals(Items[0], key)) return (-1, EmptyNode.Default);
+            else if (len == 2 && equalityComparer.Equals(Items[0], key))
             {
                 var env = new UpdateContext(UpdateType.Add, false);
-                var (_, n, _) = equalityComparer.Equals(Items[0], key)
-                                 ? EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer)
-                                 : EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer);
+                var (_, n) = EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer).Value;
 
                 return (-1, n);
             }
-            else
+            else if (len == 2 && equalityComparer.Equals(Items[1], key))
             {
-                var result = Yield(Items, key, equalityComparer).ToArray();
+                var env = new UpdateContext(UpdateType.Add, false);
+                var (_, n) = EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer).Value;
 
-                return (result.Length - Items.Length, new Collision(result, hash));
+                return (-1, n);
             }
+
+            var (left, right) = Items.Partition(item => equalityComparer.Equals(item, key), 1);
+
+            if (left.Length > 0)
+            {
+                Node collision = new Collision(right, hash);
+                return (right.Length - Items.Length, collision);
+            }
+
+            return default;
         }
 
-        static IEnumerable<K> Yield(K[] items, K key, IEqualityComparer<K> equalityComparer)
-        {
-            foreach (var item in items)
-            {
-                if (!equalityComparer.Equals(item, key))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        public override (int CountDelta, Node Node, bool Changed) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node)> Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var index = -1;
             for (var i = 0; i < Items.Length; i++)
@@ -859,11 +850,11 @@ internal sealed class TrieSet<K> :
                 else if (env.Type == UpdateType.TryAdd)
                 {
                     // Already added, so we don't continue to try
-                    return (0, this, false);
+                    return default;
                 }
 
                 var newArr = SetItem(Items, index, change, false);
-                return (0, new Collision(newArr, hash), true);
+                return (0, new Collision(newArr, hash));
             }
             else
             {
@@ -875,13 +866,13 @@ internal sealed class TrieSet<K> :
                 else if (env.Type == UpdateType.TrySetItem)
                 {
                     // Key doesn't exist, so there's nothing to set
-                    return (0, this, false);
+                    return default;
                 }
 
                 var result = new K[Items.Length + 1];
                 System.Array.Copy(Items, result, Items.Length);
                 result[Items.Length] = change;
-                return (1, new Collision(result, hash), true);
+                return (1, new Collision(result, hash));
             }
         }
 
@@ -898,13 +889,13 @@ internal sealed class TrieSet<K> :
 
         public override TrieTag Type => TrieTag.Empty;
 
-        public override (bool Found, K Key) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
+        public override Option<K> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
             default;
 
-        public override (int CountDelta, Node Node) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
-            (0, this);
+        public override Option<(int CountDelta, Node Node)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
+            default;
 
-        public override (int CountDelta, Node Node, bool Changed) Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node)> Update(UpdateContext env, K change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             if (env.Type == UpdateType.SetItem)
             {
@@ -914,11 +905,11 @@ internal sealed class TrieSet<K> :
             else if (env.Type == UpdateType.TrySetItem)
             {
                 // Key doesn't exist, so there's nothing to set
-                return (0, this, false);
+                return default;
             }
 
             var dataMap = Bit.Mask(Bit.Get(hash, section));
-            return (1, new Entries(dataMap, 0, [change], System.Array.Empty<Node>()), true);
+            return (1, new Entries(dataMap, 0, [change], System.Array.Empty<Node>()));
         }
 
         public override IEnumerator<K> GetEnumerator()

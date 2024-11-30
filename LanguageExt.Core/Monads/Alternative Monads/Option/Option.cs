@@ -42,7 +42,7 @@ public readonly struct Option<A> :
     Monoid<Option<A>>
 {
     internal readonly A? Value;
-    internal readonly bool isSome;
+    private readonly bool isSome;
 
     /// <summary>
     /// None

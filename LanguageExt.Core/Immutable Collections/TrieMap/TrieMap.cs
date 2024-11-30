@@ -66,9 +66,13 @@ internal sealed class TrieMap<K, V> :
         {
             var h       = (uint)_equalityComparer.GetHashCode(item.Key.require("Item key is null"));
             Sec section = default;
-            var (countDelta, newRoot, _, _) = Root.Update(update, item, h, section, _equalityComparer);
-            _count += countDelta;
-            Root = newRoot;
+            var changed = Root.Update(update, item, h, section, _equalityComparer);
+            if (changed)
+            {
+                _count += changed.Value.CountDelta;
+                Root = changed.Value.Node;
+            }
+            
         }
     }
 
@@ -81,9 +85,12 @@ internal sealed class TrieMap<K, V> :
         {
             var h       = (uint)_equalityComparer.GetHashCode(item.Key.require("Item key is null"));
             Sec section = default;
-            var (countDelta, newRoot, _, _) = Root.Update(update, item, h, section, _equalityComparer);
-            _count += countDelta;
-            Root = newRoot;
+            var changed = Root.Update(update, item, h, section, _equalityComparer);
+            if (changed)
+            {
+                _count += changed.Value.CountDelta;
+                Root = changed.Value.Node;
+            }
         }
     }
 
@@ -1313,9 +1320,9 @@ internal sealed class TrieMap<K, V> :
     {
         var h       = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot, _, changed) = Root.Update(env, (key, value), h, section, _equalityComparer);
-        return countDelta != 0 || changed
-                   ? new TrieMap<K, V>(_equalityComparer, newRoot, _count + countDelta)
+        var changed = Root.Update(env, (key, value), h, section, _equalityComparer);
+        return changed
+                   ? new TrieMap<K, V>(_equalityComparer, changed.Value.Node, _count + changed.Value.CountDelta)
                    : this;
     }
 
@@ -1327,13 +1334,13 @@ internal sealed class TrieMap<K, V> :
     {
         var h       = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot, oldV, changed) = Root.Update(env, (key, value), h, section, _equalityComparer);
+        var changed = Root.Update(env, (key, value), h, section, _equalityComparer);
         return changed
-                   ? (new TrieMap<K, V>(_equalityComparer, newRoot, _count + countDelta), 
-                      countDelta == 0 
-                          ? equalityComparer.Equals(oldV, value)
+                   ? (new TrieMap<K, V>(_equalityComparer, changed.Value.Node, _count + changed.Value.CountDelta), 
+                      changed.Value.CountDelta == 0 
+                          ? equalityComparer.Equals(changed.Value.Old, value)
                                 ? Change<V>.None 
-                                : Change<V>.Mapped(oldV, value)
+                                : Change<V>.Mapped(changed.Value.Old, value)
                           : Change<V>.Added(value))
                    : (this, Change<V>.None);
     }
@@ -1974,7 +1981,7 @@ internal sealed class TrieMap<K, V> :
     {
         public abstract TrieTag Type { get; }
         public abstract Option<(K Key, V Value)> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
-        public abstract (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<(int CountDelta, Node Node, V? Old)> Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract IEnumerator<(K, V)> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -2112,7 +2119,7 @@ internal sealed class TrieMap<K, V> :
             return default;
         }
 
-        public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node, V? Old)> Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var hashIndex = Bit.Get(hash, section);
             var mask = Bit.Mask(hashIndex);
@@ -2133,11 +2140,11 @@ internal sealed class TrieMap<K, V> :
                     else if (env.Type == UpdateType.TryAdd)
                     {
                         // Already added, so we don't continue to try
-                        return (0, this, default, false);
+                        return default;
                     }
 
                     var (newItems, old) = SetItem(Items, entryIndex, change, env.Mutate);
-                    return (0, new Entries(EntryMap, NodeMap, newItems, Nodes), old.Value, true);
+                    return (0, new Entries(EntryMap, NodeMap, newItems, Nodes), old.Value);
                 }
                 else
                 {
@@ -2149,7 +2156,7 @@ internal sealed class TrieMap<K, V> :
                     else if (env.Type == UpdateType.TrySetItem)
                     {
                         // Key doesn't exist, so there's nothing to set
-                        return (0, this, default, false);
+                        return default;
                     }
 
                     // Add
@@ -2174,7 +2181,7 @@ internal sealed class TrieMap<K, V> :
                     
                     var newNodes = Insert(Nodes, nodeIndex, node);
 
-                    return (1, new Entries(newEntryMap, newNodeMap, newItems, newNodes), default, true);
+                    return (1, new Entries(newEntryMap, newNodeMap, newItems, newNodes), default);
                 }
             }
             else if (Bit.Get(NodeMap, mask))
@@ -2182,13 +2189,15 @@ internal sealed class TrieMap<K, V> :
                 var nodeIndex = Bit.Index(NodeMap, mask);
 
                 var nodeToUpdate = Nodes[nodeIndex];
-                var (countDelta, newNode, ov, changed) = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
-                if(countDelta != 0 || changed)
+                var changed = nodeToUpdate.Update(env, change, hash, section.Next(), equalityComparer);
+                if(changed)
                 {
+                    var (countDelta, newNode, ov) = changed.Value;
                     var (newNodes, _) = SetItem(Nodes, nodeIndex, newNode, env.Mutate);
-                    return (countDelta, new Entries(EntryMap, NodeMap, Items, newNodes), ov, changed);
+                    Node entries = new Entries(EntryMap, NodeMap, Items, newNodes);
+                    return (countDelta, entries, ov);
                 }
-                return (0, this, default, false);
+                return default;
             }
             else
             {
@@ -2200,7 +2209,7 @@ internal sealed class TrieMap<K, V> :
                 else if (env.Type == UpdateType.TrySetItem)
                 {
                     // Key doesn't exist, so there's nothing to set
-                    return (0, this, default, false);
+                    return default;
                 }
 
                 var entryIndex = Bit.Index(EntryMap, mask);
@@ -2208,7 +2217,7 @@ internal sealed class TrieMap<K, V> :
                 var entries = Bit.Set(EntryMap, mask, true);
                 
                 var newItems = Insert(Items, entryIndex, change);
-                return (1, new Entries(entries, NodeMap, newItems, Nodes), default, true);
+                return (1, new Entries(entries, NodeMap, newItems, Nodes), default);
             }
         }
 
@@ -2265,7 +2274,7 @@ internal sealed class TrieMap<K, V> :
             else if (len == 2 && equalityComparer.Equals(Items[0].Key, key))
             {
                 var env = new UpdateContext(UpdateType.Add, false);
-                var (_, n, _, _) = EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer);
+                var (_, n, _) = EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer).Value;
                 var ov = Items[0].Value;
 
                 return (-1, n, ov);
@@ -2273,7 +2282,7 @@ internal sealed class TrieMap<K, V> :
             else if (len == 2 && equalityComparer.Equals(Items[1].Key, key))
             {
                 var env = new UpdateContext(UpdateType.Add, false);
-                var (_, n, _, _) = EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer);
+                var (_, n, _) = EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer).Value;
                 var ov = Items[1].Value;
 
                 return (-1, n, ov);
@@ -2290,7 +2299,7 @@ internal sealed class TrieMap<K, V> :
             return default;
         }
 
-        public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node, V? Old)> Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var index = -1;
             for (var i = 0; i < Items.Length; i++)
@@ -2312,11 +2321,11 @@ internal sealed class TrieMap<K, V> :
                 else if (env.Type == UpdateType.TryAdd)
                 {
                     // Already added, so we don't continue to try
-                    return (0, this, default, false);
+                    return default;
                 }
 
                 var (newArr, ov) = SetItem(Items, index, change, false);
-                return (0, new Collision(newArr, hash), ov.Value, true);
+                return (0, new Collision(newArr, hash), ov.Value);
             }
             else
             {
@@ -2328,13 +2337,13 @@ internal sealed class TrieMap<K, V> :
                 else if (env.Type == UpdateType.TrySetItem)
                 {
                     // Key doesn't exist, so there's nothing to set
-                    return (0, this, default, false);
+                    return default;
                 }
 
                 var result = new (K, V)[Items.Length + 1];
                 Array.Copy(Items, result, Items.Length);
                 result[Items.Length] = change;
-                return (1, new Collision(result, hash), default, true);
+                return (1, new Collision(result, hash), default);
             }
         }
 
@@ -2357,7 +2366,7 @@ internal sealed class TrieMap<K, V> :
         public override Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
             default;
 
-        public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node, V? Old)> Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             if (env.Type == UpdateType.SetItem)
             {
@@ -2367,11 +2376,11 @@ internal sealed class TrieMap<K, V> :
             else if (env.Type == UpdateType.TrySetItem)
             {
                 // Key doesn't exist, so there's nothing to set
-                return (0, this, default, false);
+                return default;
             }
 
             var dataMap = Bit.Mask(Bit.Get(hash, section));
-            return (1, new Entries(dataMap, 0, [change], []), default, true);
+            return (1, new Entries(dataMap, 0, [change], []), default);
         }
 
         public override IEnumerator<(K, V)> GetEnumerator()
