@@ -180,7 +180,7 @@ public class HashMapTests
     [Fact]
     public void MassAddRemoveTest()
     {
-        int max = 100000;
+        int max = 100_000;
 
         var items = IterableExtensions.AsIterable(Range(1, max))
                                       .Map( _ => (Key: Guid.NewGuid(), Value: Guid.NewGuid()))

@@ -147,6 +147,31 @@ public static partial class Prelude
         xs.OrderBy(identity, OrdComparer<OrdA, A>.Default).ToArray();
 
     /// <summary>
+    /// Partition a array into two based on a predicate
+    /// </summary>
+    /// <param name="items">Array to partition</param>
+    /// <param name="predicate">True if the item goes in the first list, false for the second list</param>
+    /// <param name="expectedFirstLength">Expected length of true</param>
+    /// <returns>Pair of arrays</returns>
+    public static (A[] First, A[] Second) Partition<A>(this A[] items, Func<A, bool> predicate, Option<int> expectedFirstLength = default)
+    {
+        var f = new List<A>(expectedFirstLength ? expectedFirstLength.Value : items.Length / 2);
+        var s = new List<A>(expectedFirstLength ? items.Length - expectedFirstLength.Value : items.Length / 2);
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                f.Add(item);
+            }
+            else
+            {
+                s.Add(item);
+            }
+        }
+        return (f.ToArray(), s.ToArray());
+    }
+
+    /// <summary>
     /// Lazy sequence of natural numbers up to Int32.MaxValue
     /// </summary>
     [Pure]

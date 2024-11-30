@@ -35,11 +35,9 @@ internal readonly record struct UpdateContext(UpdateType Type, bool Mutate);
 /// Used by internally by `LanguageExt.HashMap`
 /// </remarks>
 internal sealed class TrieMap<K, V> :
-    IEnumerable<(K Key, V Value)>,
+    IReadOnlyCollection<(K Key, V Value)>,
     IEquatable<TrieMap<K, V>>
 {
-    
-
     public static TrieMap<K, V> Empty(IEqualityComparer<K>? equalityComparer = null) => 
         new (equalityComparer ?? getRegisteredEqualityComparerOrDefault<K>(), EmptyNode.Default, 0);
 
@@ -66,7 +64,7 @@ internal sealed class TrieMap<K, V> :
         var update = new UpdateContext(tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (var item in items)
         {
-            var h       = (uint)_equalityComparer.GetHashCode(item.Key!);
+            var h       = (uint)_equalityComparer.GetHashCode(item.Key.require("Item key is null"));
             Sec section = default;
             var (countDelta, newRoot, _, _) = Root.Update(update, item, h, section, _equalityComparer);
             _count += countDelta;
@@ -81,7 +79,7 @@ internal sealed class TrieMap<K, V> :
         var update = new UpdateContext(tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (var item in items)
         {
-            var h       = (uint)_equalityComparer.GetHashCode(item.Key!);
+            var h       = (uint)_equalityComparer.GetHashCode(item.Key.require("Item key is null"));
             Sec section = default;
             var (countDelta, newRoot, _, _) = Root.Update(update, item, h, section, _equalityComparer);
             _count += countDelta;
@@ -162,61 +160,38 @@ internal sealed class TrieMap<K, V> :
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieMap<K, V> AddOrUpdate(K key, Func<V, V> Some, Func<V> None)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdate(key, Some(value!))
-                   : AddOrUpdate(key, None());
-    }
+    public TrieMap<K, V> AddOrUpdate(K key, Func<V, V> Some, Func<V> None) => 
+        FindInternal(key).Match(v => AddOrUpdate(key, Some(v.Value)), () => AddOrUpdate(key, None()));
 
     /// <summary>
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<K, V> Map, Change<V> Change) AddOrUpdateWithLog(K key, Func<V, V> Some, Func<V> None, IEqualityComparer<V> equalityComparer)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdateWithLog(key, Some(value!), equalityComparer)
-                   : AddOrUpdateWithLog(key, None(), equalityComparer);
-    }
+    public (TrieMap<K, V> Map, Change<V> Change) AddOrUpdateWithLog(K key, Func<V, V> Some, Func<V> None, IEqualityComparer<V> equalityComparer) => 
+        FindInternal(key).Match(v => AddOrUpdateWithLog(key, Some(v.Value), equalityComparer),
+            () => AddOrUpdateWithLog(key, None(), equalityComparer));
 
     /// <summary>
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieMap<K, V> AddOrMaybeUpdate(K key, Func<V, V> Some, Func<Option<V>> None)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdate(key, Some(value!))
-                   : None().Map(x => AddOrUpdate(key, x)).IfNone(this);
-    }
+    public TrieMap<K, V> AddOrMaybeUpdate(K key, Func<V, V> Some, Func<Option<V>> None) => 
+        FindInternal(key).Match(v => AddOrUpdate(key, Some(v.Value)), () => None().Match(x => AddOrUpdate(key, x), this));
 
     /// <summary>
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TrieMap<K, V> AddOrUpdate(K key, Func<V, V> Some, V None)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdate(key, Some(value!))
-                   : AddOrUpdate(key, None);
-    }
+    public TrieMap<K, V> AddOrUpdate(K key, Func<V, V> Some, V None) => 
+        FindInternal(key).Match(v => AddOrUpdate(key, Some(v.Value)), AddOrUpdate(key, None));
 
     /// <summary>
     /// Add an item to the map, if it exists update the value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<K, V> Map, Change<V> Change) AddOrUpdateWithLog(K key, Func<V, V> Some, V None, IEqualityComparer<V> equalityComparer)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? AddOrUpdateWithLog(key, Some(value!), equalityComparer)
-                   : AddOrUpdateWithLog(key, None, equalityComparer);
-    }
+    public (TrieMap<K, V> Map, Change<V> Change) AddOrUpdateWithLog(K key, Func<V, V> Some, V None, IEqualityComparer<V> equalityComparer) =>
+        FindInternal(key).Match(v => AddOrUpdateWithLog(key, Some(v.Value), equalityComparer),
+            () => AddOrUpdateWithLog(key, None, equalityComparer));
 
     /// <summary>
     /// Add a range of values to the map
@@ -286,11 +261,11 @@ internal sealed class TrieMap<K, V> :
         var changeEnv = new UpdateContext(UpdateType.AddOrUpdate, true);
         foreach (var item in items)
         {
-            var pair = self.UpdateWithLog(item.Item1!, item.Item2, env, equalityComparer);
+            var pair = self.UpdateWithLog(item.Item1, item.Item2, env, equalityComparer);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.Update(item.Item1!, pair.Change, changeEnv);
+                changes = changes.Update(item.Item1, pair.Change, changeEnv);
             }
         }
         return (self, changes);
@@ -430,11 +405,11 @@ internal sealed class TrieMap<K, V> :
         var changeEnv = new UpdateContext(UpdateType.AddOrUpdate, true);
         foreach (var item in items)
         {
-            var pair = self.UpdateWithLog(item.Key!, item.Value, env, equalityComparer);
+            var pair = self.UpdateWithLog(item.Key, item.Value, env, equalityComparer);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.Update(item.Key!, pair.Change, changeEnv);
+                changes = changes.Update(item.Key, pair.Change, changeEnv);
             }
         }
         return (self, changes);
@@ -889,10 +864,10 @@ internal sealed class TrieMap<K, V> :
     {
         var h       = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot, _) = Root.Remove(key, h, section, _equalityComparer);
-        return ReferenceEquals(newRoot, Root)
-                   ? this
-                   : new TrieMap<K, V>(_equalityComparer, newRoot, _count + countDelta);
+        var removed = Root.Remove(key, h, section, _equalityComparer);
+        return removed
+                   ? new TrieMap<K, V>(_equalityComparer, removed.Value.Node, _count + removed.Value.CountDelta)
+                   : this;
     }
 
     /// <summary>
@@ -903,13 +878,14 @@ internal sealed class TrieMap<K, V> :
     {
         var h       = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
-        var (countDelta, newRoot, old) = Root.Remove(key, h, section, _equalityComparer);
-        return ReferenceEquals(newRoot, Root)
-                   ? (this, Change<V>.None)
-                   : (new TrieMap<K, V>(_equalityComparer, newRoot, _count + countDelta), 
-                      countDelta == 0
+        var removed = Root.Remove(key, h, section, _equalityComparer);
+        
+        return removed
+                   ? (new TrieMap<K, V>(_equalityComparer, removed.Value.Node, _count + removed.Value.CountDelta), 
+                      removed.Value.CountDelta == 0
                           ? Change<V>.None
-                          : Change<V>.Removed(old!));
+                          : Change<V>.Removed(removed.Value.Old))
+                   :(this, Change<V>.None);
     }
 
     /// <summary>
@@ -918,25 +894,14 @@ internal sealed class TrieMap<K, V> :
     public V this[K key]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            var (found, _, value) = FindInternal(key);
-            return found
-                       ? value!
-                       : throw new ArgumentException($"Key doesn't exist in map: {key}");
-        }
+        get => FindInternal(key).Map(v => v.Value).IfNone(() => throw new ArgumentException($"Key doesn't exist in map: {key}"));
     }
 
     /// <summary>
     /// Get a key value pair from a key
     /// </summary>
-    public Option<(K Key, V Value)> GetOption(K key)
-    {
-        var (found, newKey, value) = FindInternal(key);
-        return found
-                   ? Some((newKey, value!))
-                   : default;
-    }
+    public Option<(K Key, V Value)> GetOption(K key) => 
+        FindInternal(key);
 
     /// <summary>
     /// Create an empty map
@@ -959,7 +924,7 @@ internal sealed class TrieMap<K, V> :
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ContainsKey(K key) =>
-        FindInternal(key).Found;
+        FindInternal(key).IsSome;
 
     /// <summary>
     /// Returns the whether the `value` exists in the map
@@ -993,19 +958,14 @@ internal sealed class TrieMap<K, V> :
     /// Returns the value associated with `key`.  Or None, if no key exists
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Option<V> Find(K key)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? Some(value!)
-                   : default;
-    }
+    public Option<V> Find(K key) => 
+        FindInternal(key).Map(v => v.Value);
 
     /// <summary>
     /// Returns the value associated with `key`.  Or None, if no key exists
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    (bool Found, K Key, V? Value) FindInternal(K key)
+    Option<(K Key, V Value)> FindInternal(K key)
     {
         var h       = (uint)_equalityComparer.GetHashCodeOrDefault(key);
         Sec section = default;
@@ -1016,13 +976,8 @@ internal sealed class TrieMap<K, V> :
     /// Returns the value associated with `key` then match the result
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public R Find<R>(K key, Func<V, R> Some, Func<R> None)
-    {
-        var (found, _, value) = FindInternal(key);
-        return found
-                   ? Some(value!)
-                   : None();
-    }
+    public R Find<R>(K key, Func<V, R> Some, Func<R> None) => 
+        FindInternal(key).Match(v => Some(v.Value), None);
 
     /// <summary>
     /// Tries to find the value, if not adds it and returns the update map and/or value
@@ -1044,7 +999,7 @@ internal sealed class TrieMap<K, V> :
         var item = Find(key);
         if (item.IsSome)
         {
-            return (this, item.Value!, Change<V>.None);
+            return (this, item.Value, Change<V>.None);
         }
         else
         {
@@ -1070,7 +1025,7 @@ internal sealed class TrieMap<K, V> :
         var item = Find(key);
         if (item.IsSome)
         {
-            return (this, item.Value!, Change<V>.None);
+            return (this, item.Value, Change<V>.None);
         }
         else
         {
@@ -1096,24 +1051,24 @@ internal sealed class TrieMap<K, V> :
     /// Tries to find the value, if not adds it and returns the update map and/or value
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public (TrieMap<K, V> Map, V Value, Change<V> Change) FindOrMaybeAddWithLog(K key, Func<Option<V>> None, IEqualityComparer<V> equalityComparer)
+    public (TrieMap<K, V> Map, V? Value, Change<V> Change) FindOrMaybeAddWithLog(K key, Func<Option<V>> None, IEqualityComparer<V> equalityComparer)
     {
         var item = Find(key);
         if (item.IsSome)
         {
-            return (this, item.Value!, Change<V>.None);
+            return (this, item.Value, Change<V>.None);
         }
         else
         {
             var v = None();
             if (v.IsSome)
             {
-                var self = AddWithLog(key, v.Value!, equalityComparer);
-                return (self.Map, v.Value!, self.Change);
+                var self = AddWithLog(key, v.Value, equalityComparer);
+                return (self.Map, v.Value, self.Change);
             }
             else
             {
-                return (this, item.Value!, Change<V>.None);
+                return (this, item.Value, Change<V>.None);
             }
         }
     }        
@@ -1143,7 +1098,7 @@ internal sealed class TrieMap<K, V> :
         {
             if (value.IsSome)
             {
-                var self = AddWithLog(key, value.Value!, equalityComparer);
+                var self = AddWithLog(key, value.Value, equalityComparer);
                 return (self.Map, value.Value, self.Change);
             }
             else
@@ -1179,8 +1134,8 @@ internal sealed class TrieMap<K, V> :
         foreach (var (Key, Value) in this)
         {
             var value = f(Value);
-            target = target.AddOrUpdateInPlace(Key!, value);
-            changes = changes.AddOrUpdateInPlace(Key!, new EntryMapped<V, U>(Value, value));
+            target = target.AddOrUpdateInPlace(Key, value);
+            changes = changes.AddOrUpdateInPlace(Key, new EntryMapped<V, U>(Value, value));
         }
         return (target, changes);
     }
@@ -1213,11 +1168,11 @@ internal sealed class TrieMap<K, V> :
             var pred = f(Value);
             if (pred)
             {
-                target = target.AddOrUpdateInPlace(Key!, Value);
+                target = target.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(Key!, Change<V>.Removed(Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (target, changes);
@@ -1244,11 +1199,11 @@ internal sealed class TrieMap<K, V> :
             var pred = f(Key, Value);
             if (pred)
             {
-                target = target.AddOrUpdateInPlace(Key!, Value);
+                target = target.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(Key!, Change<V>.Removed(Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (target, changes);
@@ -1277,7 +1232,7 @@ internal sealed class TrieMap<K, V> :
         var lhs = this;
         foreach (var item in rhs.Keys)
         {
-            lhs = lhs.Remove(item!);
+            lhs = lhs.Remove(item);
         }
         return lhs;
     }
@@ -1292,11 +1247,11 @@ internal sealed class TrieMap<K, V> :
         var lhs     = this;
         foreach (var item in rhs.Keys)
         {
-            var pair = lhs.RemoveWithLog(item!);
+            var pair = lhs.RemoveWithLog(item);
             lhs = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item!, pair.Change);
+                changes = changes.AddOrUpdateInPlace(item, pair.Change);
             }
         }
         return (lhs, changes);
@@ -1338,18 +1293,15 @@ internal sealed class TrieMap<K, V> :
         if (rhs is null) return false;
         if (ReferenceEquals(this, rhs)) return true;
         if (Count != rhs.Count) return false;
+
         using var iterA = GetEnumerator();
         using var iterB = rhs.GetEnumerator();
         while (iterA.MoveNext() && iterB.MoveNext())
         {
             if (!_equalityComparer.Equals(iterA.Current.Key, iterB.Current.Key)) return false;
+            if (!equalityComparer.Equals(iterA.Current.Value, iterB.Current.Value)) return false;
         }
-        using var iterA1 = GetEnumerator();
-        using var iterB1 = rhs.GetEnumerator();
-        while (iterA1.MoveNext() && iterB1.MoveNext())
-        {
-            if (!equalityComparer.Equals(iterA1.Current.Value, iterB1.Current.Value)) return false;
-        }
+        
         return true;
     }
         
@@ -1408,7 +1360,7 @@ internal sealed class TrieMap<K, V> :
         var extraFound = false;
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 matches++;
             }
@@ -1448,7 +1400,7 @@ internal sealed class TrieMap<K, V> :
         foreach (var item in other)
         {
             matchCount++;
-            if (!ContainsKey(item!))
+            if (!ContainsKey(item))
             {
                 return false;
             }
@@ -1471,7 +1423,7 @@ internal sealed class TrieMap<K, V> :
         var matches = 0;
         foreach (var (Key, Value) in other)
         {
-            if (ContainsKey(Key!))
+            if (ContainsKey(Key))
             {
                 matches++;
             }
@@ -1493,7 +1445,7 @@ internal sealed class TrieMap<K, V> :
         var matches = 0;
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 matches++;
             }
@@ -1543,7 +1495,7 @@ internal sealed class TrieMap<K, V> :
     {
         foreach (var item in other)
         {
-            if (!ContainsKey(item!))
+            if (!ContainsKey(item))
             {
                 return false;
             }
@@ -1569,7 +1521,7 @@ internal sealed class TrieMap<K, V> :
 
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 return true;
             }
@@ -1585,7 +1537,7 @@ internal sealed class TrieMap<K, V> :
         var res = new List<(K, V)>();
         foreach (var item in other)
         {
-            GetOption(item!).Do(res.Add);
+            GetOption(item).Do(res.Add);
         }
         return new TrieMap<K, V>(res);
     }
@@ -1603,11 +1555,11 @@ internal sealed class TrieMap<K, V> :
         {
             if (set.Contains(Key))
             {
-                res = res.AddOrUpdateInPlace(Key!, Value);
+                res = res.AddOrUpdateInPlace(Key, Value);
             }
             else
             {
-                changes = changes.AddOrUpdateInPlace(Key!, Change<V>.Removed(Value));
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
         return (res, changes);
@@ -1621,7 +1573,7 @@ internal sealed class TrieMap<K, V> :
         var res = new List<(K, V)>();
         foreach (var (Key, Value) in other)
         {
-            GetOption(Key!).Do(res.Add);
+            GetOption(Key).Do(res.Add);
         }
         return new TrieMap<K, V>(res);
     }
@@ -1643,11 +1595,11 @@ internal sealed class TrieMap<K, V> :
         var t = Empty(_equalityComparer);
         foreach (var (Key, Value) in other)
         {
-            var px = Find(Key!);
+            var px = Find(Key);
             if (px.IsSome)
             {
-                var r = Merge(Key, px.Value!, Value);
-                t = t.AddOrUpdateInPlace(Key!, r);
+                var r = Merge(Key, px.Value, Value);
+                t = t.AddOrUpdateInPlace(Key, r);
             }
         }
         return t;
@@ -1664,19 +1616,19 @@ internal sealed class TrieMap<K, V> :
         var c = TrieMap<K, Change<V>>.Empty(_equalityComparer);
         foreach (var (Key, Value) in this)
         {
-            var py = other.Find(Key!);
+            var py = other.Find(Key);
             if (py.IsSome)
             {
-                var r = Merge(Key, Value, py.Value!);
-                t = t.AddOrUpdateInPlace(Key!, r);
+                var r = Merge(Key, Value, py.Value);
+                t = t.AddOrUpdateInPlace(Key, r);
                 if (!equalityComparer.Equals(Value, r))
                 {
-                    c = c.AddOrUpdateInPlace(Key!, Change<V>.Mapped(Value, r));
+                    c = c.AddOrUpdateInPlace(Key, Change<V>.Mapped(Value, r));
                 }
             }
             else
             {
-                c = c.AddOrUpdateInPlace(Key!, Change<V>.Removed(Value));
+                c = c.AddOrUpdateInPlace(Key, Change<V>.Removed(Value));
             }
         }
 
@@ -1692,7 +1644,7 @@ internal sealed class TrieMap<K, V> :
         var self = this;
         foreach (var item in other)
         {
-            self = self.Remove(item!);
+            self = self.Remove(item);
         }
         return self;
     }
@@ -1708,11 +1660,11 @@ internal sealed class TrieMap<K, V> :
             
         foreach (var item in other)
         {
-            var pair = self.RemoveWithLog(item!);
+            var pair = self.RemoveWithLog(item);
             self = pair.Map;
             if (pair.Change.HasChanged)
             {
-                changes = changes.AddOrUpdateInPlace(item!, pair.Change);
+                changes = changes.AddOrUpdateInPlace(item, pair.Change);
             }
         }
         return (self, changes);
@@ -1727,7 +1679,7 @@ internal sealed class TrieMap<K, V> :
         var self = this;
         foreach (var (Key, Value) in other)
         {
-            self = self.Remove(Key!);
+            self = self.Remove(Key);
         }
         return self;
     }
@@ -1750,10 +1702,10 @@ internal sealed class TrieMap<K, V> :
             
         foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(Key!);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(Key!, Value);
+                self = self.Add(Key, Value);
             }
         }
         return self;
@@ -1770,11 +1722,11 @@ internal sealed class TrieMap<K, V> :
             
         foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(Key!);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(Key!, Value);
-                changes = changes.AddOrUpdateInPlace(Key!, Change<V>.Added(Value));
+                self = self.Add(Key, Value);
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Added(Value));
             }
         }
         return (self, changes);
@@ -1790,10 +1742,10 @@ internal sealed class TrieMap<K, V> :
             
         foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(Key!);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(Key!, Value);
+                self = self.Add(Key, Value);
             }
             else
             {
@@ -1814,16 +1766,16 @@ internal sealed class TrieMap<K, V> :
             
         foreach (var (Key, Value) in rhs)
         {
-            var pair = self.RemoveWithLog(Key!);
+            var pair = self.RemoveWithLog(Key);
             if (pair.Change.HasNoChange)
             {
-                self = self.Add(Key!, Value);
-                changes = changes.AddOrUpdateInPlace(Key!, Change<V>.Added(Value));
+                self = self.Add(Key, Value);
+                changes = changes.AddOrUpdateInPlace(Key, Change<V>.Added(Value));
             }
             else
             {
                 self = pair.Map;
-                changes = changes.AddOrUpdateInPlace(Key!, pair.Change);
+                changes = changes.AddOrUpdateInPlace(Key, pair.Change);
             }
         }
         return (self, changes);
@@ -1932,16 +1884,16 @@ internal sealed class TrieMap<K, V> :
         var t = TrieMap<K, R>.Empty(_equalityComparer);
         foreach(var (key, value) in other)
         {
-            var px = Find(key!);
-            t = t.AddOrUpdateInPlace(key!, px.IsSome 
-                                              ? Merge(key, px.Value!, value) 
+            var px = Find(key);
+            t = t.AddOrUpdateInPlace(key, px.IsSome 
+                                              ? Merge(key, px.Value, value) 
                                               : MapRight(key, value));
         }
 
         foreach (var (key, value) in this)
         {
-            if (t.ContainsKey(key!)) continue;
-            t = t.AddOrUpdateInPlace(key!, MapLeft(key, value));
+            if (t.ContainsKey(key)) continue;
+            t = t.AddOrUpdateInPlace(key, MapLeft(key, value));
         }
 
         return t;
@@ -1974,33 +1926,33 @@ internal sealed class TrieMap<K, V> :
         var c = TrieMap<K, Change<R>>.Empty(_equalityComparer);
         foreach(var (key, value) in other)
         {
-            var px = Find(key!);
+            var px = Find(key);
             if (px.IsSome)
             {
-                var r = Merge(key, px.Value!, value);
-                t = t.AddOrUpdateInPlace(key!, r);
+                var r = Merge(key, px.Value, value);
+                t = t.AddOrUpdateInPlace(key, r);
                 if (!equalityComparer.Equals(px.Value, match(r)))
                 {
-                    c = c.AddOrUpdateInPlace(key!, Change<R>.Mapped(px.Value, r));
+                    c = c.AddOrUpdateInPlace(key, Change<R>.Mapped(px.Value, r));
                 }
             }
             else
             {
                 var r = MapRight(key, value);
-                t = t.AddOrUpdateInPlace(key!, r);
-                c = c.AddOrUpdateInPlace(key!, Change<R>.Added(r));
+                t = t.AddOrUpdateInPlace(key, r);
+                c = c.AddOrUpdateInPlace(key, Change<R>.Added(r));
             }
         }
 
         foreach (var (key, value) in this)
         {
-            if (t.ContainsKey(key!)) continue;
+            if (t.ContainsKey(key)) continue;
                 
             var r = MapLeft(key, value);
-            t = t.AddOrUpdateInPlace(key!, r);
+            t = t.AddOrUpdateInPlace(key, r);
             if (!equalityComparer.Equals(value, match(r)))
             {
-                c = c.AddOrUpdateInPlace(key!, Change<R>.Mapped(value, r));
+                c = c.AddOrUpdateInPlace(key, Change<R>.Mapped(value, r));
             }
         }
 
@@ -2021,9 +1973,9 @@ internal sealed class TrieMap<K, V> :
     internal abstract class Node : IEnumerable<(K, V)>
     {
         public abstract TrieTag Type { get; }
-        public abstract (bool Found, K Key, V? Value) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<(K Key, V Value)> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
-        public abstract (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
+        public abstract Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer);
         public abstract IEnumerator<(K, V)> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -2055,7 +2007,7 @@ internal sealed class TrieMap<K, V> :
             Nodes = nodes;
         }
 
-        public override (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var hashIndex = Bit.Get(hash, section);
             var mask      = Bit.Mask(hashIndex);
@@ -2063,89 +2015,83 @@ internal sealed class TrieMap<K, V> :
             if (Bit.Get(EntryMap, mask))
             {
                 // If key belongs to an entry
-                var ind = Bit.Index(EntryMap, mask);
-                if (equalityComparer.Equals(Items[ind].Key, key))
+                var entryIndex = Bit.Index(EntryMap, mask);
+                if (equalityComparer.Equals(Items[entryIndex].Key, key))
                 {
-                    var v = Items[ind].Value;
+                    var v = Items[entryIndex].Value;
                     return (-1, 
                             new Entries(
                                 Bit.Set(EntryMap, mask, false), 
                                 NodeMap,
-                                RemoveAt(Items, ind), 
+                                RemoveAt(Items, entryIndex), 
                                 Nodes),
                             v
                            );
                 }
-                else
-                {
-                    return (0, this, default);
-                }
+                return default;
             }
             else if (Bit.Get(NodeMap, mask))
             {
                 //If key lies in a sub-node
-                var ind = Bit.Index(NodeMap, mask);
-                var (cd, subNode, v) = Nodes[ind].Remove(key, hash, section.Next(), equalityComparer);
-                if (cd == 0) return (0, this, default);
+                var entryIndex = Bit.Index(NodeMap, mask);
+                var removed = Nodes[entryIndex].Remove(key, hash, section.Next(), equalityComparer);
+                if (removed)
+                { 
+                    var (cd, subNode, v) = removed.Value;
+                    switch (subNode.Type)
+                    {
+                        case TrieTag.Entries:
 
-                switch (subNode.Type)
-                {
-                    case TrieTag.Entries:
+                            var subEntries = (Entries)subNode;
 
-                        var subEntries = (Entries)subNode;
-
-                        if (subEntries.Items.Length == 1 && subEntries.Nodes.Length == 0)
-                        {
-                            // If the node only has one subnode, make that subnode the new node
-                            if (Items.Length == 0 && Nodes.Length == 1)
+                            if (subEntries.Items.Length == 1 && subEntries.Nodes.Length == 0)
                             {
-                                // Build a new Entries for this level with the sublevel mask fixed
-                                return (cd, new Entries(
-                                            Bit.Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0].Key!),
-                                                         section)),
-                                            0,
-                                            Clone(subEntries.Items),
-                                            Array.Empty<Node>()
-                                        ),
-                                        v);
+                                // If the node only has one subnode, make that subnode the new node
+                                if (Items.Length == 0 && Nodes.Length == 1)
+                                {
+                                    // Build a new Entries for this level with the sublevel mask fixed
+                                    return (cd, new Entries(
+                                                Bit.Mask(Bit.Get((uint)equalityComparer.GetHashCode(subEntries.Items[0].Key!),
+                                                            section)),
+                                                0,
+                                                Clone(subEntries.Items),
+                                                Array.Empty<Node>()
+                                            ),
+                                            v);
+                                }
+                                else
+                                {
+                                    return (cd,
+                                            new Entries(
+                                                Bit.Set(EntryMap, mask, true),
+                                                Bit.Set(NodeMap, mask, false),
+                                                Insert(Items, Bit.Index(EntryMap, mask), subEntries.Items[0]),
+                                                RemoveAt(Nodes, entryIndex)),
+                                            v);
+                                }
                             }
                             else
                             {
-                                return (cd,
-                                        new Entries(
-                                            Bit.Set(EntryMap, mask, true),
-                                            Bit.Set(NodeMap, mask, false),
-                                            Insert(Items, Bit.Index(EntryMap, mask), subEntries.Items[0]),
-                                            RemoveAt(Nodes, ind)),
-                                        v);
+                                var nodeCopy = Clone(Nodes);
+                                nodeCopy[entryIndex] = subNode;
+                                return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy), v);
                             }
-                        }
-                        else
-                        {
-                            var nodeCopy = Clone(Nodes);
-                            nodeCopy[ind] = subNode;
-                            return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy), v);
-                        }
 
-                    case TrieTag.Collision:
-                        var nodeCopy2 = Clone(Nodes);
-                        nodeCopy2[ind] = subNode;
-                        return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy2), v);
-
-                    default:
-                        return (0, this, default);
+                        case TrieTag.Collision:
+                            var nodeCopy2 = Clone(Nodes);
+                            nodeCopy2[entryIndex] = subNode;
+                            return (cd, new Entries(EntryMap, NodeMap, Items, nodeCopy2), v);
+                        
+                    }
                 }
             }
-            else
-            {
-                return (0, this, default);
-            }
+            
+            return default;
         }
 
-        public override (bool Found, K Key, V? Value) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(K Key, V Value)> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {                                                                                         
             var hashIndex = Bit.Get(hash, section);
-            
             var mask = Bit.Mask(hashIndex);
 
             if(Bit.Get(EntryMap, mask))
@@ -2154,11 +2100,7 @@ internal sealed class TrieMap<K, V> :
                 if (equalityComparer.Equals(Items[entryIndex].Key, key))
                 {
                     var (Key, Value) = Items[entryIndex];
-                    return (true, Key, Value);
-                }
-                else
-                {
-                    return default;
+                    return Some((Key, Value));
                 }
             }
             else if (Bit.Get(NodeMap, mask))
@@ -2166,10 +2108,8 @@ internal sealed class TrieMap<K, V> :
                 var entryIndex = Bit.Index(NodeMap, mask);
                 return Nodes[entryIndex].Read(key, hash, section.Next(), equalityComparer);
             }
-            else
-            {
-                return default;
-            }
+            
+            return default;
         }
 
         public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
@@ -2305,54 +2245,49 @@ internal sealed class TrieMap<K, V> :
             Hash = hash;
         }
 
-        public override (bool Found, K Key, V Value) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(K Key, V Value)> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             foreach (var (Key, Value) in Items)
             {
                 if (equalityComparer.Equals(Key, key))
                 {
-                    return (true, Key, Value);
+                    return (Key, Value);
                 }
             }
             return default;
         }
 
-        public override (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
+        public override Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {
             var len = Items.Length;
-            if (len      == 0) return (0, this, default);
-            else if (len == 1) return (-1, EmptyNode.Default, Items[0].Value);
-            else if (len == 2)
+            if (len      == 0) return default;
+            else if (len == 1 && equalityComparer.Equals(Items[0].Key, key)) return (-1, EmptyNode.Default, Items[0].Value);
+            else if (len == 2 && equalityComparer.Equals(Items[0].Key, key))
             {
                 var env = new UpdateContext(UpdateType.Add, false);
-                var ((_, n, _, _), ov) = equalityComparer.Equals(Items[0].Key, key)
-                                          ? (EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer), Items[0].Value)
-                                          : (EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer), Items[1].Value);
+                var (_, n, _, _) = EmptyNode.Default.Update(env, Items[1], hash, default, equalityComparer);
+                var ov = Items[0].Value;
 
                 return (-1, n, ov);
             }
-            else
+            else if (len == 2 && equalityComparer.Equals(Items[1].Key, key))
             {
-                V? oldValue = default;
-                IEnumerable<(K, V)> Yield((K Key, V Value)[] items)
-                {
-                    foreach (var item in items)
-                    {
-                        if (equalityComparer.Equals(item.Key, key))
-                        {
-                            oldValue = item.Value;
-                        }
-                        else
-                        {
-                            yield return item;
-                        }
-                    }
-                }
+                var env = new UpdateContext(UpdateType.Add, false);
+                var (_, n, _, _) = EmptyNode.Default.Update(env, Items[0], hash, default, equalityComparer);
+                var ov = Items[1].Value;
 
-                var result = Yield(Items).ToArray();
-
-                return (result.Length - Items.Length, new Collision(result, hash), oldValue);
+                return (-1, n, ov);
             }
+            
+            var (left, right) = Items.Partition(item => equalityComparer.Equals(item.Key, key), 1);
+
+            if (left.Length > 0)
+            {
+                Node collision = new Collision(right, hash);
+                return (right.Length - Items.Length, collision, left[0].Value);
+            }
+
+            return default;
         }
 
         public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
@@ -2416,11 +2351,11 @@ internal sealed class TrieMap<K, V> :
 
         public override TrieTag Type => TrieTag.Empty;
 
-        public override (bool Found, K Key, V Value) Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
+        public override Option<(K Key, V Value)> Read(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
             default;
 
-        public override (int CountDelta, Node Node, V? Old) Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
-            (0, this, default);
+        public override Option<(int CountDelta, Node Node, V Old)> Remove(K key, uint hash, Sec section, IEqualityComparer<K> equalityComparer) =>
+            default;
 
         public override (int CountDelta, Node Node, V? Old, bool Changed) Update(UpdateContext env, (K Key, V Value) change, uint hash, Sec section, IEqualityComparer<K> equalityComparer)
         {

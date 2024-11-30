@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using LanguageExt.ClassInstances;
@@ -32,6 +33,7 @@ public static class ObjectExt
         EqDefault<A>.Equals(value, default!);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNullIfNotNull(nameof(reason))] //cheat
     public static T require<T>(this T? value, string reason, [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
         if(value is null) throw new ArgumentNullException(paramName, reason);
