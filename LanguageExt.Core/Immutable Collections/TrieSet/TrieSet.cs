@@ -44,7 +44,7 @@ internal sealed class TrieSet<K> :
         var env = new UpdateContext( tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (K item in items)
         {
-            var hash    = (uint)_equalityComparer.GetHashCode(item!);
+            var hash    = (uint)_equalityComparer.GetHashCode(item.require("Item is null"));
             Sec section = default;
             var changed = Root.Update(env, item, hash, section, _equalityComparer);
             if (changed)
@@ -63,7 +63,7 @@ internal sealed class TrieSet<K> :
         var env = new UpdateContext( tryAdd ? UpdateType.TryAdd : UpdateType.AddOrUpdate, true);
         foreach (K item in items)
         {
-            var hash    = (uint)_equalityComparer.GetHashCode(item!);
+            var hash    = (uint)_equalityComparer.GetHashCode(item.require("Item is null"));
             Sec section = default;
             var changed = Root.Update(env, item, hash, section, _equalityComparer);
             if (changed)
@@ -184,7 +184,7 @@ internal sealed class TrieSet<K> :
         var self = this;
         foreach (var item in items)
         {
-            self = self.Remove(item!);
+            self = self.Remove(item);
         }
         return self;
     }
@@ -277,7 +277,7 @@ internal sealed class TrieSet<K> :
         var lhs = this;
         foreach (var item in rhs)
         {
-            lhs = lhs.Remove(item!);
+            lhs = lhs.Remove(item);
         }
         return lhs;
     }
@@ -338,7 +338,7 @@ internal sealed class TrieSet<K> :
         bool extraFound = false;
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 matches++;
             }
@@ -371,7 +371,7 @@ internal sealed class TrieSet<K> :
         foreach (var item in other)
         {
             matchCount++;
-            if (!ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 return false;
             }
@@ -394,7 +394,7 @@ internal sealed class TrieSet<K> :
         int matches = 0;
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 matches++;
             }
@@ -410,7 +410,7 @@ internal sealed class TrieSet<K> :
     {
         foreach (var item in other)
         {
-            if (!ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 return false;
             }
@@ -430,7 +430,7 @@ internal sealed class TrieSet<K> :
 
         foreach (var item in other)
         {
-            if (ContainsKey(item!))
+            if (ContainsKey(item))
             {
                 return true;
             }
@@ -446,7 +446,7 @@ internal sealed class TrieSet<K> :
         var res = new List<K>();
         foreach (var item in other)
         {
-            Find(item!).Do(res.Add);
+            Find(item).Do(res.Add);
         }
         return new TrieSet<K>(res, equalityComparer: _equalityComparer);
     }
@@ -460,7 +460,7 @@ internal sealed class TrieSet<K> :
         var self = this;
         foreach (var item in other)
         {
-            self = self.Remove(item!);
+            self = self.Remove(item);
         }
         return self;
     }
@@ -482,7 +482,7 @@ internal sealed class TrieSet<K> :
 
         foreach (var item in this)
         {
-            if (!rhs.ContainsKey(item!))
+            if (!rhs.ContainsKey(item))
             {
                 res.Add(item);
             }
@@ -490,7 +490,7 @@ internal sealed class TrieSet<K> :
 
         foreach (var item in rhs)
         {
-            if (!ContainsKey(item!))
+            if (!ContainsKey(item))
             {
                 res.Add(item);
             }
@@ -1031,21 +1031,6 @@ internal sealed class TrieSet<K> :
         _count < 50
             ? $"[{ string.Join(", ", AsEnumerable()) }]"
             : $"[{ string.Join(", ", AsEnumerable().Take(50)) } ... ]";
-
-    public bool TryGetValue(K key, out K value)
-    {
-        var ov = Find(key);
-        if (ov.IsSome)
-        {
-            value = (K)ov;
-            return true;
-        }
-        else
-        {
-            value = default!;
-            return false;
-        }
-    }
 
     public bool HasSameEqualityComparer(IEqualityComparer<K> equalityComparer) => 
         _equalityComparer == equalityComparer;
