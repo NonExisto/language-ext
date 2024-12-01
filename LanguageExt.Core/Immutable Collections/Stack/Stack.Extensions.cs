@@ -284,7 +284,7 @@ public static class StackExtensions
     /// <returns>The number of items in the enumerable</returns>
     [Pure]
     public static int Length<T>(this Stck<T> stack) =>
-        List.length(stack);
+        stack.Count;
 
     /// <summary>
     /// Invokes an action for each item in the stack in order

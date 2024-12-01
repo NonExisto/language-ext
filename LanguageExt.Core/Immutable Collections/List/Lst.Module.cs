@@ -860,7 +860,7 @@ public static class List
     /// <returns>The number of items in the enumerable</returns>
     [Pure]
     public static int length<T>(IEnumerable<T> list) =>
-        list.Count();
+        list is IReadOnlyCollection<T> r ? r.Count : list.Count();
 
     /// <summary>
     /// Invokes an action for each item in the enumerable in order

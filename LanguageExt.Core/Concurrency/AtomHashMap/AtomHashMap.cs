@@ -21,7 +21,7 @@ namespace LanguageExt;
 /// See the [concurrency section](https://github.com/louthy/language-ext/wiki/Concurrency) of the wiki for more info.
 /// </remarks>
 public class AtomHashMap<K, V> :
-    IEnumerable<(K Key, V Value)>,
+    IReadOnlyCollection<(K Key, V Value)>,
     IEquatable<HashMap<K, V>>,
     IEquatable<AtomHashMap<K, V>>,
     IReadOnlyDictionary<K, V>
@@ -78,16 +78,6 @@ public class AtomHashMap<K, V> :
     /// </summary>
     [Pure]
     public int Count
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => Items.Count;
-    }
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Items.Count;

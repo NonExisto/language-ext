@@ -452,7 +452,7 @@ public static class Stack
     /// <returns>The number of items in the enumerable</returns>
     [Pure]
     public static int length<T>(Stck<T> stack) =>
-        List.length(stack);
+        stack.Count;
 
     /// <summary>
     /// Invokes an action for each item in the stack in order

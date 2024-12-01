@@ -124,7 +124,7 @@ public static class Queue
 
     [Pure]
     public static int length<T>(Que<T> queue) =>
-        List.length(queue);
+        queue.Count;
 
     public static Unit iter<T>(Que<T> queue, Action<T> action) =>
         List.iter(queue, action);
@@ -241,7 +241,7 @@ public static class QueueExtensions
 
     [Pure]
     public static int Length<T>(this Que<T> queue) =>
-        List.length(queue);
+        queue.Count;
 
     public static Unit Iter<T>(this Que<T> queue, Action<T> action) =>
         List.iter(queue, action);

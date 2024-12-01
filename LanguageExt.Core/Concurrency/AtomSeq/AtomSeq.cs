@@ -575,16 +575,6 @@ public class AtomSeq<A> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => items.Count;
     }
-        
-    /// <summary>
-    /// Alias of `Count`
-    /// </summary>
-    /// <returns>Number of items in the sequence</returns>
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => items.Count;
-    }
 
     /// <summary>
     /// Stream as an enumerable

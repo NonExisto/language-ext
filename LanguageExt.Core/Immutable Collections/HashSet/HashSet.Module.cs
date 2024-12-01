@@ -148,7 +148,7 @@ public partial class HashSet
     /// <returns>Number of elements</returns>
     [Pure]
     public static int length<T>(HashSet<T> set) =>
-        set.Length;
+        set.Count;
 
     /// <summary>
     /// Returns setA - setB.  Only the items in setA that are not in 

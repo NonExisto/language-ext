@@ -116,16 +116,6 @@ public readonly struct HashSet<A> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => _value?.Count ?? 0;
     }
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value?.Count ?? 0;
-    }
         
     /// <summary>
     /// Impure iteration of the bound values in the structure

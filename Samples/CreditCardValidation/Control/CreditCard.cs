@@ -81,7 +81,7 @@ static Validation<Error, int> ValidateInt(string value) =>
     static Validation<Error, Seq<int>> ValidateLuhn(Seq<int> digits)
     {
         var checkDigit = 0;
-        for (var i = digits.Length - 2; i >= 0; --i)
+        for (var i = digits.Count - 2; i >= 0; --i)
         {
             checkDigit += ((i & 1) is 0) switch
                           {

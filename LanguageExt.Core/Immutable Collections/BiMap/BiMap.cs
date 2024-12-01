@@ -13,7 +13,7 @@ namespace LanguageExt;
 /// <typeparam name="B">B</typeparam>
 [Serializable]
 public readonly struct BiMap<A, B> :
-    IEnumerable<(A Left, B Right)>,
+    IReadOnlyCollection<(A Left, B Right)>,
     IComparable<BiMap<A, B>>,
     IEquatable<BiMap<A, B>>,
     IComparable
@@ -214,12 +214,6 @@ public readonly struct BiMap<A, B> :
     /// </summary>
     [Pure]
     public int Count => Left.Count;
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length => Left.Length;
 
     /// <summary>
     /// Atomically updates an existing item

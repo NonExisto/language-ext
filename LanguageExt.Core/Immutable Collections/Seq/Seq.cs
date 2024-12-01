@@ -472,16 +472,6 @@ public readonly struct Seq<A> :
     }
         
     /// <summary>
-    /// Alias of `Count`
-    /// </summary>
-    /// <returns>Number of items in the sequence</returns>
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
-    }
-
-    /// <summary>
     /// Stream as an enumerable
     /// </summary>
     [Pure]

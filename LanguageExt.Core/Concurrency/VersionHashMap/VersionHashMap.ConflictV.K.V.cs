@@ -27,7 +27,7 @@ namespace LanguageExt;
 /// </para>
 /// </summary>
 public class VersionHashMap<ConflictV, K, V> :
-    IEnumerable<(K Key, V Value)>,
+    IReadOnlyCollection<(K Key, V Value)>,
     IEquatable<VersionHashMap<ConflictV, K, V>>
     where ConflictV : Conflict<V>
 {
@@ -77,16 +77,6 @@ public class VersionHashMap<ConflictV, K, V> :
     /// </summary>
     [Pure]
     public int Count
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => Items.Count;
-    }
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Items.Count;

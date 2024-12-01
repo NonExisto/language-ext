@@ -172,7 +172,7 @@ public static partial class TrackingHashMapExtensions
         if (b.IsSome)
         {
             var bv = b.Value.Remove(innerKey);
-            if (bv.Count() == 0)
+            if (bv.Count == 0)
             {
                 return self.Remove(outerKey);
             }
@@ -197,10 +197,10 @@ public static partial class TrackingHashMapExtensions
             if (c.IsSome)
             {
                 var cv = c.Value.Remove(cKey);
-                if (cv.Count() == 0)
+                if (cv.Count == 0)
                 {
                     var bv = b.Value.Remove(bKey);
-                    if (b.Value.Count() == 0)
+                    if (b.Value.Count == 0)
                     {
                         return self.Remove(aKey);
                     }

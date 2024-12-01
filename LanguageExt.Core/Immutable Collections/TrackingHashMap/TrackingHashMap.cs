@@ -159,16 +159,6 @@ public readonly struct TrackingHashMap<K, V> :
     }
 
     /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
-    }
-
-    /// <summary>
     /// Atomically filter out items that return false when a predicate is applied
     /// </summary>
     /// <param name="pred">Predicate</param>

@@ -17,7 +17,7 @@ namespace LanguageExt;
 [Serializable]
 [CollectionBuilder(typeof(Queue), nameof(Queue.createRange))]
 public readonly struct Que<A> : 
-    IEnumerable<A>, 
+    IReadOnlyCollection<A>, 
     IEquatable<Que<A>>
 {
     public static readonly Que<A> Empty = new (QueInternal<A>.Empty);
@@ -93,16 +93,6 @@ public readonly struct Que<A> :
     /// </summary>
     [Pure]
     public int Count
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
-    }
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value?.Count ?? 0;

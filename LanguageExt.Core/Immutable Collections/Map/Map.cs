@@ -177,17 +177,7 @@ public readonly struct Map<K, V> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => value?.Count ?? 0;
     }
-
-    /// <summary>
-    /// Alias of Count
-    /// </summary>
-    [Pure]
-    public int Length
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value?.Count ?? 0;
-    }
-        
+      
     /// <summary>
     /// Atomically adds a new item to the map
     /// </summary>
