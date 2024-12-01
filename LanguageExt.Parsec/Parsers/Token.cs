@@ -4,6 +4,7 @@ using LanguageExt;
 using static LanguageExt.Prelude;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
+using System.Globalization;
 
 namespace LanguageExt.Parsec;
 
@@ -242,7 +243,7 @@ public static class Token
                                                  )
                                                  select $"{pt}{fr}{ex}")
                        let all = $"{si}{nu}{frac}"
-                       let opt = parseDouble(all)
+                       let opt = parseDouble(all, CultureInfo.InvariantCulture)
                        from res in opt.Match(
                            result,
                            () => failure<double>("Invalid floating point value")
@@ -262,7 +263,7 @@ public static class Token
                                      )
                                      select $"{pt}{fr}{ex}"
                         let all = $"{si}{nu}{frac}"
-                        let opt = parseDouble(all)
+                        let opt = parseDouble(all, CultureInfo.InvariantCulture)
                         from res in opt.Match(
                             result,
                             () => failure<double>("Invalid floating point value")

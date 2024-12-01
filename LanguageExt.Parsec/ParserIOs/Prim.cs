@@ -634,8 +634,8 @@ namespace LanguageExt.Parsec
         /// <summary>
         /// Parse a char list and convert into an integer
         /// </summary>
-        public static Parser<I, Option<int>> asInteger<I>(Parser<I, string> p) =>
-            p.Select(parseInt);
+        public static Parser<I, Option<int>> asInteger<I>(Parser<I, string> p, IFormatProvider? formatProvider = null) =>
+            p.Select(x => parseInt(x, formatProvider));
 
         /// <summary>
         /// Parse a char list and convert into an integer
@@ -658,8 +658,8 @@ namespace LanguageExt.Parsec
         /// <summary>
         /// Parse a char list and convert into an double precision floating point value
         /// </summary>
-        public static Parser<I, Option<double>> asDouble<I>(Parser<I, string> p) =>
-            p.Select(parseDouble);
+        public static Parser<I, Option<double>> asDouble<I>(Parser<I, string> p, IFormatProvider? formatProvider = null) =>
+            p.Select(x => parseDouble(x, formatProvider));
 
         /// <summary>
         /// Parse a char list and convert into an double precision floating point value
@@ -670,8 +670,8 @@ namespace LanguageExt.Parsec
         /// <summary>
         /// Parse a char list and convert into an double precision floating point value
         /// </summary>
-        public static Parser<I, Option<float>> asFloat<I>(Parser<I, string> p) =>
-            p.Select(parseFloat);
+        public static Parser<I, Option<float>> asFloat<I>(Parser<I, string> p, IFormatProvider? formatProvider = null) =>
+            p.Select(x => parseFloat(x, formatProvider));
 
         public static Parser<I, Seq<O>> manyUntil<I, O, U>(Parser<I, O> p, Parser<I, U> end)
         {
