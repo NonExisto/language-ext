@@ -25,18 +25,25 @@ public static class ObjectExt
     /// return false.</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNull<A>([System.Diagnostics.CodeAnalysis.NotNullWhen(false)]this A? value) =>
+    public static bool IsNull<A>([NotNullWhen(false)]this A? value) =>
         value is null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsDefault<A>(A value) =>
         EqDefault<A>.Equals(value, default!);
 
+    /// <summary>
+    /// Allows to null check argument in fluent style in certain conditions. 
+    /// This method allows to transparently check argument right before code would start using it.
+    /// </summary>
+    /// <typeparam name="T">Argument type, both reference and value type are supported.</typeparam>
+    /// <param name="value">Argument value to null check.</param>
+    /// <param name="reason">A reason for declining argument usage</param>
+    /// <param name="paramName">Automatically generated argument name for exception</param>
+    /// <returns>Not null value</returns>
+    /// <exception cref="ArgumentNullException">Indicate a failure in null check with context information collected</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [return: NotNullIfNotNull(nameof(reason))] //cheat
-    public static T require<T>(this T? value, string reason, [CallerArgumentExpression(nameof(value))] string? paramName = null)
-    {
-        if(value is null) throw new ArgumentNullException(paramName, reason);
-        return value;
-    }
+    public static T require<T>(this T? value, string reason, [CallerArgumentExpression(nameof(value))] string? paramName = null) => 
+        value ?? throw new ArgumentNullException(paramName, reason);
 }
