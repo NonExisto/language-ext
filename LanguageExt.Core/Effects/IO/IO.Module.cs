@@ -188,14 +188,11 @@ public partial class IO
     //
     //  Internal
     //
-    
+
     /// <summary>
     /// Yields the thread for the `Duration` specified allowing for concurrency
     /// on the current thread 
     /// </summary>
-    internal static async Task<Unit> yieldFor(Duration d, CancellationToken token)
-    {
-        await Task.Delay((TimeSpan)d, token);
-        return unit;
-    }
+    internal static Task<Unit> yieldFor(Duration d, CancellationToken token) => 
+        Task.Delay((TimeSpan)d, token).ContinueWith(_ => unit);
 }

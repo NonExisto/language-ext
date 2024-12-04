@@ -1000,10 +1000,9 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> BiMap<B>(Func<A, B> Some, Func<Unit, B> None) =>
-        Check.NullReturn(
-            IsSome
+        IsSome
                 ? Some(Value)
-                : None(unit));
+                : None(unit);
 
     /// <summary>
     /// Projection from one value to another

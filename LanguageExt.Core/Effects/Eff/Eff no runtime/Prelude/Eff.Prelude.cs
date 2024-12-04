@@ -49,13 +49,6 @@ public static partial class Prelude
     //
 
     /// <summary>
-    /// Make the runtime into the bound value
-    /// </summary>
-    [Pure]
-    internal static Eff<MinRT> runtimeMinRT =>
-        LanguageExt.Eff<MinRT>.Lift(rt => rt);
-
-    /// <summary>
     /// Create a new cancellation context and run the provided Aff in that context
     /// </summary>
     /// <param name="ma">Operation to run in the next context</param>

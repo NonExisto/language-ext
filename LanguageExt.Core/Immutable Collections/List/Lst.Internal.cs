@@ -102,24 +102,6 @@ internal sealed class LstInternal<A> :
         get => Root.Count;
     }
 
-    [Pure]
-    int IReadOnlyCollection<A>.Count
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => Count;
-    }
-
-    [Pure]
-    A IReadOnlyList<A>.this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            if (index < 0 || index >= Root.Count) throw new ArgumentOutOfRangeException(nameof(index));
-            return ListModule.GetItem(Root, index);
-        }
-    }
-
     /// <summary>
     /// Add an item to the end of the list
     /// </summary>

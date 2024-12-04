@@ -3,7 +3,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <NoWarn>IDE1006;IDE0160;IDE0130;IDE0055;IDE0011;IDE0007;IDE0040;IDE0290;IDE0061</NoWarn>
+    <NoWarn>IDE1006;IDE0160;IDE0130;IDE0055;IDE0011;IDE0007;IDE0290;IDE0061</NoWarn>
     <DefineConstants>CONTRACTS_FULL</DefineConstants>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>

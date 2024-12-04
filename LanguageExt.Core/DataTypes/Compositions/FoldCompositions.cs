@@ -22,12 +22,6 @@ public readonly struct FoldCompositions<A>
     static S FoldNodesBack<S>(S state, Func<S, A, S> f, Seq<Compositions<A>.Node> nodes) =>
         nodes.FoldBack(state, (s, n) => FoldNode(s, f, n));
 
-    internal static Seq<B> FoldMap<B>(Func<A, B> f, Seq<Compositions<A>.Node> nodes) =>
-        FoldNodes(Seq<B>(), (s, n) => f(n).Cons(s), nodes);
-
-    internal static Seq<B> FoldMapBack<B>(Func<A, B> f, Seq<Compositions<A>.Node> nodes) =>
-        FoldNodesBack(Seq<B>(), (s, n) => f(n).Cons(s), nodes);
-
     public static Func<Unit, int> Count(Compositions<A> fa) => _ =>
         FoldNodes(0, (s, _) => s + 1, fa.Tree);
 

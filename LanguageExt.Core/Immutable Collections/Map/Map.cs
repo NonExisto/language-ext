@@ -73,10 +73,6 @@ public readonly struct Map<K, V> :
         this.value = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Map(MapItem<K, V> root, bool rev, IComparer<K>? comparer = null) =>
-        value = new MapInternal<K, V>(root, rev, comparer);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Map(IComparer<K> comparer) =>
         value = new MapInternal<K, V>(comparer);
 
@@ -812,10 +808,6 @@ public readonly struct Map<K, V> :
     [Pure] [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<(K Key, V Value)> AsEnumerable() => 
         Value.AsEnumerable();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Map<K, V> SetRoot(MapItem<K, V> root) =>
-        new (Value.SetRoot(root));
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

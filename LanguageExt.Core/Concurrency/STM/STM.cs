@@ -51,42 +51,7 @@ public static class STM
         transaction.Value == null
             ? RunTransaction(op, isolation)
             : op();
-
-    /// <summary>
-    /// Run the op within a new transaction
-    /// If a transaction is already running, then this becomes part of the parent transaction
-    /// </summary>
-    internal static ValueTask<R> DoTransaction<R>(Func<ValueTask<R>> op, Isolation isolation) =>
-        transaction.Value == null
-            ? RunTransaction(op, isolation)
-            : op();
-
-    /// <summary>
-    /// Run the op within a new transaction
-    /// If a transaction is already running, then this becomes part of the parent transaction
-    /// </summary>
-    internal static Eff<R> DoTransaction<R>(Eff<R> op, Isolation isolation) =>
-        transaction.Value == null
-            ? RunTransaction(op, isolation)
-            : op;
         
-    /// <summary>
-    /// Run the op within a new transaction
-    /// If a transaction is already running, then this becomes part of the parent transaction
-    /// </summary>
-    internal static Eff<RT, R> DoTransaction<RT, R>(Eff<RT, R> op, Isolation isolation) =>
-        transaction.Value == null
-            ? RunTransaction(op, isolation)
-            : op;
-        
-    /// <summary>
-    /// Run the op within a new transaction
-    /// If a transaction is already running, then this becomes part of the parent transaction
-    /// </summary>
-    internal static R DoTransaction<R>(Func<CommuteRef<R>> op, Isolation isolation) =>
-        transaction.Value == null
-            ? RunTransaction(op, isolation)
-            : op().Value;
 
     /// <summary>
     /// Runs the transaction
@@ -419,50 +384,6 @@ public static class STM
         }
         return (A)transaction.Value.Commute(id, CastCommute(f));
     }
-
-    /// <summary>
-    /// Must be called in a transaction. Sets the in-transaction-value of
-    /// ref to:  
-    /// 
-    ///     `f(in-transaction-value-of-ref)`
-    ///     
-    /// and returns the in-transaction-value when complete.
-    /// 
-    /// At the commit point of the transaction, `f` is run *AGAIN* with the
-    /// most recently committed value:
-    /// 
-    ///     `f(most-recently-committed-value-of-ref)`
-    /// 
-    /// Thus `f` should be commutative, or, failing that, you must accept
-    /// last-one-in-wins behavior.
-    /// 
-    /// Commute allows for more concurrency than just setting the items
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static A Commute<X, A>(long id, X x, Func<X, A, A> f) =>
-        Commute<A>(id, a => f(x, a));
-
-    /// <summary>
-    /// Must be called in a transaction. Sets the in-transaction-value of
-    /// ref to:  
-    /// 
-    ///     `f(in-transaction-value-of-ref)`
-    ///     
-    /// and returns the in-transaction-value when complete.
-    /// 
-    /// At the commit point of the transaction, `f` is run *AGAIN* with the
-    /// most recently committed value:
-    /// 
-    ///     `f(most-recently-committed-value-of-ref)`
-    /// 
-    /// Thus `f` should be commutative, or, failing that, you must accept
-    /// last-one-in-wins behavior.
-    /// 
-    /// Commute allows for more concurrency than just setting the items
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static A Commute<X, Y, A>(long id, X x, Y y, Func<X, Y, A, A> f) =>
-        Commute<A>(id, a => f(x, y, a));
 
     /// <summary>
     /// Make sure Refs are cleaned up

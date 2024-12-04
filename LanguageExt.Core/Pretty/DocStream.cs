@@ -36,7 +36,7 @@ namespace LanguageExt.Pretty
                     
                     case SLine<A>(var i, var next):
                         sb.AppendLine();
-                        sb.Append(FastSpace.Show(i));
+                        sb.Append(' ', i);
                         doc = next;
                         break;
                     

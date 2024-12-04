@@ -63,13 +63,6 @@ public readonly struct Lst<A> :
     Lst(LstInternal<A> initial) =>
         value = initial;
 
-    /// <summary>
-    /// Ctor
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Lst(ListItem<A> root) =>
-        value = new LstInternal<A>(root);
-
     ListItem<A> Root
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -632,11 +625,6 @@ public readonly struct Lst<A> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Arr<A> ToArr() =>
         toArray(this);
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal A[] ToArray() =>
-        Value.ToArray();
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

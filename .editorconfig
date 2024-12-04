@@ -181,6 +181,8 @@ indent_style = space
 # http://kent-boogaart.com/blog/editorconfig-reference-for-c-developers#insert_final_newline
 insert_final_newline = true
 
+dotnet_style_require_accessibility_modifiers = always
+
 [*.{cs,vb}]
 dotnet_diagnostic.CA1000.severity = none
 dotnet_diagnostic.CA1002.severity = suggestion

@@ -363,22 +363,6 @@ public abstract record Error : Monoid<Error>
             Option<Error> oerr                 => oerr.IfNone(Errors.Bottom),
             _                                  => Errors.Bottom
         };
-    
-    [Pure]
-    internal static Option<FAIL> Convert<FAIL>(object? err) => 
-        err switch
-    {
-        // Messy, but we're doing our best to recover an error rather than return Bottom
-            
-        FAIL fail                                           => fail,
-        Exception e  when typeof(FAIL) == typeof(Error)     => (FAIL)(object)New(e),
-        Exception e  when typeof(FAIL) == typeof(string)    => (FAIL)(object)e.Message,
-        Error e      when typeof(FAIL) == typeof(Exception) => (FAIL)(object)e.ToException(),
-        Error e      when typeof(FAIL) == typeof(string)    => (FAIL)(object)e.ToString(),
-        string e     when typeof(FAIL) == typeof(Exception) => (FAIL)(object)new Exception(e),
-        string e     when typeof(FAIL) == typeof(Error)     => (FAIL)(object)New(e),
-        _ => None
-    };
 
     /// <summary>
     /// Throw the error as an exception
