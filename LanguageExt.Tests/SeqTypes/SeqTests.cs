@@ -49,7 +49,7 @@ public class SeqTests
     {
         string[]? x = null;
 
-        Assert.Equal(0, toSeq(x).Count);
+        Assert.Empty(toSeq(x));
     }
 
     [Fact]
@@ -480,10 +480,10 @@ public class SeqTests
     public void CheckItems()
     {
         var xs = Seq<int>();
-        Assert.Equal(0, xs.Count);
+        Assert.Empty(xs);
             
         xs = Seq(0);
-        Assert.Equal(1, xs.Count);
+        Assert.Single(xs);
         Assert.Equal(0, xs[0]);
             
         xs = Seq(0, 1);

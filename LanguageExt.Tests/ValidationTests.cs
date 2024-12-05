@@ -19,7 +19,7 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.Equal(1, errors.Count);
+                      Assert.Single(errors);
                       Assert.Equal("SOMETHING WENT WRONG", errors.Head);
                   });
     }
@@ -46,7 +46,7 @@ public class ValidationTests
             Succ: _ => Assert.Fail("should never get here"),
             Fail: errors =>
                   {
-                      Assert.Equal(1, errors.Count);
+                      Assert.Single(errors);
                       Assert.Equal("SOMETHING WENT WRONG", errors.Head);
                   });
     }

@@ -41,8 +41,8 @@ namespace LanguageExt.Tests
             var res = block.Parse(toks, t => new Pos(t.Ln - 1, t.Col - 1)).ToEither().IfLeft(() => default);
 
             Assert.Equal(3, res.Item1.Count);
-            Assert.Equal(1, res.Item2.Count);
-            Assert.Equal(1, res.Item3.Count);
+            Assert.Single(res.Item2);
+            Assert.Single(res.Item3);
         }
     }
 }

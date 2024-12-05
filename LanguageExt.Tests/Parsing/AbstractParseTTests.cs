@@ -31,9 +31,9 @@ namespace LanguageExt.Tests.Parsing
             ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString());
 
         protected void ParseT_ValidStringFromGivenToLower_SomeAsGiven([DisallowNull]T expected) =>
-            ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString().ToLower());
+            ParseT_ValidStringFromGiven_SomeAsGiven(expected, expected.ToString()?.ToLower());
 
-        private void ParseT_ValidStringFromGiven_SomeAsGiven(T expected, string value)
+        private void ParseT_ValidStringFromGiven_SomeAsGiven(T expected, string? value)
         {
             var actual = ParseT(value);
             Assert.Equal(expected, actual);

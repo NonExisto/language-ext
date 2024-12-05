@@ -7,10 +7,10 @@ namespace LanguageExt.Tests
     {
         public class TestClass
         {
-            public readonly string W;
-            public readonly string X;
-            public readonly string Y;
-            public readonly string Z;
+            public readonly string? W;
+            public readonly string? X;
+            public readonly string? Y;
+            public readonly string? Z;
 
             public TestClass()
             {

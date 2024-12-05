@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
 namespace LanguageExt;
@@ -94,10 +95,9 @@ public readonly record struct Pure<A>(A Value)
     //  Conversion
     //
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<A> ToOption() =>
-        Value is null 
-            ? Option<A>.None 
-            : Option<A>.Some(Value);
+        Prelude.Optional(Value);
     
     public Either<L, A> ToEither<L>() =>
         Either<L, A>.Right(Value);

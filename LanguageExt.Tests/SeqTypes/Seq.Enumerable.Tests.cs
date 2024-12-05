@@ -29,7 +29,7 @@ namespace LanguageExt.Tests
             Assert.True(seq.Tail.IsEmpty);
             Assert.True(seq.Tail.Tail.IsEmpty);
             Assert.True(seq.Head.IsNone);
-            Assert.Equal(0, seq.Count);
+            Assert.Empty(seq);
             Assert.Equal(0, seq.Count());
 
             var res1 = seq.Match(
@@ -46,7 +46,7 @@ namespace LanguageExt.Tests
 
             var skipped = seq.Skip(1);
             Assert.True(skipped.IsEmpty);
-            Assert.Equal(0, skipped.Count);
+            Assert.Empty(skipped);
             Assert.Equal(0, skipped.Count());
             Assert.True(skipped.Head.IsNone);
         }
@@ -62,7 +62,7 @@ namespace LanguageExt.Tests
             Assert.True(seq.Tail.IsEmpty);
             Assert.True(seq.Tail.Tail.IsEmpty);
 
-            Assert.Equal(1, seq.Count);
+            Assert.Single(seq);
             Assert.Equal(1, seq.Count());
 
             var res1 = seq.Match(
@@ -79,7 +79,7 @@ namespace LanguageExt.Tests
 
             var skipped = seq.Skip(1);
             Assert.True(skipped.IsEmpty);
-            Assert.Equal(0, skipped.Count);
+            Assert.Empty(skipped);
             Assert.Equal(0, skipped.Count());
             Assert.True(skipped.Head.IsNone);
         }
@@ -117,7 +117,7 @@ namespace LanguageExt.Tests
             Assert.Equal(2, seq.Tail.Tail.Tail.Count);
             Assert.Equal(2, seq.Tail.Tail.Tail.Count());
 
-            Assert.Equal(1, seq.Tail.Tail.Tail.Tail.Count);
+            Assert.Single(seq.Tail.Tail.Tail.Tail);
             Assert.Equal(1, seq.Tail.Tail.Tail.Tail.Count());
 
             var res = Sum(seq);
@@ -141,12 +141,12 @@ namespace LanguageExt.Tests
 
             var skipped4 = seq.Skip(4);
             Assert.Equal(5, skipped4.Head);
-            Assert.Equal(1, skipped4.Count);
+            Assert.Single(skipped4);
             Assert.Equal(1, skipped4.Count());
 
             var skipped5 = seq.Skip(5);
             Assert.True(skipped5.IsEmpty);
-            Assert.Equal(0, skipped5.Count);
+            Assert.Empty(skipped5);
             Assert.Equal(0, skipped5.Count());
         }
 

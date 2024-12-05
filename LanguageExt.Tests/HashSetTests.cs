@@ -145,12 +145,12 @@ public class HashSetTests
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "c");
-        Assert.Equal(1, m.Count);
+        Assert.Single(m);
         Assert.True(m.Find("c").IsNone);
         m.Find("e").IfNone(() => failwith<string>("Broken 5"));
 
         m = remove(m, "e");
-        Assert.Equal(0, m.Count);
+        Assert.Empty(m);
         Assert.True(m.Find("e").IsNone);
     }
 

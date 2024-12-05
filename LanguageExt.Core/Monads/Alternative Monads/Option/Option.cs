@@ -445,6 +445,28 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> Select<B>(Func<A, B> f) =>
+        Map(f);
+
+    /// <summary>
+    /// Projection from one value to another 
+    /// </summary>
+    /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="f">Projection function</param>
+    /// <returns>Mapped functor</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Option<B> Select<B>(Func<A, B?> f) where B: struct =>
+        Map(f);
+
+    /// <summary>
+    /// Projection from one value to another 
+    /// </summary>
+    /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="f">Projection function</param>
+    /// <returns>Mapped functor</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Option<B> Map<B>(Func<A, B> f) =>
         IsSome
             ? Optional(f(Value))
             : default;
@@ -457,10 +479,10 @@ public readonly struct Option<A> :
     /// <returns>Mapped functor</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Option<B> Map<B>(Func<A, B> f) =>
+    public Option<B> Map<B>(Func<A, B?> f) where B: struct =>
         IsSome
-            ? Option<B>.Some(f(Value)!)
-            : default;
+            ? Optional(f(Value))
+            : default;    
     
     /// <summary>
     /// Map each element of a structure to an action, evaluate these actions from
@@ -529,6 +551,21 @@ public readonly struct Option<A> :
         var mb = bind(Value);
         if (mb.IsNone) return default;
         return project(Value, mb.Value);
+    }
+
+    /// <summary>
+    /// Monad bind operation for nullable result
+    /// </summary>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Option<C> SelectMany<B, C>(
+        Func<A, Option<B>> bind,
+        Func<A, B, C?> project) where C: struct
+    {
+        if (IsNone) return default;
+        var mb = bind(Value);
+        if (mb.IsNone) return default;
+        return Optional(project(Value, mb.Value));
     }
 
     /// <summary>
@@ -605,7 +642,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Iterable<A> AsIterable() =>
-        IsSome ? [Value!] : [];
+        IsSome ? [Value] : [];
         
     /// <summary>
     /// Convert the structure to an Eff
@@ -1013,10 +1050,38 @@ public readonly struct Option<A> :
     /// <returns>Mapped functor</returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Option<B> BiMap<B>(Func<A, B?> Some, Func<Unit, B?> None) where B: struct =>
+        Optional(IsSome
+                ? Some(Value)
+                : None(unit));
+
+    /// <summary>
+    /// Projection from one value to another
+    /// </summary>
+    /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="Some">Projection function</param>
+    /// <param name="None">Projection function</param>
+    /// <returns>Mapped functor</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<B> BiMap<B>(Func<A, B> Some, Func<B> None) =>
         IsSome
             ? Some(Value)
             : None();
+
+    /// <summary>
+    /// Projection from one value to another
+    /// </summary>
+    /// <typeparam name="B">Resulting functor value type</typeparam>
+    /// <param name="Some">Projection function</param>
+    /// <param name="None">Projection function</param>
+    /// <returns>Mapped functor</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Option<B> BiMap<B>(Func<A, B?> Some, Func<B?> None) where B: struct =>
+        Optional(IsSome
+            ? Some(Value)
+            : None());    
 
     /// <summary>
     /// <para>
@@ -1216,9 +1281,7 @@ public readonly struct Option<A> :
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Option<A> Where(Func<A, bool> pred) =>
-        IsSome && pred(Value)
-            ? this
-            : default;
+        Filter(pred);
 
     /// <summary>
     /// Partial application map
@@ -1263,6 +1326,16 @@ public readonly struct Option<A> :
     public Option<B> Bind<B>(Func<A, Pure<B>> f) =>
         IsSome  
             ? f(Value).ToOption()
+            : default;
+
+    /// <summary>
+    /// Monadic bind
+    /// </summary>
+    /// <param name="f">Bind function</param>
+    [Pure]
+    public Option<B> Bind<B>(Func<A, Pure<B?>> f) where B: struct =>
+        IsSome  
+            ? Optional(f(Value).Value)
             : default;
 
 
