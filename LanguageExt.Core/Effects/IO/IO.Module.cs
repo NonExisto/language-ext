@@ -194,5 +194,5 @@ public partial class IO
     /// on the current thread 
     /// </summary>
     internal static Task<Unit> yieldFor(Duration d, CancellationToken token) => 
-        Task.Delay((TimeSpan)d, token).ContinueWith(_ => unit);
+        Task.Delay((TimeSpan)d, token).ContinueWith(static _ => unit);
 }

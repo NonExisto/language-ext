@@ -49,7 +49,7 @@ public class OptionNullableTests
 						 select (int?)null;
 		result.Should<Option<int>>().Be(None);
 
-		result = Some(123).SelectMany(x => Some(123), (x,y) => (int?)null);
+		result = Some(123).SelectMany(x => Some(123), (x, y) => (int?)null);
 		result.Should<Option<int>>().Be(None);
 	}
 
@@ -60,5 +60,25 @@ public class OptionNullableTests
 
 		var result = optional.Bind(x => Pure((int?)null));
 		result.Should<Option<int>>().Be(None);
+	}
+
+	[Fact]
+	public void ImplicitCastShouldNotProduceNullable()
+	{
+		Option<int?> result = (int?)null; // And yet it does. Guess only static analysis rule could prevent that.
+
+		result.Should<Option<int?>>().Be(None); // At least we secure conversion result
+		result.Count().Should().Be(0);
+		
+		result = 2;
+		result.Should<Option<int?>>().Be(2);
+	}
+
+	[Fact]
+	public void ImplicitCastShouldProduceNoneForNullReference()
+	{
+		Option<string> result = (string?)null;
+
+		result.Should<Option<string>>().Be(None);
 	}
 }
